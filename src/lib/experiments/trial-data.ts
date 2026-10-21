@@ -1,4 +1,4 @@
-import type { Gray } from "@/lib/tracking/types.ts";
+import type { Gray } from "../tracking/types.ts";
 export { decodeTrack, encodeTrack } from "./track-codec.ts";
 
 /** Converts the clean grayscale background to a small JPEG for revisiting trials without the video. */

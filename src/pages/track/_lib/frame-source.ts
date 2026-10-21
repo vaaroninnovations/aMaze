@@ -25,11 +25,10 @@ export type FrameSource = {
 
 export async function createServerVideoSource(
   file: File,
-  token: string,
   onUploadProgress: (progress: number) => void,
   signal: AbortSignal,
 ): Promise<FrameSource> {
-  const uploaded = await uploadVideo(file, token, onUploadProgress, signal);
+  const uploaded = await uploadVideo(file, onUploadProgress, signal);
   let bitmap: ImageBitmap | null = null;
   let seekVersion = 0;
   return {
@@ -42,7 +41,7 @@ export async function createServerVideoSource(
     duration: uploaded.duration,
     seek: async (time) => {
       const version = ++seekVersion;
-      const next = await fetchVideoFrame(uploaded.sessionId, time, token);
+      const next = await fetchVideoFrame(uploaded.sessionId, time);
       if (version !== seekVersion) {
         next.close();
         return;

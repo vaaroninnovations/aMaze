@@ -1,6 +1,5 @@
 import convexPlugin from "@convex-dev/eslint-plugin";
 import js from "@eslint/js";
-import herculesPlugin from "@usehercules/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import { globalIgnores } from "eslint/config";

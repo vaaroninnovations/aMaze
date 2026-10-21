@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
 import { arenaPolygon, pointInPolygon } from "@/lib/tracking/geometry.ts";
 import { buildZones, defaultParams } from "@/lib/tracking/templates.ts";
 import { summarize } from "@/lib/tracking/metrics.ts";
@@ -111,7 +110,6 @@ function grayJpeg(gray: Gray): Promise<Blob> {
 }
 
 export function useTrackingSession() {
-  const anonymousSessionId = getAnonymousSessionId();
   const [source, setSource] = useState<FrameSource | null>(null);
   const [dims, setDims] = useState<Dims>({ w: 480, h: 360 });
   const [status, setStatus] = useState<SessionStatus>("empty");
@@ -150,10 +148,6 @@ export function useTrackingSession() {
   const cancelRef = useRef(false);
   const uploadAbortRef = useRef<AbortController | null>(null);
   const trackAbortRef = useRef<AbortController | null>(null);
-  const sessionRef = useRef(anonymousSessionId);
-  useEffect(() => {
-    sessionRef.current = anonymousSessionId;
-  }, [anonymousSessionId]);
 
   const zones = useMemo(
     () =>
@@ -176,23 +170,17 @@ export function useTrackingSession() {
     () => () => {
       source?.dispose();
       if (source?.liveSessionId) {
-        void deleteLiveSession(source.liveSessionId, sessionRef.current).catch(
-          (error: unknown) =>
-            console.error(
-              "Could not clean up the live tracking session.",
-              error,
-            ),
+        void deleteLiveSession(source.liveSessionId).catch((error: unknown) =>
+          console.error("Could not clean up the live tracking session.", error),
         );
       }
       if (source?.serverSessionId) {
-        void deleteVideoSession(
-          source.serverSessionId,
-          sessionRef.current,
-        ).catch((error: unknown) =>
-          console.error(
-            "Could not clean up the temporary video upload.",
-            error,
-          ),
+        void deleteVideoSession(source.serverSessionId).catch(
+          (error: unknown) =>
+            console.error(
+              "Could not clean up the temporary video upload.",
+              error,
+            ),
         );
       }
     },
@@ -313,7 +301,6 @@ export function useTrackingSession() {
         return;
       }
       if (src.liveSessionId) {
-        const anonymousSessionId = sessionRef.current;
         for (let i = 0; i < BACKGROUND_SAMPLES; i++) {
           const t =
             src.kind === "camera"
@@ -328,14 +315,10 @@ export function useTrackingSession() {
           await uploadLiveBackgroundFrame(
             src.liveSessionId,
             await canvasJpeg(work.current.canvas),
-            anonymousSessionId,
           );
           setProgress((i + 1) / BACKGROUND_SAMPLES);
         }
-        const prepared = await prepareLiveSession(
-          src.liveSessionId,
-          anonymousSessionId,
-        );
+        const prepared = await prepareLiveSession(src.liveSessionId);
         const binary = atob(prepared.background);
         if (binary.length !== d.w * d.h)
           throw new Error(
@@ -370,11 +353,7 @@ export function useTrackingSession() {
         return;
       }
       if (src.serverSessionId) {
-        const anonymousSessionId = sessionRef.current;
-        const prepared = await prepareVideo(
-          src.serverSessionId,
-          anonymousSessionId,
-        );
+        const prepared = await prepareVideo(src.serverSessionId);
         if (prepared.width !== d.w || prepared.height !== d.h) {
           throw new Error(
             "The tracking service returned inconsistent video dimensions.",
@@ -444,7 +423,6 @@ export function useTrackingSession() {
                   setProgress(0);
                   return await createServerVideoSource(
                     kind,
-                    anonymousSessionId,
                     (p) => setProgress(p),
                     controller.signal,
                   );
@@ -456,7 +434,6 @@ export function useTrackingSession() {
             src.liveSessionId = await createLiveSession(
               Math.round(src.width * scale),
               Math.round(src.height * scale),
-              anonymousSessionId,
             );
           } catch (error) {
             src.dispose();
@@ -478,7 +455,7 @@ export function useTrackingSession() {
         );
       }
     },
-    [source, prepare, anonymousSessionId],
+    [source, prepare],
   );
 
   /** Closes the current video and returns to the source picker. */
@@ -509,15 +486,10 @@ export function useTrackingSession() {
       setTemplateId(source.preset.templateId);
       return;
     }
-    const anonymousSessionId = sessionRef.current;
     const result = source?.liveSessionId
-      ? await detectLiveArena(
-          source.liveSessionId,
-          await grayJpeg(background),
-          anonymousSessionId,
-        )
+      ? await detectLiveArena(source.liveSessionId, await grayJpeg(background))
       : source?.serverSessionId
-        ? await detectVideoArena(source.serverSessionId, anonymousSessionId)
+        ? await detectVideoArena(source.serverSessionId)
         : null;
     if (!result)
       throw new Error("The source is not connected to server-side processing.");
@@ -574,18 +546,15 @@ export function useTrackingSession() {
     if (source.kind === "demo")
       return await detectLocalFrame(source, currentTime, null);
     if (source.serverSessionId) {
-      const anonymousSessionId = sessionRef.current;
       if (!arena) return null;
       return await testVideoDetection(
         source.serverSessionId,
         currentTime,
         arena,
         settings,
-        anonymousSessionId,
       );
     }
     if (source.liveSessionId) {
-      const anonymousSessionId = sessionRef.current;
       const workspace = work.current;
       if (!arena || !workspace)
         throw new Error("Live server tracking is not ready.");
@@ -601,7 +570,6 @@ export function useTrackingSession() {
         currentTime,
         arena,
         settings,
-        anonymousSessionId,
         false,
       );
     }
@@ -660,7 +628,6 @@ export function useTrackingSession() {
       return;
     }
     if (source.liveSessionId) {
-      const anonymousSessionId = sessionRef.current;
       if (!arena) {
         setError("Select a valid arena before starting tracking.");
         return;
@@ -698,7 +665,6 @@ export function useTrackingSession() {
             t,
             arena,
             settings,
-            anonymousSessionId,
           );
           points.push({ t, ...detection });
           if (i % 5 === 0 || i === total) {
@@ -709,15 +675,11 @@ export function useTrackingSession() {
           }
         }
         if (points.length) {
-          const result = await finalizeLiveSession(
-            source.liveSessionId,
-            anonymousSessionId,
-            {
-              zones,
-              pxPerCm,
-              templateId,
-            },
-          );
+          const result = await finalizeLiveSession(source.liveSessionId, {
+            zones,
+            pxPerCm,
+            templateId,
+          });
           setTrack(result.track);
           setServerSummary(result.summary);
           setServerMeasures(result.measures);
@@ -742,7 +704,6 @@ export function useTrackingSession() {
       return;
     }
     if (source.serverSessionId) {
-      const anonymousSessionId = sessionRef.current;
       if (!arena) {
         setError("Select a valid arena before starting server-side tracking.");
         return;
@@ -759,7 +720,6 @@ export function useTrackingSession() {
       try {
         const result = await trackVideo(
           source.serverSessionId,
-          anonymousSessionId,
           {
             arena,
             zones,
@@ -816,7 +776,6 @@ export function useTrackingSession() {
 
   const trackCameraFrame = useCallback(
     async (frame: Blob, time: number) => {
-      const anonymousSessionId = sessionRef.current;
       if (!source?.liveSessionId || !arena)
         throw new Error("Live server tracking is not ready.");
       return await trackLiveFrame(
@@ -825,25 +784,19 @@ export function useTrackingSession() {
         time,
         arena,
         settings,
-        anonymousSessionId,
       );
     },
     [source, arena, settings],
   );
 
   const finalizeLiveTrack = useCallback(async () => {
-    const anonymousSessionId = sessionRef.current;
     if (!source?.liveSessionId)
       throw new Error("Live server tracking is not ready.");
-    const result = await finalizeLiveSession(
-      source.liveSessionId,
-      anonymousSessionId,
-      {
-        zones,
-        pxPerCm,
-        templateId,
-      },
-    );
+    const result = await finalizeLiveSession(source.liveSessionId, {
+      zones,
+      pxPerCm,
+      templateId,
+    });
     setServerSummary(result.summary);
     setServerMeasures(result.measures);
     return result;
@@ -856,7 +809,6 @@ export function useTrackingSession() {
 
   /** Live mode: auto-detect the arena from the current camera frame (used while positioning the camera). */
   const detectArenaNow = useCallback(async () => {
-    const anonymousSessionId = sessionRef.current;
     const workspace = work.current;
     if (!source?.liveSessionId || !workspace) return;
     await source.seek(currentTime);
@@ -864,7 +816,6 @@ export function useTrackingSession() {
     const result = await detectLiveArena(
       source.liveSessionId,
       await canvasJpeg(workspace.canvas),
-      anonymousSessionId,
     );
     applyDetectedMaze(result.detection, result.arena, templateId);
   }, [source, currentTime, applyDetectedMaze, templateId]);
@@ -874,14 +825,12 @@ export function useTrackingSession() {
    * every zone and arm) toward it. Keeps the current test type; ignores jitter and unsure frames.
    */
   const followArena = useCallback(async () => {
-    const anonymousSessionId = sessionRef.current;
     const workspace = work.current;
     if (!source?.liveSessionId || !workspace) return;
     source.draw(workspace.ctx, workspace.canvas.width, workspace.canvas.height);
     const result = await detectLiveArena(
       source.liveSessionId,
       await canvasJpeg(workspace.canvas),
-      anonymousSessionId,
     );
     const det = result.detection;
     if (!det || det.confidence < 0.4) return;

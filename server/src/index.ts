@@ -1,6 +1,7 @@
 import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
 import Fastify, { type FastifyRequest } from "fastify";
+import { createRemoteJWKSet, errors, jwtVerify } from "jose";
 import sharp from "sharp";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
@@ -30,6 +31,25 @@ import {
   detectArena,
   medianBackground,
 } from "../../src/lib/tracking/vision.ts";
+
+const configuredConvexSiteUrl = process.env.CONVEX_SITE_URL;
+if (!configuredConvexSiteUrl) {
+  throw new Error("CONVEX_SITE_URL must be set to the Convex site URL.");
+}
+const convexSite = new URL(configuredConvexSiteUrl);
+if (
+  convexSite.protocol !== "https:" &&
+  !(convexSite.protocol === "http:" && convexSite.hostname === "localhost")
+) {
+  throw new Error("CONVEX_SITE_URL must use HTTPS outside local development.");
+}
+if (convexSite.pathname !== "/" || convexSite.search || convexSite.hash) {
+  throw new Error("CONVEX_SITE_URL must be an origin without a path.");
+}
+const convexSiteUrl = convexSite.origin;
+const convexJwks = createRemoteJWKSet(
+  new URL("/.well-known/jwks.json", convexSiteUrl),
+);
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -219,6 +239,27 @@ function sendError(
   message: string,
 ) {
   return reply.code(status).send({ error: message });
+}
+
+async function verifyAccessToken(
+  authorization: string | undefined,
+): Promise<string | null> {
+  const match = authorization?.match(/^Bearer ([^\s]+)$/i);
+  if (!match) return null;
+
+  try {
+    const { payload } = await jwtVerify(match[1]!, convexJwks, {
+      issuer: convexSiteUrl,
+      audience: "convex",
+    });
+    if (typeof payload.sub !== "string") return null;
+    const [userId, sessionId, ...extra] = payload.sub.split("|");
+    if (!userId || !sessionId || extra.length > 0) return null;
+    return userId;
+  } catch (error) {
+    if (error instanceof errors.JOSEError) return null;
+    throw error;
+  }
 }
 
 async function runBuffer(
@@ -514,11 +555,11 @@ async function main() {
 
   await app.register(cors, {
     origin(origin, callback) {
-      if (origin && origins.has(origin)) callback(null, true);
+      if (!origin || origins.has(origin)) callback(null, true);
       else callback(new Error("Origin is not allowed."), false);
     },
     methods: ["GET", "POST", "DELETE", "OPTIONS"],
-    allowedHeaders: ["content-type", "x-anonymous-session"],
+    allowedHeaders: ["authorization", "content-type"],
     maxAge: 600,
   });
   await app.register(multipart, {
@@ -531,16 +572,24 @@ async function main() {
   );
 
   app.addHook("onRequest", async (request, reply) => {
-    if (request.url === "/healthz") return;
-    const sessionId = request.headers["x-anonymous-session"];
-    if (
-      typeof sessionId !== "string" ||
-      !z.string().uuid().safeParse(sessionId).success
-    ) {
-      sendError(reply, 400, "A valid anonymous session ID is required.");
+    if (request.method === "OPTIONS" || request.url === "/healthz") return;
+    try {
+      const authSubject = await verifyAccessToken(
+        request.headers.authorization,
+      );
+      if (!authSubject) {
+        sendError(reply, 401, "Sign in with Google to use the tracking API.");
+        return;
+      }
+      request.authSubject = authSubject;
+    } catch (error) {
+      request.log.error(
+        { err: error },
+        "Could not verify the Convex access token",
+      );
+      sendError(reply, 503, "Authentication is temporarily unavailable.");
       return;
     }
-    request.authSubject = sessionId;
   });
 
   app.setErrorHandler((error, request, reply) => {

@@ -22,6 +22,9 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
     api.users.getCurrentUser,
     isAuthenticated ? {} : "skip",
   );
+  const navItems = isAuthenticated
+    ? NAV.filter((item) => item.to === "/track")
+    : [];
 
   return (
     <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
@@ -48,11 +51,11 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
               </svg>
             </span>
             <span className="font-sans text-[15px] font-semibold tracking-[-0.04em]">
-              a<span className="text-[#08796f] dark:text-[#59dbc7]">Maze</span>
+              α<span className="text-[#08796f] dark:text-[#59dbc7]">Maze</span>
             </span>
           </Link>
           <nav className="flex items-center gap-1">
-            {NAV.map((n) => (
+            {navItems.map((n) => (
               <NavLink
                 key={n.to}
                 to={n.to}

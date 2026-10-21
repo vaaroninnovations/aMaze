@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getTrackingAccessToken } from "./access-token.ts";
 import type {
   Arena,
   DetectionSettings,
@@ -153,7 +154,6 @@ const analyticsSchema = z.object({
 export type ServerAnalytics = z.infer<typeof analyticsSchema>;
 
 export async function calculateServerAnalytics(
-  anonymousSessionId: string,
   args: {
     track: TrackPoint[];
     zones: Zone[];
@@ -166,7 +166,7 @@ export async function calculateServerAnalytics(
   },
   signal?: AbortSignal,
 ): Promise<ServerAnalytics> {
-  return await requestJson(anonymousSessionId, "/v1/analytics", analyticsSchema, {
+  return await requestJson("/v1/analytics", analyticsSchema, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(args),
@@ -177,10 +177,8 @@ export async function calculateServerAnalytics(
 export async function createLiveSession(
   width: number,
   height: number,
-  anonymousSessionId: string,
 ): Promise<string> {
   const result = await requestJson(
-    anonymousSessionId,
     "/v1/live-sessions",
     z.object({ sessionId: z.string().uuid() }),
     {
@@ -195,16 +193,14 @@ export async function createLiveSession(
 export async function uploadLiveBackgroundFrame(
   sessionId: string,
   frame: Blob,
-  anonymousSessionId: string,
 ): Promise<void> {
   const response = await fetch(
     `${apiUrl()}/v1/live-sessions/${sessionId}/background`,
     {
       method: "POST",
-      headers: {
-        "X-Anonymous-Session": anonymousSessionId,
+      headers: await trackingHeaders({
         "Content-Type": "application/octet-stream",
-      },
+      }),
       body: frame,
     },
   );
@@ -213,10 +209,8 @@ export async function uploadLiveBackgroundFrame(
 
 export async function prepareLiveSession(
   sessionId: string,
-  anonymousSessionId: string,
 ): Promise<PreparedVideo> {
   return await requestJson(
-    anonymousSessionId,
     `/v1/live-sessions/${sessionId}/prepare`,
     preparedSchema,
     { method: "POST" },
@@ -226,10 +220,8 @@ export async function prepareLiveSession(
 export async function detectLiveArena(
   sessionId: string,
   frame: Blob,
-  anonymousSessionId: string,
 ): Promise<{ detection: MazeDetection | null; arena: Arena }> {
   return await requestJson(
-    anonymousSessionId,
     `/v1/live-sessions/${sessionId}/arena`,
     z.object({
       detection: z
@@ -252,10 +244,8 @@ export async function detectLiveArena(
 
 export async function detectVideoArena(
   sessionId: string,
-  anonymousSessionId: string,
 ): Promise<{ detection: MazeDetection | null; arena: Arena }> {
   return await requestJson(
-    anonymousSessionId,
     `/v1/sessions/${sessionId}/arena`,
     z.object({
       detection: z
@@ -278,14 +268,12 @@ export async function trackLiveFrame(
   time: number,
   arena: Arena,
   settings: DetectionSettings,
-  anonymousSessionId: string,
   record = true,
 ): Promise<Detection> {
   const config = encodeURIComponent(
     JSON.stringify({ arena, settings, record }),
   );
   return await requestJson(
-    anonymousSessionId,
     `/v1/live-sessions/${sessionId}/frame?time=${encodeURIComponent(time)}&config=${config}`,
     z.object({
       found: z.boolean(),
@@ -303,7 +291,6 @@ export async function trackLiveFrame(
 
 export async function finalizeLiveSession(
   sessionId: string,
-  anonymousSessionId: string,
   options: {
     zones: Zone[];
     pxPerCm: number;
@@ -311,7 +298,6 @@ export async function finalizeLiveSession(
   },
 ): Promise<ServerTrack> {
   return await requestJson(
-    anonymousSessionId,
     `/v1/live-sessions/${sessionId}/finalize`,
     z.object({
       track: z.array(pointSchema),
@@ -326,13 +312,10 @@ export async function finalizeLiveSession(
   );
 }
 
-export async function deleteLiveSession(
-  sessionId: string,
-  anonymousSessionId: string,
-): Promise<void> {
+export async function deleteLiveSession(sessionId: string): Promise<void> {
   const response = await fetch(`${apiUrl()}/v1/live-sessions/${sessionId}`, {
     method: "DELETE",
-    headers: { "X-Anonymous-Session": anonymousSessionId },
+    headers: await trackingHeaders(),
   });
   if (!response.ok) throw new Error(await parseError(response));
 }
@@ -363,35 +346,37 @@ async function parseError(response: Response): Promise<string> {
   return message;
 }
 
+async function trackingHeaders(headers?: HeadersInit): Promise<Headers> {
+  const result = new Headers(headers);
+  result.set("Authorization", `Bearer ${await getTrackingAccessToken()}`);
+  return result;
+}
+
 async function requestJson<T>(
-  anonymousSessionId: string,
   endpoint: string,
   schema: z.ZodType<T>,
   init?: RequestInit,
 ): Promise<T> {
   const response = await fetch(`${apiUrl()}${endpoint}`, {
     ...init,
-    headers: {
-      ...init?.headers,
-      "X-Anonymous-Session": anonymousSessionId,
-    },
+    headers: await trackingHeaders(init?.headers),
   });
   if (!response.ok) throw new Error(await parseError(response));
   return schema.parse(await response.json());
 }
 
-export function uploadVideo(
+export async function uploadVideo(
   file: File,
-  anonymousSessionId: string,
   onProgress: (progress: number) => void,
   signal?: AbortSignal,
 ): Promise<UploadedVideo> {
+  const accessToken = await getTrackingAccessToken();
   const form = new FormData();
   form.append("video", file, file.name);
-  return new Promise((resolve, reject) => {
+  return await new Promise<UploadedVideo>((resolve, reject) => {
     const request = new XMLHttpRequest();
     request.open("POST", `${apiUrl()}/v1/sessions`);
-    request.setRequestHeader("X-Anonymous-Session", anonymousSessionId);
+    request.setRequestHeader("Authorization", `Bearer ${accessToken}`);
     request.responseType = "json";
     request.upload.onprogress = (event) => {
       if (event.lengthComputable) onProgress(event.loaded / event.total);
@@ -425,12 +410,8 @@ export function uploadVideo(
   });
 }
 
-export async function prepareVideo(
-  sessionId: string,
-  anonymousSessionId: string,
-): Promise<PreparedVideo> {
+export async function prepareVideo(sessionId: string): Promise<PreparedVideo> {
   return await requestJson(
-    anonymousSessionId,
     `/v1/sessions/${sessionId}/prepare`,
     preparedSchema,
     {
@@ -442,11 +423,10 @@ export async function prepareVideo(
 export async function fetchVideoFrame(
   sessionId: string,
   time: number,
-  anonymousSessionId: string,
 ): Promise<ImageBitmap> {
   const response = await fetch(
     `${apiUrl()}/v1/sessions/${sessionId}/frame?time=${encodeURIComponent(time)}`,
-    { headers: { "X-Anonymous-Session": anonymousSessionId } },
+    { headers: await trackingHeaders() },
   );
   if (!response.ok) throw new Error(await parseError(response));
   return await createImageBitmap(await response.blob());
@@ -457,10 +437,8 @@ export async function testVideoDetection(
   time: number,
   arena: Arena,
   settings: DetectionSettings,
-  anonymousSessionId: string,
 ) {
   return await requestJson(
-    anonymousSessionId,
     `/v1/sessions/${sessionId}/test`,
     z.object({
       found: z.boolean(),
@@ -478,7 +456,6 @@ export async function testVideoDetection(
 
 export async function trackVideo(
   sessionId: string,
-  anonymousSessionId: string,
   options: {
     arena: Arena;
     zones: Zone[];
@@ -491,10 +468,9 @@ export async function trackVideo(
 ): Promise<ServerTrack> {
   const response = await fetch(`${apiUrl()}/v1/sessions/${sessionId}/track`, {
     method: "POST",
-    headers: {
-      "X-Anonymous-Session": anonymousSessionId,
+    headers: await trackingHeaders({
       "Content-Type": "application/json",
-    },
+    }),
     body: JSON.stringify(options),
     signal,
   });
@@ -543,13 +519,10 @@ export async function trackVideo(
   return result;
 }
 
-export async function deleteVideoSession(
-  sessionId: string,
-  anonymousSessionId: string,
-): Promise<void> {
+export async function deleteVideoSession(sessionId: string): Promise<void> {
   const response = await fetch(`${apiUrl()}/v1/sessions/${sessionId}`, {
     method: "DELETE",
-    headers: { "X-Anonymous-Session": anonymousSessionId },
+    headers: await trackingHeaders(),
   });
   if (!response.ok) throw new Error(await parseError(response));
 }

@@ -1,0 +1,10 @@
+amaze.drvara.si {
+    root * /opt/amaze/dist
+    encode zstd gzip
+    try_files {path} /index.html
+    file_server
+}
+
+tracking.amaze.drvara.si {
+    reverse_proxy 127.0.0.1:8080
+}

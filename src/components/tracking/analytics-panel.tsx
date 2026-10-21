@@ -103,7 +103,6 @@ export default function AnalyticsPanel({
     const controller = new AbortController();
     const timeout = setTimeout(() => {
       void calculateServerAnalytics(
-        anonymousSessionId,
         {
           track,
           zones,

@@ -9,9 +9,9 @@ track generation, and saved-trial summaries run on the server.
 
 Requirements: Node.js 22.12+ and pnpm 10.
 
-1. Copy `.env.example` to `.env` and configure the Vite and tracking-service
-   settings. Configure Google OAuth and Convex Auth variables in the Convex
-   deployment environment.
+1. Copy `.env.example` to `.env`. Set `VITE_CONVEX_URL` and `CONVEX_SITE_URL`
+   to the matching Convex deployment URLs. Set up Google sign-in and Convex Auth
+   on that deployment as described below.
 2. Install dependencies with `pnpm install`.
 3. Start the web app and tracking service in separate terminals:
 
@@ -20,32 +20,103 @@ Requirements: Node.js 22.12+ and pnpm 10.
    pnpm dev:server
    ```
 
-4. Set `VITE_TRACKING_API_URL` to the tracking service URL (for example,
-   `http://localhost:8080`) and set `TRACKING_ALLOWED_ORIGINS` to the web app
-   origin (for example, `http://localhost:5173`).
+4. The example environment uses `http://localhost:8080` for the tracking API
+   and allows the web app at `http://localhost:5173`.
 
 The service requires FFmpeg and FFprobe on `PATH`. The Docker image installs
 them automatically.
 
-## Production deployment
+## Google Auth setup
 
-Build and run the tracking service with Docker Compose:
+The app uses Google through Convex Auth. Configure `SITE_URL` to the public web
+app origin and generate Convex Auth's signing keys for the deployment:
 
 ```sh
-cp .env.example .env
-# Set production URLs and identity-provider values in .env.
-docker compose up --build -d
+pnpm exec auth --prod --web-server-url https://amaze.drvara.si
 ```
 
-Deploy the Vite client as a static site and set its `VITE_*` variables at build
-time. Configure the Google OAuth application's authorized callback URL as
-`https://<deployment>.convex.site/api/auth/callback/google`. Set `AUTH_GOOGLE_ID`,
-`AUTH_GOOGLE_SECRET`, and `SITE_URL` in the Convex deployment environment.
-Convex Auth also requires `JWT_PRIVATE_KEY` and `JWKS`; generate and set these
-using the Convex Auth manual setup instructions. Configure `VITE_CONVEX_URL`
-with the matching Convex deployment URL. Terminate TLS at a
-reverse proxy or platform ingress in front of the tracking service; the Compose
-port is bound to loopback and must not be exposed as plain HTTP.
+Set the Google client ID and secret in that same Convex deployment. The CLI
+prompts for a value when it is omitted:
+
+```sh
+pnpm exec convex env set AUTH_GOOGLE_ID --prod
+pnpm exec convex env set AUTH_GOOGLE_SECRET --prod
+```
+
+Keep `JWT_PRIVATE_KEY` and Google client secrets in Convex environment variables,
+never in the Vite `.env` file or browser bundle.
+
+In Google Cloud Console, create a Web application OAuth client and add this
+authorized redirect URI:
+
+```text
+https://<deployment>.convex.site/api/auth/callback/google
+```
+
+`CONVEX_SITE_URL` is the Convex deployment's `*.convex.site` URL. The tracking
+service verifies Convex Auth access tokens using that deployment's public JWKS;
+Google credentials and private signing keys remain only in Convex.
+
+## Hostinger deployment
+
+This guide hosts both the static website and tracking API on a **Hostinger VPS**.
+The tracking API needs Docker and FFmpeg; shared/web hosting cannot run this
+service. Shared hosting can still be used for the static website if preferred,
+but the API must remain on a VPS.
+
+1. Deploy the Convex backend with `pnpm exec convex deploy`, targeting the
+   production deployment, and configure Google Auth as above. Note the matching
+   `*.convex.cloud` and `*.convex.site` deployment URLs. Configure the Google
+   OAuth callback URI below in Google Cloud Console.
+2. On the VPS, install Docker Engine, the Docker Compose plugin, Node.js
+   22.12+, pnpm 10, and Caddy. Point the website domain and tracking subdomain
+   to the VPS, then clone this repository to `/opt/amaze`. Create `.env` from
+   `.env.example`.
+3. In `.env`, set:
+   - `CONVEX_SITE_URL=https://<deployment>.convex.site`
+   - `TRACKING_ALLOWED_ORIGINS=https://amaze.drvara.si` (the exact frontend
+     origin, with no path)
+   - `VITE_CONVEX_URL=https://<deployment>.convex.cloud`
+   - `VITE_TRACKING_API_URL=https://tracking.amaze.drvara.si`
+
+   The `VITE_*` values are public and compiled into the site; never put
+   secrets in them.
+4. Build the frontend on the VPS:
+
+   ```sh
+   cd /opt/amaze
+   pnpm install --frozen-lockfile
+   pnpm run build
+   ```
+
+5. Start the tracking service:
+
+   ```sh
+   docker compose up --build -d
+   ```
+
+6. Configure Caddy using
+   [`deploy/Caddyfile.example`](./deploy/Caddyfile.example). It is configured
+   for `amaze.drvara.si` and `tracking.amaze.drvara.si`; change `/opt/amaze/dist`
+   if you cloned the repository elsewhere. The Caddyfile serves the frontend
+   build with client-side route fallback and proxies the API to `127.0.0.1:8080`.
+   Install it as `/etc/caddy/Caddyfile`, then validate and reload Caddy:
+
+   ```sh
+   sudo caddy validate --config /etc/caddy/Caddyfile
+   sudo systemctl reload caddy
+   ```
+
+   Caddy provisions HTTPS automatically; allow inbound ports 80 and 443, and
+   do not expose port 8080 publicly.
+
+For an example `.env` configuration, use `.env.example` as a template. Never
+put Google client secrets, Convex private keys, or any other server secrets in
+`VITE_*` variables. The API requires a valid Convex Auth JWT for all routes
+except `/healthz`; Google sign-in is therefore required for camera and uploaded
+video processing. Temporary uploads and live sessions are assigned to the
+authenticated Convex user. The built-in demo remains available without signing
+in.
 
 Users can sign in with Google, edit their profile, and claim the current
 browser's anonymous projects on first sign-in. Project owners can create
@@ -53,11 +124,6 @@ revocable read-only results links or invite viewers and editors. Email
 invitations are prepared as a `mailto:` draft so the owner sends them using
 their email client; invitees must accept while signed in with the invited
 Google account.
-
-The tracking service validates bearer access tokens against the configured OIDC
-issuer and `HERCULES_OIDC_AUDIENCE` (the API audience for the access token).
-`TRACKING_ALLOWED_ORIGINS` must contain the exact web app origins; production
-origins must use HTTPS. `/healthz` is an unauthenticated liveness endpoint.
 
 Temporary uploads and live sessions are held in process memory and on the
 mounted `tracking-data` volume. The service removes temporary data on startup

@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { motion } from "motion/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useConvexAuth, useAuthActions } from "@convex-dev/auth/react";
 import heroImage from "../../generated-image-1791186058084.png";
 import {
   ArrowRight,
@@ -10,9 +12,17 @@ import {
   ScanSearch,
   Timer,
 } from "lucide-react";
+import { toast } from "sonner";
 import AppHeader from "@/components/app-header.tsx";
 import RodentBackground from "@/components/rodent-background.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog.tsx";
 import { TEMPLATES } from "@/lib/tracking/templates.ts";
 
 const STATS = [
@@ -49,15 +59,59 @@ const FEATURES = [
   {
     icon: Lock,
     title: "Private by design",
-    text: "Videos are processed in your browser and never leave your computer.",
+    text: "Videos are processed by the authenticated tracking service. Only clips attached to saved trials are kept in Convex Storage.",
   },
 ];
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Index() {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { signIn } = useAuthActions();
+  const navigate = useNavigate();
+  const [signInDestination, setSignInDestination] = useState<string | null>(
+    null,
+  );
+
+  const openWorkspace = (destination: string) => {
+    if (isLoading) return;
+    if (isAuthenticated) {
+      navigate(destination);
+      return;
+    }
+    setSignInDestination(
+      new URL(destination, window.location.origin).toString(),
+    );
+  };
+
   return (
     <div className="relative isolate min-h-screen bg-[#f5f9f8] text-[#142d31] selection:bg-[#0b887b]/20 dark:bg-[#071318] dark:text-[#e5f1f0] dark:selection:bg-[#5be2ce]/25">
+      <Dialog
+        open={signInDestination !== null}
+        onOpenChange={(open) => {
+          if (!open) setSignInDestination(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Sign in to start tracking</DialogTitle>
+            <DialogDescription>
+              Continue with Google to open the tracking workspace.
+            </DialogDescription>
+          </DialogHeader>
+          <Button
+            disabled={isLoading}
+            onClick={() => {
+              if (!signInDestination) return;
+              void signIn("google", { redirectTo: signInDestination }).catch(
+                () => toast.error("Could not start Google sign-in."),
+              );
+            }}
+          >
+            Sign in with Google
+          </Button>
+        </DialogContent>
+      </Dialog>
       <RodentBackground />
       <div className="relative z-10 isolate overflow-hidden">
         <div
@@ -65,15 +119,17 @@ export default function Index() {
           className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_18%_25%,rgba(29,112,107,0.13),transparent_38%),radial-gradient(ellipse_at_84%_42%,rgba(20,95,91,0.1),transparent_34%)] dark:bg-[radial-gradient(ellipse_at_18%_25%,rgba(29,112,107,0.2),transparent_38%),radial-gradient(ellipse_at_84%_42%,rgba(20,95,91,0.17),transparent_34%)]"
         />
         <AppHeader>
-          <Button
-            size="sm"
-            asChild
-            className="border border-[#08796f] bg-[#08796f] text-white shadow-[0_0_24px_rgba(8,121,111,0.16)] hover:bg-[#066b62] dark:border-[#65ddcc]/25 dark:bg-[#44cbb9] dark:text-[#041614] dark:shadow-[0_0_24px_rgba(68,203,185,0.18)] dark:hover:bg-[#6de0d1]"
-          >
-            <Link to="/track">
-              Open workspace <ArrowRight />
-            </Link>
-          </Button>
+          {isAuthenticated && (
+            <Button
+              size="sm"
+              asChild
+              className="border border-[#08796f] bg-[#08796f] text-white shadow-[0_0_24px_rgba(8,121,111,0.16)] hover:bg-[#066b62] dark:border-[#65ddcc]/25 dark:bg-[#44cbb9] dark:text-[#041614] dark:shadow-[0_0_24px_rgba(68,203,185,0.18)] dark:hover:bg-[#6de0d1]"
+            >
+              <Link to="/track">
+                Open workspace <ArrowRight />
+              </Link>
+            </Button>
+          )}
         </AppHeader>
 
         <section className="relative overflow-hidden border-b border-[#c9d9d7] dark:border-white/[0.08]">
@@ -89,7 +145,7 @@ export default function Index() {
                 transition={{ duration: 0.6, ease }}
                 className="text-[clamp(4.5rem,11vw,9rem)] font-semibold leading-[0.82] tracking-[-0.085em] text-[#132c30] dark:text-[#eff8f6]"
               >
-                aMaze
+                αMaze
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
@@ -128,20 +184,20 @@ export default function Index() {
               >
                 <Button
                   size="lg"
-                  asChild
+                  disabled={isLoading}
+                  onClick={() => openWorkspace("/track")}
                   className="h-12 border border-[#08796f] bg-[#08796f] px-6 font-semibold text-white shadow-[0_0_28px_rgba(8,121,111,0.16)] hover:bg-[#066b62] dark:border-[#65ddcc]/25 dark:bg-[#44cbb9] dark:text-[#041614] dark:shadow-[0_0_28px_rgba(68,203,185,0.18)] dark:hover:bg-[#6de0d1]"
                 >
-                  <Link to="/track">
-                    Start tracking <ArrowRight />
-                  </Link>
+                  Start tracking <ArrowRight />
                 </Button>
                 <Button
                   size="lg"
                   variant="secondary"
-                  asChild
+                  disabled={isLoading}
+                  onClick={() => openWorkspace("/track?demo=1")}
                   className="h-12 border border-[#aebfbd] bg-white/70 px-5 text-[#203d40] hover:bg-white hover:text-[#102b30] dark:border-white/10 dark:bg-white/[0.045] dark:text-[#d1dfdd] dark:hover:bg-white/[0.09] dark:hover:text-white"
                 >
-                  <Link to="/track?demo=1">Try the demo video</Link>
+                  Try the demo video
                 </Button>
               </motion.div>
               <div className="flex items-center gap-2 pt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-[#526d6b] dark:text-[#78918f]">

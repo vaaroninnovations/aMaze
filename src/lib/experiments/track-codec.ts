@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { TrackPoint } from "@/lib/tracking/types.ts";
+import type { TrackPoint } from "../tracking/types.ts";
 
 const trackFileSchema = z.object({
   v: z.literal(1),
