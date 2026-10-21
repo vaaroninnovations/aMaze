@@ -1,0 +1,39 @@
+services:
+  tracking:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      PORT: "8080"
+      TRACKING_DATA_DIR: /data/tracking
+      HERCULES_OIDC_AUTHORITY: ${HERCULES_OIDC_AUTHORITY:?Set the OIDC authority}
+      HERCULES_OIDC_CLIENT_ID: ${HERCULES_OIDC_CLIENT_ID:?Set the OIDC client ID}
+      HERCULES_OIDC_AUDIENCE: ${HERCULES_OIDC_AUDIENCE:?Set the access-token audience}
+      TRACKING_ALLOWED_ORIGINS: ${TRACKING_ALLOWED_ORIGINS:?Set the web app origins}
+      TRACKING_MAX_UPLOAD_BYTES: ${TRACKING_MAX_UPLOAD_BYTES:-1073741824}
+      TRACKING_MAX_DURATION_SECONDS: ${TRACKING_MAX_DURATION_SECONDS:-7200}
+      TRACKING_MAX_CONCURRENT_JOBS_PER_USER: ${TRACKING_MAX_CONCURRENT_JOBS_PER_USER:-1}
+      TRACKING_MAX_CONCURRENT_JOBS: ${TRACKING_MAX_CONCURRENT_JOBS:-2}
+      TRACKING_MAX_ACTIVE_SESSIONS: ${TRACKING_MAX_ACTIVE_SESSIONS:-20}
+    volumes:
+      - tracking-data:/data/tracking
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8080/healthz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  tracking-data:
