@@ -1,4 +1,4 @@
-import { useSessionPaginatedQuery as usePaginatedQuery } from "@/lib/anonymous-convex.ts";
+import { useSessionPaginatedQuery as usePaginatedQuery } from "@/lib/session-convex.ts";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { Activity, Radio, Video } from "lucide-react";

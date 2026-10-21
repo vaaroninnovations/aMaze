@@ -14,6 +14,15 @@ type ArgsWithDeviceKey<Reference extends FunctionReference> = Omit<
   "ownerKey"
 >;
 
+export function useSessionOwnerKey() {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  return {
+    ownerKey: isAuthenticated ? undefined : getAnonymousSessionId(),
+    isLoading,
+    isAuthenticated,
+  };
+}
+
 export function useSessionQuery<
   Reference extends FunctionReference<"query">,
 >(reference: Reference, args: ArgsWithDeviceKey<Reference> | "skip") {

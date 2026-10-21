@@ -3,7 +3,7 @@ import {
   useSessionAction as useAction,
   useSessionMutation as useMutation,
   useSessionQuery as useQuery,
-} from "@/lib/anonymous-convex.ts";
+} from "@/lib/session-convex.ts";
 import { useNavigate } from "react-router-dom";
 import { CloudUpload, Plus } from "lucide-react";
 import { toast } from "sonner";
