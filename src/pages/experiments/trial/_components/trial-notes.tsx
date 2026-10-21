@@ -11,11 +11,27 @@ import { Label } from "@/components/ui/label.tsx";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import { errorMessage } from "@/lib/errors.ts";
-import { hasTrialInfo, TRIAL_INFO_FIELDS, type TrialInfo } from "@/lib/experiments/trial-info.ts";
+import {
+  hasTrialInfo,
+  TRIAL_INFO_FIELDS,
+  type TrialInfo,
+} from "@/lib/experiments/trial-info.ts";
 
-type Props = { trialId: Id<"trials">; session: string; notes: string; info?: TrialInfo };
+type Props = {
+  trialId: Id<"trials">;
+  session: string;
+  notes: string;
+  info?: TrialInfo;
+  canEdit?: boolean;
+};
 
-export default function TrialNotes({ trialId, session: initialSession, notes: initialNotes, info }: Props) {
+export default function TrialNotes({
+  trialId,
+  session: initialSession,
+  notes: initialNotes,
+  info,
+  canEdit = true,
+}: Props) {
   const update = useMutation(api.experiments.trials.update);
   const [session, setSession] = useState(initialSession);
   const [notes, setNotes] = useState(initialNotes);
@@ -47,21 +63,50 @@ export default function TrialNotes({ trialId, session: initialSession, notes: in
         </dl>
       )}
       <div className="space-y-2">
-        <Label htmlFor="trial-session-edit" className="text-xs text-muted-foreground">
+        <Label
+          htmlFor="trial-session-edit"
+          className="text-xs text-muted-foreground"
+        >
           Session
         </Label>
-        <Input id="trial-session-edit" value={session} onChange={(e) => setSession(e.target.value)} maxLength={60} />
+        <Input
+          id="trial-session-edit"
+          value={session}
+          onChange={(e) => setSession(e.target.value)}
+          maxLength={60}
+          disabled={!canEdit}
+        />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="trial-notes-edit" className="text-xs text-muted-foreground">
+        <Label
+          htmlFor="trial-notes-edit"
+          className="text-xs text-muted-foreground"
+        >
           Notes
         </Label>
-        <Textarea id="trial-notes-edit" value={notes} onChange={(e) => setNotes(e.target.value)} rows={5} placeholder="Observations, exclusions, conditions" />
+        <Textarea
+          id="trial-notes-edit"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={5}
+          placeholder="Observations, exclusions, conditions"
+          disabled={!canEdit}
+        />
       </div>
-      <Button size="sm" className="w-full" onClick={() => void save()} disabled={!dirty || saving || !session.trim()}>
-        {saving ? <Spinner /> : <Check />} Save changes
-      </Button>
-      <p className="text-[11px] text-muted-foreground">Results are recalculated from the saved track each time you open the trial.</p>
+      {canEdit && (
+        <Button
+          size="sm"
+          className="w-full"
+          onClick={() => void save()}
+          disabled={!dirty || saving || !session.trim()}
+        >
+          {saving ? <Spinner /> : <Check />} Save changes
+        </Button>
+      )}
+      <p className="text-[11px] text-muted-foreground">
+        Results are recalculated from the saved track each time you open the
+        trial.
+      </p>
     </PanelSection>
   );
 }

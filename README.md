@@ -9,8 +9,9 @@ track generation, and saved-trial summaries run on the server.
 
 Requirements: Node.js 22.12+ and pnpm 10.
 
-1. Copy `.env.example` to `.env` and configure the Vite, Convex, and OIDC
-   settings for your development deployment.
+1. Copy `.env.example` to `.env` and configure the Vite and tracking-service
+   settings. Configure Google OAuth and Convex Auth variables in the Convex
+   deployment environment.
 2. Install dependencies with `pnpm install`.
 3. Start the web app and tracking service in separate terminals:
 
@@ -37,10 +38,21 @@ docker compose up --build -d
 ```
 
 Deploy the Vite client as a static site and set its `VITE_*` variables at build
-time. Configure the OIDC application with the production site's callback URL,
-and configure Convex with its production deployment URL. Terminate TLS at a
+time. Configure the Google OAuth application's authorized callback URL as
+`https://<deployment>.convex.site/api/auth/callback/google`. Set `AUTH_GOOGLE_ID`,
+`AUTH_GOOGLE_SECRET`, and `SITE_URL` in the Convex deployment environment.
+Convex Auth also requires `JWT_PRIVATE_KEY` and `JWKS`; generate and set these
+using the Convex Auth manual setup instructions. Configure `VITE_CONVEX_URL`
+with the matching Convex deployment URL. Terminate TLS at a
 reverse proxy or platform ingress in front of the tracking service; the Compose
 port is bound to loopback and must not be exposed as plain HTTP.
+
+Users can sign in with Google, edit their profile, and claim the current
+browser's anonymous projects on first sign-in. Project owners can create
+revocable read-only results links or invite viewers and editors. Email
+invitations are prepared as a `mailto:` draft so the owner sends them using
+their email client; invitees must accept while signed in with the invited
+Google account.
 
 The tracking service validates bearer access tokens against the configured OIDC
 issuer and `HERCULES_OIDC_AUDIENCE` (the API audience for the access token).

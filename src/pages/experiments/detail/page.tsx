@@ -1,15 +1,21 @@
+import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Pencil, ScanLine, Trash2 } from "lucide-react";
+import { ArrowLeft, Pencil, ScanLine, Share2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
 import type { Id } from "@/convex/_generated/dataModel.d.ts";
-import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
+import { useSessionOwnerKey } from "@/lib/session-convex.ts";
 import AppHeader from "@/components/app-header.tsx";
 import ConfirmDialog from "@/components/confirm-dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs.tsx";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs.tsx";
 import { errorMessage } from "@/lib/errors.ts";
 import { getTemplate } from "@/lib/tracking/templates.ts";
 import type { TemplateId } from "@/lib/tracking/types.ts";
@@ -22,15 +28,22 @@ import TrialsTable from "../_components/trials-table.tsx";
 import GroupStats from "../_components/stats/group-stats.tsx";
 import QueryBoundary from "../_components/query-boundary.tsx";
 import NotAvailable from "../_components/not-available.tsx";
+import SharingDialog from "../_components/sharing-dialog.tsx";
 
-function ExperimentDetail({ experimentId }: { experimentId: Id<"experiments"> }) {
+function ExperimentDetail({
+  experimentId,
+}: {
+  experimentId: Id<"experiments">;
+}) {
   const navigate = useNavigate();
-  const data = useQuery(api.experiments.experiments.get, {
-    experimentId,
-    ownerKey: getAnonymousSessionId(),
-  });
+  const { ownerKey, isLoading } = useSessionOwnerKey();
+  const data = useQuery(
+    api.experiments.experiments.get,
+    isLoading ? "skip" : { experimentId, ...(ownerKey ? { ownerKey } : {}) },
+  );
   const update = useMutation(api.experiments.experiments.update);
   const remove = useMutation(api.experiments.experiments.remove);
+  const [sharingOpen, setSharingOpen] = useState(false);
 
   if (data === undefined) {
     return (
@@ -44,7 +57,7 @@ function ExperimentDetail({ experimentId }: { experimentId: Id<"experiments"> })
     );
   }
 
-  const { experiment, groups, subjects } = data;
+  const { experiment, groups, subjects, canEdit, isOwner } = data;
 
   return (
     <div className="space-y-6">
@@ -53,89 +66,179 @@ function ExperimentDetail({ experimentId }: { experimentId: Id<"experiments"> })
           <p className="font-mono text-[11px] uppercase tracking-wider text-primary">
             {getTemplate(experiment.templateId as TemplateId).name}
           </p>
-          <h1 className="truncate text-2xl font-semibold tracking-tight">{experiment.name}</h1>
-          {experiment.description && <p className="max-w-2xl text-sm text-muted-foreground">{experiment.description}</p>}
+          <h1 className="truncate text-2xl font-semibold tracking-tight">
+            {experiment.name}
+          </h1>
+          {experiment.description && (
+            <p className="max-w-2xl text-sm text-muted-foreground">
+              {experiment.description}
+            </p>
+          )}
         </div>
         <div className="flex gap-2">
-          <ExperimentReportButton experiment={experiment} groups={groups} subjects={subjects} />
-          <ExperimentExportMenu experimentId={experimentId} experimentName={experiment.name} groups={groups} subjects={subjects} />
-          <Button size="sm" variant="secondary" asChild>
-            <Link to="/track">
-              <ScanLine /> Track a trial
-            </Link>
-          </Button>
-          <ExperimentFormDialog
-            title="Edit experiment"
-            submitLabel="Save"
-            initial={{ name: experiment.name, description: experiment.description ?? "", templateId: experiment.templateId }}
-            onSubmit={async (v) => {
-              try {
-                await update({
-                  experimentId,
-                  ...v,
-                  ownerKey: getAnonymousSessionId(),
-                });
-              } catch (e) {
-                toast.error(errorMessage(e, "Could not update the experiment."));
-                throw e;
-              }
-            }}
-            trigger={
-              <Button size="icon" variant="ghost" className="size-8" aria-label="Edit experiment">
-                <Pencil />
-              </Button>
-            }
+          <ExperimentReportButton
+            experiment={experiment}
+            groups={groups}
+            subjects={subjects}
           />
-          <ConfirmDialog
-            title={`Delete "${experiment.name}"?`}
-            description={`This permanently deletes ${experiment.subjectCount} subjects and ${experiment.trialCount} saved trials.`}
-            onConfirm={async () => {
-              try {
-                await remove({
-                  experimentId,
-                  ownerKey: getAnonymousSessionId(),
-                });
-                navigate("/experiments");
-              } catch (e) {
-                toast.error(errorMessage(e, "Could not delete the experiment."));
-              }
-            }}
-            trigger={
-              <Button size="icon" variant="ghost" className="size-8 text-muted-foreground hover:text-destructive" aria-label="Delete experiment">
-                <Trash2 />
-              </Button>
-            }
+          <ExperimentExportMenu
+            experimentId={experimentId}
+            experimentName={experiment.name}
+            groups={groups}
+            subjects={subjects}
           />
+          {canEdit && (
+            <>
+              <Button size="sm" variant="secondary" asChild>
+                <Link to="/track">
+                  <ScanLine /> Track a trial
+                </Link>
+              </Button>
+              <ExperimentFormDialog
+                title="Edit experiment"
+                submitLabel="Save"
+                initial={{
+                  name: experiment.name,
+                  description: experiment.description ?? "",
+                  templateId: experiment.templateId,
+                }}
+                onSubmit={async (v) => {
+                  try {
+                    await update({
+                      experimentId,
+                      ...v,
+                      ...(ownerKey ? { ownerKey } : {}),
+                    });
+                  } catch (e) {
+                    toast.error(
+                      errorMessage(e, "Could not update the experiment."),
+                    );
+                    throw e;
+                  }
+                }}
+                trigger={
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-8"
+                    aria-label="Edit experiment"
+                  >
+                    <Pencil />
+                  </Button>
+                }
+              />
+              <ConfirmDialog
+                title={`Delete "${experiment.name}"?`}
+                description={`This permanently deletes ${experiment.subjectCount} subjects and ${experiment.trialCount} saved trials.`}
+                onConfirm={async () => {
+                  try {
+                    await remove({
+                      experimentId,
+                      ...(ownerKey ? { ownerKey } : {}),
+                    });
+                    navigate("/experiments");
+                  } catch (e) {
+                    toast.error(
+                      errorMessage(e, "Could not delete the experiment."),
+                    );
+                  }
+                }}
+                trigger={
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-8 text-muted-foreground hover:text-destructive"
+                    aria-label="Delete experiment"
+                  >
+                    <Trash2 />
+                  </Button>
+                }
+              />
+            </>
+          )}
+          {isOwner && (
+            <>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="size-8"
+                aria-label="Share project"
+                onClick={() => setSharingOpen(true)}
+              >
+                <Share2 />
+              </Button>
+              <SharingDialog
+                experimentId={experimentId}
+                experimentName={experiment.name}
+                shareToken={experiment.shareToken}
+                open={sharingOpen}
+                onOpenChange={setSharingOpen}
+              />
+            </>
+          )}
         </div>
       </div>
 
-      <Tabs defaultValue={experiment.trialCount > 0 ? "trials" : "subjects"} className="gap-4">
+      <Tabs
+        defaultValue={experiment.trialCount > 0 ? "trials" : "subjects"}
+        className="gap-4"
+      >
         <TabsList>
           <TabsTrigger value="trials" className="cursor-pointer">
-            Trials <span className="font-mono text-xs text-muted-foreground">{experiment.trialCount}</span>
+            Trials{" "}
+            <span className="font-mono text-xs text-muted-foreground">
+              {experiment.trialCount}
+            </span>
           </TabsTrigger>
           <TabsTrigger value="stats" className="cursor-pointer">
             Statistics
           </TabsTrigger>
-          <TabsTrigger value="subjects" className="cursor-pointer">
-            Subjects <span className="font-mono text-xs text-muted-foreground">{subjects.length}</span>
-          </TabsTrigger>
-          <TabsTrigger value="groups" className="cursor-pointer">
-            Groups <span className="font-mono text-xs text-muted-foreground">{groups.length}</span>
-          </TabsTrigger>
+          {canEdit && (
+            <>
+              <TabsTrigger value="subjects" className="cursor-pointer">
+                Subjects{" "}
+                <span className="font-mono text-xs text-muted-foreground">
+                  {subjects.length}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="groups" className="cursor-pointer">
+                Groups{" "}
+                <span className="font-mono text-xs text-muted-foreground">
+                  {groups.length}
+                </span>
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
         <TabsContent value="trials">
           <TrialsTable experimentId={experimentId} groups={groups} />
         </TabsContent>
         <TabsContent value="stats">
-          <GroupStats experimentId={experimentId} experimentName={experiment.name} groups={groups} subjects={subjects} />
+          <GroupStats
+            experimentId={experimentId}
+            experimentName={experiment.name}
+            groups={groups}
+            subjects={subjects}
+          />
         </TabsContent>
-        <TabsContent value="subjects">
-          <SubjectsManager experimentId={experimentId} groups={groups} subjects={subjects} />
-        </TabsContent>
-        <TabsContent value="groups">
-          <GroupsManager experimentId={experimentId} groups={groups} subjects={subjects} />
-        </TabsContent>
+        {canEdit && (
+          <>
+            <TabsContent value="subjects">
+              <SubjectsManager
+                experimentId={experimentId}
+                groups={groups}
+                subjects={subjects}
+              />
+            </TabsContent>
+            <TabsContent value="groups">
+              <GroupsManager
+                experimentId={experimentId}
+                groups={groups}
+                subjects={subjects}
+              />
+            </TabsContent>
+          </>
+        )}
       </Tabs>
     </div>
   );
@@ -152,7 +255,10 @@ export default function ExperimentPage() {
             <ArrowLeft /> Experiments
           </Link>
         </Button>
-        <QueryBoundary key={experimentId} fallback={<NotAvailable what="Experiment" />}>
+        <QueryBoundary
+          key={experimentId}
+          fallback={<NotAvailable what="Experiment" />}
+        >
           <ExperimentDetail experimentId={experimentId as Id<"experiments">} />
         </QueryBoundary>
       </main>

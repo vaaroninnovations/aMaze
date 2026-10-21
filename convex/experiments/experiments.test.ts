@@ -98,6 +98,113 @@ describe("experiments access", () => {
   });
 });
 
+describe("accounts and sharing", () => {
+  async function createAccount(
+    t: ReturnType<typeof convexTest>,
+    email: string,
+  ) {
+    const userId = await t.run((ctx) =>
+      ctx.db.insert("users", { email, name: email.split("@")[0] }),
+    );
+    return t.withIdentity({
+      subject: `${userId}|test-session`,
+      email,
+      tokenIdentifier: `test:${email}`,
+    });
+  }
+
+  it("moves browser-owned projects to the signed-in account", async () => {
+    const t = convexTest(schema, modules);
+    const ownerKey = "f55b0920-3f3f-4a2c-9d9e-3262e437a836";
+    const anonymousId = await t.mutation(api.experiments.experiments.create, {
+      name: "Local study",
+      templateId: "open-field",
+      ownerKey,
+    });
+    const owner = await createAccount(t, "owner@example.test");
+
+    expect(
+      await owner.mutation(api.users.claimAnonymousProjects, { ownerKey }),
+    ).toBe(1);
+    expect(
+      await owner.query(api.experiments.experiments.list, {}),
+    ).toHaveLength(1);
+    await expect(
+      t.query(api.experiments.experiments.get, {
+        experimentId: anonymousId,
+        ownerKey,
+      }),
+    ).rejects.toThrow(/not initialized/);
+  });
+
+  it("creates revocable read-only project links", async () => {
+    const t = convexTest(schema, modules);
+    const owner = await createAccount(t, "owner@example.test");
+    const experimentId = await owner.mutation(
+      api.experiments.experiments.create,
+      { name: "Shared study", templateId: "open-field" },
+    );
+    const shareToken = await owner.mutation(
+      api.experiments.sharing.updateShareLink,
+      { experimentId, enabled: true },
+    );
+    expect(shareToken).toBeTruthy();
+    expect(
+      await t.query(api.experiments.sharing.sharedView, {
+        shareToken: shareToken!,
+      }),
+    ).toMatchObject({ experiment: { name: "Shared study" }, trials: [] });
+
+    await owner.mutation(api.experiments.sharing.updateShareLink, {
+      experimentId,
+      enabled: false,
+    });
+    expect(
+      await t.query(api.experiments.sharing.sharedView, {
+        shareToken: shareToken!,
+      }),
+    ).toBeNull();
+  });
+
+  it.each([
+    ["viewer", false],
+    ["editor", true],
+  ] as const)("applies %s invitation permissions", async (role, canEdit) => {
+    const t = convexTest(schema, modules);
+    const owner = await createAccount(t, "owner@example.test");
+    const collaborator = await createAccount(t, "colleague@example.test");
+    const experimentId = await owner.mutation(
+      api.experiments.experiments.create,
+      { name: "Collaborative study", templateId: "open-field" },
+    );
+    const { inviteToken } = await owner.mutation(
+      api.experiments.sharing.invite,
+      { experimentId, email: "colleague@example.test", role },
+    );
+    await collaborator.mutation(api.experiments.sharing.acceptInvitation, {
+      inviteToken,
+    });
+
+    expect(
+      await collaborator.query(api.experiments.experiments.get, {
+        experimentId,
+      }),
+    ).toMatchObject({ canEdit, isOwner: false });
+    expect(
+      await collaborator.query(api.experiments.experiments.list, {}),
+    ).toHaveLength(1);
+    const createSubject = collaborator.mutation(
+      api.experiments.subjects.create,
+      { experimentId, code: "M1", groupId: null, sex: "male" },
+    );
+    if (canEdit) {
+      await expect(createSubject).resolves.toBeTruthy();
+    } else {
+      await expect(createSubject).rejects.toThrow(/access/);
+    }
+  });
+});
+
 describe("subjects and trials", () => {
   it("rejects duplicate subject IDs within an experiment", async () => {
     const { alice, experimentId } = await setup();

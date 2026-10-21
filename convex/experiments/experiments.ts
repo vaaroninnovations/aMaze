@@ -7,6 +7,7 @@ import {
   deleteTrialDoc,
   findUser,
   getOrCreateAnonymousUser,
+  isExperimentOwner,
   optionalText,
   requireExperiment,
   requireUser,
@@ -65,13 +66,18 @@ export const get = query({
       .take(MAX_CHILDREN);
     const subjects = await ctx.db
       .query("subjects")
-      .withIndex("by_experiment_and_code", (q) => q.eq("experimentId", experiment._id))
+      .withIndex("by_experiment_and_code", (q) =>
+        q.eq("experimentId", experiment._id),
+      )
       .take(MAX_CHILDREN);
     return {
       experiment,
       groups,
       subjects,
       canEdit: await canEditExperiment(ctx, experiment, args.ownerKey),
+      isOwner:
+        !args.ownerKey &&
+        (await isExperimentOwner(ctx, experiment, args.ownerKey)),
     };
   },
 });
@@ -128,15 +134,15 @@ export const remove = mutation({
     await ctx.db.delete("experiments", args.experimentId);
     const memberships = await ctx.db
       .query("experimentMembers")
-      .withIndex("by_experiment", (q) =>
-        q.eq("experimentId", experiment._id),
-      )
+      .withIndex("by_experiment", (q) => q.eq("experimentId", experiment._id))
       .take(MAX_CHILDREN);
     for (const membership of memberships) {
       await ctx.db.delete(membership._id);
     }
     // Children can outnumber one transaction's limits, so clean them up in batches.
-    await ctx.scheduler.runAfter(0, internal.experiments.experiments.purge, { experimentId: args.experimentId });
+    await ctx.scheduler.runAfter(0, internal.experiments.experiments.purge, {
+      experimentId: args.experimentId,
+    });
     return null;
   },
 });
@@ -146,11 +152,16 @@ export const purge = internalMutation({
   args: { experimentId: v.id("experiments") },
   handler: async (ctx, args) => {
     if (await ctx.db.get("experiments", args.experimentId)) {
-      throw new ConvexError({ code: "CONFLICT", message: "Experiment still exists." });
+      throw new ConvexError({
+        code: "CONFLICT",
+        message: "Experiment still exists.",
+      });
     }
     const trials = await ctx.db
       .query("trials")
-      .withIndex("by_experiment_and_recorded_at", (q) => q.eq("experimentId", args.experimentId))
+      .withIndex("by_experiment_and_recorded_at", (q) =>
+        q.eq("experimentId", args.experimentId),
+      )
       .take(PURGE_BATCH);
     for (const trial of trials) await deleteTrialDoc(ctx, trial);
 
@@ -158,7 +169,9 @@ export const purge = internalMutation({
       trials.length < PURGE_BATCH
         ? await ctx.db
             .query("subjects")
-            .withIndex("by_experiment_and_code", (q) => q.eq("experimentId", args.experimentId))
+            .withIndex("by_experiment_and_code", (q) =>
+              q.eq("experimentId", args.experimentId),
+            )
             .take(PURGE_BATCH)
         : [];
     for (const s of subjects) await ctx.db.delete("subjects", s._id);
@@ -167,14 +180,20 @@ export const purge = internalMutation({
       trials.length < PURGE_BATCH && subjects.length < PURGE_BATCH
         ? await ctx.db
             .query("groups")
-            .withIndex("by_experiment", (q) => q.eq("experimentId", args.experimentId))
+            .withIndex("by_experiment", (q) =>
+              q.eq("experimentId", args.experimentId),
+            )
             .take(PURGE_BATCH)
         : [];
     for (const g of groups) await ctx.db.delete("groups", g._id);
 
     // Terminates once every child table returns an empty batch.
     if (trials.length + subjects.length + groups.length > 0) {
-      await ctx.scheduler.runAfter(0, internal.experiments.experiments.purge, args);
+      await ctx.scheduler.runAfter(
+        0,
+        internal.experiments.experiments.purge,
+        args,
+      );
     }
     return null;
   },

@@ -4,24 +4,35 @@ import { formatDistanceToNow } from "date-fns";
 import { ArrowRight, FlaskConical, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
-import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
+import { useSessionOwnerKey } from "@/lib/session-convex.ts";
 import AppHeader from "@/components/app-header.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty.tsx";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { errorMessage } from "@/lib/errors.ts";
 import { getTemplate } from "@/lib/tracking/templates.ts";
 import type { TemplateId } from "@/lib/tracking/types.ts";
-import ExperimentFormDialog, { type ExperimentFormValues } from "./_components/experiment-form-dialog.tsx";
+import ExperimentFormDialog, {
+  type ExperimentFormValues,
+} from "./_components/experiment-form-dialog.tsx";
 
 function useCreateExperiment() {
   const navigate = useNavigate();
   const create = useMutation(api.experiments.experiments.create);
+  const { ownerKey, isLoading } = useSessionOwnerKey();
   return async (values: ExperimentFormValues) => {
+    if (isLoading) throw new Error("Authentication is still loading.");
     try {
       const id = await create({
         ...values,
-        ownerKey: getAnonymousSessionId(),
+        ...(ownerKey ? { ownerKey } : {}),
       });
       navigate(`/experiments/${id}`);
     } catch (e) {
@@ -48,9 +59,11 @@ function NewExperimentButton() {
 }
 
 function ExperimentList() {
-  const experiments = useQuery(api.experiments.experiments.list, {
-    ownerKey: getAnonymousSessionId(),
-  });
+  const { ownerKey, isLoading } = useSessionOwnerKey();
+  const experiments = useQuery(
+    api.experiments.experiments.list,
+    isLoading ? "skip" : ownerKey ? { ownerKey } : {},
+  );
 
   if (experiments === undefined) {
     return (
@@ -70,7 +83,10 @@ function ExperimentList() {
             <FlaskConical />
           </EmptyMedia>
           <EmptyTitle>No experiments yet</EmptyTitle>
-          <EmptyDescription>Create an experiment, add subjects and groups, then save trials from the workspace.</EmptyDescription>
+          <EmptyDescription>
+            Create an experiment, add subjects and groups, then save trials from
+            the workspace.
+          </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <NewExperimentButton />
@@ -92,16 +108,23 @@ function ExperimentList() {
               {getTemplate(e.templateId as TemplateId).name}
             </p>
             <h2 className="truncate font-semibold">{e.name}</h2>
-            {e.description && <p className="line-clamp-2 text-sm text-muted-foreground">{e.description}</p>}
+            {e.description && (
+              <p className="line-clamp-2 text-sm text-muted-foreground">
+                {e.description}
+              </p>
+            )}
           </div>
           <div className="flex items-end justify-between gap-2">
             <div className="flex gap-4 font-mono text-xs tabular-nums">
               <span>
-                <span className="text-base font-semibold">{e.subjectCount}</span>{" "}
+                <span className="text-base font-semibold">
+                  {e.subjectCount}
+                </span>{" "}
                 <span className="text-muted-foreground">subjects</span>
               </span>
               <span>
-                <span className="text-base font-semibold">{e.trialCount}</span> <span className="text-muted-foreground">trials</span>
+                <span className="text-base font-semibold">{e.trialCount}</span>{" "}
+                <span className="text-muted-foreground">trials</span>
               </span>
             </div>
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -122,8 +145,12 @@ export default function ExperimentsPage() {
       <main className="mx-auto max-w-6xl space-y-6 p-4 py-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Experiments</h1>
-            <p className="text-sm text-muted-foreground">Subjects, groups and saved trials for each study.</p>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Experiments
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Subjects, groups and saved trials for each study.
+            </p>
           </div>
           <NewExperimentButton />
         </div>

@@ -1,7 +1,12 @@
 import { Link, NavLink } from "react-router-dom";
 import type { ReactNode } from "react";
-import { FlaskConical, ScanLine } from "lucide-react";
+import { useConvexAuth, useAuthActions } from "@convex-dev/auth/react";
+import { useQuery } from "convex/react";
+import { FlaskConical, LogOut, ScanLine, UserRound } from "lucide-react";
+import { toast } from "sonner";
+import { api } from "@/convex/_generated/api.js";
 import { cn } from "@/lib/utils.ts";
+import { Button } from "./ui/button.tsx";
 import ThemeToggle from "./theme-toggle.tsx";
 
 const NAV = [
@@ -11,6 +16,13 @@ const NAV = [
 
 /** Logo, main navigation and account menu, shared by every page. */
 export default function AppHeader({ children }: { children?: ReactNode }) {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const { signIn, signOut } = useAuthActions();
+  const user = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? {} : "skip",
+  );
+
   return (
     <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-[1600px] items-center justify-between gap-3 px-4">
@@ -59,6 +71,52 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
         </div>
         <div className="flex items-center gap-2">
           {children}
+          {isAuthenticated ? (
+            <>
+              <Button size="sm" variant="ghost" asChild>
+                <Link to="/profile">
+                  {user?.image ? (
+                    <img
+                      src={user.image}
+                      alt=""
+                      className="size-5 rounded-full object-cover"
+                    />
+                  ) : (
+                    <UserRound />
+                  )}
+                  <span className="hidden max-w-32 truncate sm:inline">
+                    {user?.name ?? "Profile"}
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                aria-label="Sign out"
+                title="Sign out"
+                onClick={() =>
+                  void signOut().catch(() =>
+                    toast.error("Could not sign out. Please try again."),
+                  )
+                }
+              >
+                <LogOut />
+              </Button>
+            </>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={isLoading}
+              onClick={() =>
+                void signIn("google", {
+                  redirectTo: window.location.href,
+                }).catch(() => toast.error("Could not start Google sign-in."))
+              }
+            >
+              <UserRound /> Sign in
+            </Button>
+          )}
           <ThemeToggle />
         </div>
       </div>

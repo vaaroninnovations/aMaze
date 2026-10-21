@@ -1,5 +1,10 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useConvexAuth } from "@convex-dev/auth/react";
+import { useMutation } from "convex/react";
+import { toast } from "sonner";
+import { api } from "@/convex/_generated/api.js";
+import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
 import { DefaultProviders } from "./components/providers/default.tsx";
 
 const Index = lazy(() => import("./pages/Index.tsx"));
@@ -10,11 +15,49 @@ const ExperimentPage = lazy(
   () => import("./pages/experiments/detail/page.tsx"),
 );
 const TrialPage = lazy(() => import("./pages/experiments/trial/page.tsx"));
+const ProfilePage = lazy(() => import("./pages/profile/page.tsx"));
+const SharedProjectPage = lazy(() => import("./pages/share/page.tsx"));
+const InvitationPage = lazy(() => import("./pages/invite/page.tsx"));
+
+function SessionAccountSync() {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const claimProjects = useMutation(api.users.claimAnonymousProjects);
+  const synced = useRef(false);
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!isAuthenticated) {
+      synced.current = false;
+      return;
+    }
+    if (synced.current) return;
+    synced.current = true;
+    void claimProjects({ ownerKey: getAnonymousSessionId() })
+      .then((count) => {
+        if (count > 0) {
+          toast.success(
+            `${count} anonymous project${count === 1 ? "" : "s"} moved to your account.`,
+          );
+        }
+      })
+      .catch((error: unknown) => {
+        synced.current = false;
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Could not move your anonymous projects to your account.",
+        );
+      });
+  }, [claimProjects, isAuthenticated, isLoading]);
+
+  return null;
+}
 
 export default function App() {
   return (
     <DefaultProviders>
       <BrowserRouter>
+        <SessionAccountSync />
         <Suspense
           fallback={
             <div className="grid min-h-screen place-items-center text-sm text-muted-foreground">
@@ -24,6 +67,9 @@ export default function App() {
         >
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/share/:shareToken" element={<SharedProjectPage />} />
+            <Route path="/invite/:inviteToken" element={<InvitationPage />} />
             <Route path="/track" element={<TrackPage />} />
             <Route path="/experiments" element={<ExperimentsPage />} />
             <Route

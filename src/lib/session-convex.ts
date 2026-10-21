@@ -9,7 +9,9 @@ import { useConvexAuth } from "@convex-dev/auth/react";
 import type { FunctionArgs, FunctionReference } from "convex/server";
 import { getAnonymousSessionId } from "./anonymous-session.ts";
 
-type ArgsWithDeviceKey<Reference extends FunctionReference> = Omit<
+type AnySessionFunction = FunctionReference<"query" | "mutation" | "action">;
+
+type ArgsWithDeviceKey<Reference extends AnySessionFunction> = Omit<
   FunctionArgs<Reference>,
   "ownerKey"
 >;
@@ -23,19 +25,19 @@ export function useSessionOwnerKey() {
   };
 }
 
-export function useSessionQuery<
-  Reference extends FunctionReference<"query">,
->(reference: Reference, args: ArgsWithDeviceKey<Reference> | "skip") {
+export function useSessionQuery<Reference extends FunctionReference<"query">>(
+  reference: Reference,
+  args: ArgsWithDeviceKey<Reference> | "skip",
+) {
   const { isAuthenticated, isLoading } = useConvexAuth();
-  return useQuery(
-    reference,
+  const queryArgs: "skip" | FunctionArgs<Reference> =
     args === "skip" || isLoading
       ? "skip"
-      : {
+      : ({
           ...args,
           ...(!isAuthenticated ? { ownerKey: getAnonymousSessionId() } : {}),
-        },
-  );
+        } as FunctionArgs<Reference>);
+  return useQuery(reference, queryArgs);
 }
 
 export function useSessionMutation<
@@ -49,15 +51,15 @@ export function useSessionMutation<
       return mutate({
         ...args,
         ...(!isAuthenticated ? { ownerKey: getAnonymousSessionId() } : {}),
-      });
+      } as FunctionArgs<Reference>);
     },
     [isAuthenticated, isLoading, mutate],
   );
 }
 
-export function useSessionAction<
-  Reference extends FunctionReference<"action">,
->(reference: Reference) {
+export function useSessionAction<Reference extends FunctionReference<"action">>(
+  reference: Reference,
+) {
   const run = useAction(reference);
   const { isAuthenticated, isLoading } = useConvexAuth();
   return useCallback(
@@ -66,7 +68,7 @@ export function useSessionAction<
       return run({
         ...args,
         ...(!isAuthenticated ? { ownerKey: getAnonymousSessionId() } : {}),
-      });
+      } as FunctionArgs<Reference>);
     },
     [isAuthenticated, isLoading, run],
   );
@@ -76,16 +78,15 @@ export function useSessionPaginatedQuery<
   Reference extends FunctionReference<"query">,
 >(
   reference: Reference,
-  args: ArgsWithDeviceKey<Reference>,
+  args: Omit<FunctionArgs<Reference>, "ownerKey" | "paginationOpts">,
   options: Parameters<typeof usePaginatedQuery<Reference>>[2],
 ) {
-  const { isAuthenticated } = useConvexAuth();
-  return usePaginatedQuery(
-    reference,
-    {
-      ...args,
-      ...(!isAuthenticated ? { ownerKey: getAnonymousSessionId() } : {}),
-    },
-    options,
-  );
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const queryArgs = isLoading
+    ? "skip"
+    : ({
+        ...args,
+        ...(!isAuthenticated ? { ownerKey: getAnonymousSessionId() } : {}),
+      } as Parameters<typeof usePaginatedQuery<Reference>>[1]);
+  return usePaginatedQuery(reference, queryArgs, options);
 }

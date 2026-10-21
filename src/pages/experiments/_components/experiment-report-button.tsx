@@ -4,7 +4,7 @@ import { FileText } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
 import type { Doc, Id } from "@/convex/_generated/dataModel.d.ts";
-import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
+import { useSessionOwnerKey } from "@/lib/session-convex.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { Spinner } from "@/components/ui/spinner.tsx";
 import { getTemplate } from "@/lib/tracking/templates.ts";
@@ -18,19 +18,26 @@ type Props = {
 };
 
 /** Fetches the trials once on click, then builds the PDF (jsPDF is loaded only at that point). */
-export default function ExperimentReportButton({ experiment, groups, subjects }: Props) {
+export default function ExperimentReportButton({
+  experiment,
+  groups,
+  subjects,
+}: Props) {
   const convex = useConvex();
+  const { ownerKey, isLoading } = useSessionOwnerKey();
   const [busy, setBusy] = useState(false);
 
   const generate = async () => {
     setBusy(true);
     try {
       const experimentId: Id<"experiments"> = experiment._id;
+      if (isLoading) throw new Error("Authentication is still loading.");
       const { rows, truncated } = await convex.query(
         api.experiments.trials.statsData,
-        { experimentId, ownerKey: getAnonymousSessionId() },
+        { experimentId, ...(ownerKey ? { ownerKey } : {}) },
       );
-      const { buildExperimentReport } = await import("@/lib/reports/experiment-report.ts");
+      const { buildExperimentReport } =
+        await import("@/lib/reports/experiment-report.ts");
       const doc = buildExperimentReport({
         name: experiment.name,
         description: experiment.description,
@@ -50,7 +57,8 @@ export default function ExperimentReportButton({ experiment, groups, subjects }:
 
   return (
     <Button size="sm" variant="secondary" onClick={generate} disabled={busy}>
-      {busy ? <Spinner /> : <FileText />} <span className="hidden sm:inline">PDF report</span>
+      {busy ? <Spinner /> : <FileText />}{" "}
+      <span className="hidden sm:inline">PDF report</span>
     </Button>
   );
 }

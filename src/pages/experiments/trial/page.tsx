@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
 import type { Id } from "@/convex/_generated/dataModel.d.ts";
 import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
+import { useSessionOwnerKey } from "@/lib/session-convex.ts";
 import AppHeader from "@/components/app-header.tsx";
 import ConfirmDialog from "@/components/confirm-dialog.tsx";
 import AnalyticsPanel, {
@@ -51,12 +52,13 @@ function TrialView({
   trialId: Id<"trials">;
   experimentId: string;
 }) {
+  const { ownerKey, isLoading } = useSessionOwnerKey();
   const anonymousSessionId = getAnonymousSessionId();
   const navigate = useNavigate();
-  const data = useQuery(api.experiments.trials.get, {
-    trialId,
-    ownerKey: anonymousSessionId,
-  });
+  const data = useQuery(
+    api.experiments.trials.get,
+    isLoading ? "skip" : { trialId, ...(ownerKey ? { ownerKey } : {}) },
+  );
   const remove = useMutation(api.experiments.trials.remove);
   const trackQuery = useTrackFile(data?.trackUrl);
   const snapshot = useSnapshot(
@@ -95,7 +97,7 @@ function TrialView({
   }
   if (data === null) return <NotAvailable what="Trial" />;
 
-  const { trial, subject, group, experiment } = data;
+  const { trial, subject, group, experiment, canEdit } = data;
   const analyticsData: AnalyticsData = {
     track,
     zones: trial.zones,
@@ -141,27 +143,29 @@ function TrialView({
             {trial.sourceName} · {trial.fps} fps · arena {trial.arenaCm} cm
           </p>
         </div>
-        <ConfirmDialog
-          title="Delete this trial?"
-          description="The saved results, track, background image, and attached video are removed permanently."
-          onConfirm={async () => {
-            try {
-              await remove({ trialId, ownerKey: anonymousSessionId });
-              navigate(`/experiments/${experimentId}`);
-            } catch (e) {
-              toast.error(errorMessage(e, "Could not delete the trial."));
+        {canEdit && (
+          <ConfirmDialog
+            title="Delete this trial?"
+            description="The saved results, track, background image, and attached video are removed permanently."
+            onConfirm={async () => {
+              try {
+                await remove({ trialId, ...(ownerKey ? { ownerKey } : {}) });
+                navigate(`/experiments/${experimentId}`);
+              } catch (e) {
+                toast.error(errorMessage(e, "Could not delete the trial."));
+              }
+            }}
+            trigger={
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 /> Delete
+              </Button>
             }
-          }}
-          trigger={
-            <Button
-              size="sm"
-              variant="ghost"
-              className="text-muted-foreground hover:text-destructive"
-            >
-              <Trash2 /> Delete
-            </Button>
-          }
-        />
+          />
+        )}
       </div>
 
       {trackQuery.isError ? (
@@ -240,6 +244,7 @@ function TrialView({
             session={trial.session}
             notes={trial.notes ?? ""}
             info={trial.info}
+            canEdit={canEdit}
           />
         </div>
       )}

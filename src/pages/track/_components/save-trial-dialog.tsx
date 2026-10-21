@@ -141,16 +141,19 @@ export default function SaveTrialDialog({
       const trackBlob = new Blob([encodeTrack(s.track)], {
         type: "application/json",
       });
-      const trackStorageId = await upload(await generateUploadUrl(), trackBlob);
+      const trackStorageId = await upload(
+        await generateUploadUrl({}),
+        trackBlob,
+      );
       const snapshot = s.background ? await grayToJpeg(s.background) : null;
       const snapshotStorageId = snapshot
-        ? await upload(await generateUploadUrl(), snapshot)
+        ? await upload(await generateUploadUrl({}), snapshot)
         : null;
       if (videoFile && videoFile.size > 1_073_741_824) {
         throw new Error("The video exceeds the 1 GB saved-trial limit.");
       }
       const videoStorageId = videoFile
-        ? await upload(await generateUploadUrl(), videoFile)
+        ? await upload(await generateUploadUrl({}), videoFile)
         : undefined;
 
       const trialId = await saveTrial({

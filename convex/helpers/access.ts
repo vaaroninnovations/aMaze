@@ -92,18 +92,12 @@ export async function requireExperiment(
 
   const memberships = await ctx.db
     .query("experimentMembers")
-    .withIndex("by_experiment", (q) =>
-      q.eq("experimentId", experiment._id),
-    )
+    .withIndex("by_experiment", (q) => q.eq("experimentId", experiment._id))
     .take(1000);
   const membership = memberships.find(
-    (member) =>
-      member.userId === user._id && member.status === "accepted",
+    (member) => member.userId === user._id && member.status === "accepted",
   );
-  if (
-    membership &&
-    (permission === "view" || membership.role === "editor")
-  ) {
+  if (membership && (permission === "view" || membership.role === "editor")) {
     return experiment;
   }
 
@@ -123,9 +117,7 @@ export async function canEditExperiment(
   if (experiment.ownerId === user._id) return true;
   const memberships = await ctx.db
     .query("experimentMembers")
-    .withIndex("by_experiment", (q) =>
-      q.eq("experimentId", experiment._id),
-    )
+    .withIndex("by_experiment", (q) => q.eq("experimentId", experiment._id))
     .take(1000);
   return memberships.some(
     (member) =>
@@ -133,7 +125,15 @@ export async function canEditExperiment(
       member.status === "accepted" &&
       member.role === "editor",
   );
-  return experiment;
+}
+
+export async function isExperimentOwner(
+  ctx: Ctx,
+  experiment: Doc<"experiments">,
+  ownerKey?: string,
+): Promise<boolean> {
+  const user = await findUser(ctx, ownerKey);
+  return user !== null && experiment.ownerId === user._id;
 }
 
 export async function requireSubject(
