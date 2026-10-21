@@ -1,0 +1,230 @@
+/// <reference types="vite/client" />
+import { convexTest } from "convex-test";
+import { describe, expect, it } from "vitest";
+import { api } from "../_generated/api";
+import type { Id } from "../_generated/dataModel";
+import schema from "../schema";
+import { modules } from "../test.setup";
+import { encodeTrack } from "../../src/lib/experiments/track-codec.ts";
+import { buildZones, defaultParams } from "../../src/lib/tracking/templates.ts";
+import type { TrackPoint } from "../../src/lib/tracking/types.ts";
+
+const ARENA = { rect: { x: 0, y: 0, w: 100, h: 100 }, shape: "rect" as const };
+const ZONES = buildZones(
+  "open-field",
+  { rect: ARENA.rect, shape: ARENA.shape },
+  defaultParams("open-field"),
+);
+const TRACK: TrackPoint[] = [
+  { t: 0, x: 50, y: 50, found: true, area: 10 },
+  { t: 1, x: 51, y: 50, found: true, area: 10 },
+  { t: 2, x: 51, y: 51, found: true, area: 10 },
+];
+
+async function setup() {
+  const t = convexTest(schema, modules);
+  const alice = t.withIdentity({ subject: "alice", name: "Alice" });
+  const bob = t.withIdentity({ subject: "bob", name: "Bob" });
+  await alice.mutation(api.users.updateCurrentUser, {});
+  await bob.mutation(api.users.updateCurrentUser, {});
+  const experimentId = await alice.mutation(
+    api.experiments.experiments.create,
+    { name: "Anxiety", templateId: "open-field" },
+  );
+  return { t, alice, bob, experimentId };
+}
+
+async function saveTrial(
+  ctx: Awaited<ReturnType<typeof setup>>,
+  subjectId: Id<"subjects">,
+  trackData = encodeTrack(TRACK),
+  videoStorageId?: Id<"_storage">,
+) {
+  const trackStorageId = await ctx.t.run((c) =>
+    c.storage.store(new Blob([trackData], { type: "application/json" })),
+  );
+  return ctx.alice.action(api.experiments.trials.save, {
+    subjectId,
+    session: "Day 1",
+    templateId: "open-field",
+    sourceName: "clip.mp4",
+    live: false,
+    arena: ARENA,
+    zones: ZONES,
+    dims: { w: 100, h: 100 },
+    pxPerCm: 2.5,
+    arenaCm: 40,
+    fps: 10,
+    trackStorageId,
+    snapshotStorageId: null,
+    videoStorageId,
+  });
+}
+
+describe("experiments access", () => {
+  it("lists only the caller's experiments", async () => {
+    const { alice, bob } = await setup();
+    expect(
+      await alice.query(api.experiments.experiments.list, {}),
+    ).toHaveLength(1);
+    expect(await bob.query(api.experiments.experiments.list, {})).toHaveLength(
+      0,
+    );
+  });
+
+  it("rejects signed-out callers", async () => {
+    const { t } = await setup();
+    await expect(
+      t.query(api.experiments.experiments.list, {}),
+    ).rejects.toThrow();
+  });
+
+  it("blocks other users from reading or changing an experiment", async () => {
+    const { bob, experimentId } = await setup();
+    await expect(
+      bob.query(api.experiments.experiments.get, { experimentId }),
+    ).rejects.toThrow(/access/);
+    await expect(
+      bob.mutation(api.experiments.subjects.create, {
+        experimentId,
+        code: "M1",
+        groupId: null,
+        sex: "male",
+      }),
+    ).rejects.toThrow(/access/);
+    await expect(
+      bob.mutation(api.experiments.experiments.remove, { experimentId }),
+    ).rejects.toThrow(/access/);
+  });
+});
+
+describe("subjects and trials", () => {
+  it("rejects duplicate subject IDs within an experiment", async () => {
+    const { alice, experimentId } = await setup();
+    await alice.mutation(api.experiments.subjects.create, {
+      experimentId,
+      code: "M1",
+      groupId: null,
+      sex: "male",
+    });
+    await expect(
+      alice.mutation(api.experiments.subjects.create, {
+        experimentId,
+        code: " M1 ",
+        groupId: null,
+        sex: "female",
+      }),
+    ).rejects.toThrow(/already exists/);
+  });
+
+  it("keeps trial and subject counters in sync on save and delete", async () => {
+    const ctx = await setup();
+    const { alice, bob, experimentId } = ctx;
+    const subjectId = await alice.mutation(api.experiments.subjects.create, {
+      experimentId,
+      code: "M1",
+      groupId: null,
+      sex: "male",
+    });
+    const trialId = await saveTrial(ctx, subjectId);
+
+    let data = await alice.query(api.experiments.experiments.get, {
+      experimentId,
+    });
+    expect(data.experiment.trialCount).toBe(1);
+    expect(data.experiment.subjectCount).toBe(1);
+    expect(data.subjects[0]?.trialCount).toBe(1);
+
+    await expect(
+      bob.query(api.experiments.trials.get, { trialId }),
+    ).rejects.toThrow(/access/);
+    const page = await alice.query(api.experiments.trials.listByExperiment, {
+      experimentId,
+      paginationOpts: { numItems: 10, cursor: null },
+    });
+    expect(page.page[0]?.subjectCode).toBe("M1");
+
+    const stats = await alice.query(api.experiments.trials.statsData, {
+      experimentId,
+    });
+    expect(stats.rows).toHaveLength(1);
+    expect(
+      stats.rows[0]?.measures.find((measure) => measure.label === "Center time")
+        ?.value,
+    ).toBe(100);
+    expect(stats.rows[0]?.summary.duration).toBe(2);
+    expect(stats.rows[0]?.summary.detectedPct).toBe(100);
+    await expect(
+      bob.query(api.experiments.trials.statsData, { experimentId }),
+    ).rejects.toThrow(/access/);
+
+    await alice.mutation(api.experiments.subjects.remove, { subjectId });
+    data = await alice.query(api.experiments.experiments.get, { experimentId });
+    expect(data.experiment.trialCount).toBe(0);
+    expect(data.experiment.subjectCount).toBe(0);
+    expect(
+      await alice.query(api.experiments.trials.get, { trialId }),
+    ).toBeNull();
+  });
+
+  it("rejects malformed tracks instead of saving client-supplied results", async () => {
+    const ctx = await setup();
+    const subjectId = await ctx.alice.mutation(
+      api.experiments.subjects.create,
+      {
+        experimentId: ctx.experimentId,
+        code: "M1",
+        groupId: null,
+        sex: "male",
+      },
+    );
+    await expect(saveTrial(ctx, subjectId, "{}")).rejects.toThrow(
+      /damaged|unknown format/,
+    );
+  });
+
+  it("retains an attached video with the trial and deletes it with the trial", async () => {
+    const ctx = await setup();
+    const subjectId = await ctx.alice.mutation(
+      api.experiments.subjects.create,
+      {
+        experimentId: ctx.experimentId,
+        code: "M1",
+        groupId: null,
+        sex: "male",
+      },
+    );
+    const videoStorageId = await ctx.t.run((c) =>
+      c.storage.store(new Blob(["video"], { type: "video/webm" })),
+    );
+    const trialId = await saveTrial(ctx, subjectId, undefined, videoStorageId);
+    const trial = await ctx.alice.query(api.experiments.trials.get, {
+      trialId,
+    });
+    expect(trial?.videoUrl).toBeTruthy();
+
+    await ctx.alice.mutation(api.experiments.trials.remove, { trialId });
+    expect(await ctx.t.run((c) => c.storage.get(videoStorageId))).toBeNull();
+  });
+
+  it("ungroups subjects when their group is deleted", async () => {
+    const { alice, experimentId } = await setup();
+    const groupId = await alice.mutation(api.experiments.groups.create, {
+      experimentId,
+      name: "Control",
+      color: "#22d3ee",
+    });
+    await alice.mutation(api.experiments.subjects.create, {
+      experimentId,
+      code: "M1",
+      groupId,
+      sex: "male",
+    });
+    await alice.mutation(api.experiments.groups.remove, { groupId });
+    const data = await alice.query(api.experiments.experiments.get, {
+      experimentId,
+    });
+    expect(data.groups).toHaveLength(0);
+    expect(data.subjects[0]?.groupId).toBeNull();
+  });
+});
