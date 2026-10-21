@@ -238,7 +238,9 @@ export default function TrackPage() {
                   data={analyticsData}
                   summary={summary}
                   serverMeasures={s.serverMeasures}
-                  anonymousSessionId={anonymousSessionId}
+                  anonymousSessionId={
+                    s.source?.kind === "demo" ? undefined : anonymousSessionId
+                  }
                   busy={s.status === "tracking"}
                   actions={
                     <>

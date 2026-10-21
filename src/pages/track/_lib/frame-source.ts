@@ -137,6 +137,13 @@ export function createDemoSource(
     width: DEMO_W,
     height: DEMO_H,
     duration: DEMO_DURATION,
+    preset: {
+      templateId,
+      arena: {
+        rect: { x: ARENA.x, y: ARENA.y, w: ARENA.size, h: ARENA.size },
+        shape: "rect",
+      },
+    },
     seek: async (t) => {
       current = Math.min(Math.max(t, 0), DEMO_DURATION);
     },

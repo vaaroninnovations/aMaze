@@ -11,6 +11,7 @@ import {
 import { internal } from "../_generated/api";
 import {
   cleanText,
+  canEditExperiment,
   deleteTrialDoc,
   optionalText,
   requireExperiment,
@@ -298,7 +299,12 @@ export const listByExperiment = query({
     ownerKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await requireExperiment(ctx, args.experimentId, args.ownerKey);
+    await requireExperiment(
+      ctx,
+      args.experimentId,
+      args.ownerKey,
+      "view",
+    );
     const result = await ctx.db
       .query("trials")
       .withIndex("by_experiment_and_recorded_at", (q) =>
@@ -333,7 +339,12 @@ export const statsData = query({
     ownerKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await requireExperiment(ctx, args.experimentId, args.ownerKey);
+    await requireExperiment(
+      ctx,
+      args.experimentId,
+      args.ownerKey,
+      "view",
+    );
     const trials = await ctx.db
       .query("trials")
       .withIndex("by_experiment_and_recorded_at", (q) =>
@@ -382,6 +393,7 @@ export const get = query({
       ctx,
       trial.experimentId,
       args.ownerKey,
+      "view",
     );
     const subject = await ctx.db.get("subjects", trial.subjectId);
     const group = subject?.groupId
@@ -390,6 +402,7 @@ export const get = query({
     return {
       trial,
       experiment: { _id: experiment._id, name: experiment.name },
+      canEdit: await canEditExperiment(ctx, experiment, args.ownerKey),
       subject,
       group,
       trackUrl: await ctx.storage.getUrl(trial.trackStorageId),

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAnonymousMutation as useMutation } from "@/lib/anonymous-convex.ts";
+import { useSessionMutation as useMutation } from "@/lib/anonymous-convex.ts";
 import { Check, Pencil, Plus, Trash2, Users, X } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";

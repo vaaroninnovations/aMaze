@@ -3,6 +3,7 @@ import { internal } from "../_generated/api";
 import { internalMutation, mutation, query } from "../_generated/server";
 import {
   cleanText,
+  canEditExperiment,
   deleteTrialDoc,
   findUser,
   getOrCreateAnonymousUser,
@@ -22,11 +23,29 @@ export const list = query({
       ? await findUser(ctx, args.ownerKey)
       : await requireUser(ctx);
     if (!user) return [];
-    return await ctx.db
+    const owned = await ctx.db
       .query("experiments")
       .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
       .order("desc")
       .take(MAX_EXPERIMENTS);
+    if (args.ownerKey) return owned;
+
+    const memberships = await ctx.db
+      .query("experimentMembers")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .take(MAX_EXPERIMENTS);
+    const shared = await Promise.all(
+      memberships
+        .filter((member) => member.status === "accepted")
+        .map((member) => ctx.db.get("experiments", member.experimentId)),
+    );
+    return [...owned, ...shared.filter((item) => item !== null)]
+      .filter(
+        (experiment, index, all) =>
+          all.findIndex((item) => item?._id === experiment?._id) === index,
+      )
+      .sort((a, b) => b._creationTime - a._creationTime)
+      .slice(0, MAX_EXPERIMENTS);
   },
 });
 
@@ -34,7 +53,12 @@ export const list = query({
 export const get = query({
   args: { experimentId: v.id("experiments"), ownerKey: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    const experiment = await requireExperiment(ctx, args.experimentId, args.ownerKey);
+    const experiment = await requireExperiment(
+      ctx,
+      args.experimentId,
+      args.ownerKey,
+      "view",
+    );
     const groups = await ctx.db
       .query("groups")
       .withIndex("by_experiment", (q) => q.eq("experimentId", experiment._id))
@@ -43,7 +67,12 @@ export const get = query({
       .query("subjects")
       .withIndex("by_experiment_and_code", (q) => q.eq("experimentId", experiment._id))
       .take(MAX_CHILDREN);
-    return { experiment, groups, subjects };
+    return {
+      experiment,
+      groups,
+      subjects,
+      canEdit: await canEditExperiment(ctx, experiment, args.ownerKey),
+    };
   },
 });
 
@@ -91,8 +120,21 @@ export const update = mutation({
 export const remove = mutation({
   args: { experimentId: v.id("experiments"), ownerKey: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    await requireExperiment(ctx, args.experimentId, args.ownerKey);
+    const experiment = await requireExperiment(
+      ctx,
+      args.experimentId,
+      args.ownerKey,
+    );
     await ctx.db.delete("experiments", args.experimentId);
+    const memberships = await ctx.db
+      .query("experimentMembers")
+      .withIndex("by_experiment", (q) =>
+        q.eq("experimentId", experiment._id),
+      )
+      .take(MAX_CHILDREN);
+    for (const membership of memberships) {
+      await ctx.db.delete(membership._id);
+    }
     // Children can outnumber one transaction's limits, so clean them up in batches.
     await ctx.scheduler.runAfter(0, internal.experiments.experiments.purge, { experimentId: args.experimentId });
     return null;

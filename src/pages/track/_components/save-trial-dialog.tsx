@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
-  useAnonymousAction as useAction,
-  useAnonymousMutation as useMutation,
-  useAnonymousQuery as useQuery,
+  useSessionAction as useAction,
+  useSessionMutation as useMutation,
+  useSessionQuery as useQuery,
 } from "@/lib/anonymous-convex.ts";
 import { useNavigate } from "react-router-dom";
 import { CloudUpload, Plus } from "lucide-react";

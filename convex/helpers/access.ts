@@ -1,4 +1,5 @@
 import { ConvexError } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 
@@ -21,10 +22,23 @@ export async function findUser(
   ctx: Ctx,
   ownerKey?: string,
 ): Promise<Doc<"users"> | null> {
+  if (ownerKey) {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", `anonymous:${ownerKey}`),
+      )
+      .unique();
+  }
+
+  const authUserId = await getAuthUserId(ctx);
+  if (authUserId) {
+    const authUser = await ctx.db.get(authUserId);
+    if (authUser) return authUser;
+  }
+
   const identity = await ctx.auth.getUserIdentity();
-  const tokenIdentifier = ownerKey
-    ? `anonymous:${ownerKey}`
-    : identity?.tokenIdentifier;
+  const tokenIdentifier = identity?.tokenIdentifier;
   if (!tokenIdentifier) return null;
   const user = await ctx.db
     .query("users")
@@ -65,6 +79,7 @@ export async function requireExperiment(
   ctx: Ctx,
   experimentId: Id<"experiments">,
   ownerKey?: string,
+  permission: "view" | "edit" = "edit",
 ): Promise<Doc<"experiments">> {
   const user = await requireUser(ctx, ownerKey);
   const experiment = await ctx.db.get("experiments", experimentId);
@@ -73,12 +88,51 @@ export async function requireExperiment(
       code: "NOT_FOUND",
       message: "Experiment not found.",
     });
-  if (experiment.ownerId !== user._id) {
-    throw new ConvexError({
-      code: "FORBIDDEN",
-      message: "You don't have access to this experiment.",
-    });
+  if (experiment.ownerId === user._id) return experiment;
+
+  const memberships = await ctx.db
+    .query("experimentMembers")
+    .withIndex("by_experiment", (q) =>
+      q.eq("experimentId", experiment._id),
+    )
+    .take(1000);
+  const membership = memberships.find(
+    (member) =>
+      member.userId === user._id && member.status === "accepted",
+  );
+  if (
+    membership &&
+    (permission === "view" || membership.role === "editor")
+  ) {
+    return experiment;
   }
+
+  throw new ConvexError({
+    code: "FORBIDDEN",
+    message: "You don't have access to this experiment.",
+  });
+}
+
+export async function canEditExperiment(
+  ctx: Ctx,
+  experiment: Doc<"experiments">,
+  ownerKey?: string,
+): Promise<boolean> {
+  const user = await findUser(ctx, ownerKey);
+  if (!user) return false;
+  if (experiment.ownerId === user._id) return true;
+  const memberships = await ctx.db
+    .query("experimentMembers")
+    .withIndex("by_experiment", (q) =>
+      q.eq("experimentId", experiment._id),
+    )
+    .take(1000);
+  return memberships.some(
+    (member) =>
+      member.userId === user._id &&
+      member.status === "accepted" &&
+      member.role === "editor",
+  );
   return experiment;
 }
 
@@ -86,11 +140,17 @@ export async function requireSubject(
   ctx: Ctx,
   subjectId: Id<"subjects">,
   ownerKey?: string,
+  permission: "view" | "edit" = "edit",
 ) {
   const subject = await ctx.db.get("subjects", subjectId);
   if (!subject)
     throw new ConvexError({ code: "NOT_FOUND", message: "Subject not found." });
-  const experiment = await requireExperiment(ctx, subject.experimentId, ownerKey);
+  const experiment = await requireExperiment(
+    ctx,
+    subject.experimentId,
+    ownerKey,
+    permission,
+  );
   return { subject, experiment };
 }
 
@@ -98,11 +158,17 @@ export async function requireGroup(
   ctx: Ctx,
   groupId: Id<"groups">,
   ownerKey?: string,
+  permission: "view" | "edit" = "edit",
 ) {
   const group = await ctx.db.get("groups", groupId);
   if (!group)
     throw new ConvexError({ code: "NOT_FOUND", message: "Group not found." });
-  const experiment = await requireExperiment(ctx, group.experimentId, ownerKey);
+  const experiment = await requireExperiment(
+    ctx,
+    group.experimentId,
+    ownerKey,
+    permission,
+  );
   return { group, experiment };
 }
 

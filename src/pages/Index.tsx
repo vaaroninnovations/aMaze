@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
+import heroImage from "../../generated-image-1791186058084.png";
 import {
   ArrowRight,
   Crosshair,
@@ -176,93 +177,12 @@ export default function Index() {
                   </span>
                 </div>
                 <div className="relative overflow-hidden rounded-lg bg-[#eaf2f1] dark:bg-[#091317]">
-                  <div
-                    role="img"
-                    aria-label="Open field arena with tracking zones"
-                    className="aspect-[4/3] w-full bg-[radial-gradient(ellipse_at_center,rgba(33,130,118,0.16),transparent_68%),linear-gradient(145deg,#eaf2f1,#dce9e7)] dark:bg-[radial-gradient(ellipse_at_center,rgba(43,152,137,0.2),transparent_68%),linear-gradient(145deg,#0e2226,#081519)]"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 600 450"
-                      preserveAspectRatio="none"
-                      className="size-full"
-                    >
-                      <rect
-                        x="92"
-                        y="38"
-                        width="416"
-                        height="374"
-                        rx="12"
-                        fill="rgba(15, 105, 97, 0.035)"
-                        stroke="rgba(38, 112, 106, 0.52)"
-                        strokeWidth="2"
-                      />
-                      <rect
-                        x="196"
-                        y="132"
-                        width="208"
-                        height="186"
-                        rx="8"
-                        fill="rgba(15, 105, 97, 0.08)"
-                        stroke="rgba(38, 112, 106, 0.36)"
-                        strokeDasharray="6 5"
-                        strokeWidth="1.5"
-                      />
-                      <path
-                        d="M300 38v94m0 186v94M92 225h104m208 0h104"
-                        stroke="rgba(38, 112, 106, 0.24)"
-                        strokeDasharray="4 6"
-                      />
-                      <circle
-                        cx="300"
-                        cy="225"
-                        r="8"
-                        fill="#08796f"
-                        opacity=".8"
-                      />
-                    </svg>
-                  </div>
+                  <img
+                    src={heroImage}
+                    alt="Mouse tracked inside an open-field arena"
+                    className="aspect-[4/3] w-full object-cover"
+                  />
                   <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0)_52%,rgba(12,42,42,0.12))] dark:bg-[linear-gradient(180deg,rgba(5,18,22,0.08),rgba(5,18,22,0.03)_52%,rgba(5,18,22,0.45))]" />
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 600 450"
-                    preserveAspectRatio="none"
-                    className="pointer-events-none absolute inset-0 size-full"
-                  >
-                    <defs>
-                      <filter
-                        id="trajectory-glow"
-                        x="-50%"
-                        y="-50%"
-                        width="200%"
-                        height="200%"
-                      >
-                        <feGaussianBlur stdDeviation="3" result="blur" />
-                        <feMerge>
-                          <feMergeNode in="blur" />
-                          <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                      </filter>
-                    </defs>
-                    <path
-                      d="M196 235 C205 221 215 238 225 219 S250 207 253 222 S276 244 287 225 S306 197 318 211 S330 245 347 228 S361 194 375 206 S381 235 402 222"
-                      fill="none"
-                      stroke="#6bf0d9"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeDasharray="5 3"
-                      filter="url(#trajectory-glow)"
-                    />
-                    <circle cx="402" cy="222" r="5" fill="#8effe8" />
-                    <circle
-                      cx="402"
-                      cy="222"
-                      r="12"
-                      fill="none"
-                      stroke="#8effe8"
-                      strokeOpacity=".65"
-                    />
-                  </svg>
                   <div className="absolute left-3 top-3 rounded border border-[#a9c8c3] bg-white/95 px-2.5 py-2 shadow-sm backdrop-blur sm:left-4 sm:top-4 dark:border-[#74e6d3]/25 dark:bg-[#07181ce8] dark:shadow-none">
                     <p className="font-mono text-[8px] uppercase tracking-widest text-[#496865] dark:text-[#87a5a1]">
                       Arena detection

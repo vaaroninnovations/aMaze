@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
+import { arenaPolygon, pointInPolygon } from "@/lib/tracking/geometry.ts";
 import { buildZones, defaultParams } from "@/lib/tracking/templates.ts";
+import { summarize } from "@/lib/tracking/metrics.ts";
+import {
+  arenaMask,
+  detectAnimal,
+  medianBackground,
+  toGray,
+  type Detection,
+} from "@/lib/tracking/vision.ts";
 import {
   alignArena,
   arenaMoved,
@@ -33,6 +42,7 @@ import type {
   Arena,
   DetectionSettings,
   Gray,
+  Point,
   TemplateId,
   TemplateParams,
   TrackPoint,
@@ -175,12 +185,14 @@ export function useTrackingSession() {
         );
       }
       if (source?.serverSessionId) {
-        void deleteVideoSession(source.serverSessionId, sessionRef.current).catch(
-          (error: unknown) =>
-            console.error(
-              "Could not clean up the temporary video upload.",
-              error,
-            ),
+        void deleteVideoSession(
+          source.serverSessionId,
+          sessionRef.current,
+        ).catch((error: unknown) =>
+          console.error(
+            "Could not clean up the temporary video upload.",
+            error,
+          ),
         );
       }
     },
@@ -274,6 +286,32 @@ export function useTrackingSession() {
       setDims(d);
       setStatus("preparing");
       setProgress(0);
+      if (src.kind === "demo") {
+        const frames: Gray[] = [];
+        for (let i = 0; i < BACKGROUND_SAMPLES; i++) {
+          await src.seek((src.duration * (i + 0.5)) / BACKGROUND_SAMPLES);
+          src.draw(work.current.ctx, d.w, d.h);
+          frames.push(toGray(work.current.ctx.getImageData(0, 0, d.w, d.h)));
+          setProgress((i + 1) / BACKGROUND_SAMPLES);
+        }
+        setBackground(medianBackground(frames));
+        if (!src.preset)
+          throw new Error("The demo does not have a predefined arena.");
+        const scale = d.w / src.width;
+        const { x, y, w, h } = src.preset.arena.rect;
+        setArena({
+          ...src.preset.arena,
+          rect: { x: x * scale, y: y * scale, w: w * scale, h: h * scale },
+        });
+        setTemplateId(src.preset.templateId);
+        await src.seek(0);
+        src.draw(work.current.ctx, d.w, d.h);
+        setCurrentTime(0);
+        setFrameVersion((version) => version + 1);
+        setStatus("ready");
+        setProgress(1);
+        return;
+      }
       if (src.liveSessionId) {
         const anonymousSessionId = sessionRef.current;
         for (let i = 0; i < BACKGROUND_SAMPLES; i++) {
@@ -294,7 +332,10 @@ export function useTrackingSession() {
           );
           setProgress((i + 1) / BACKGROUND_SAMPLES);
         }
-        const prepared = await prepareLiveSession(src.liveSessionId, anonymousSessionId);
+        const prepared = await prepareLiveSession(
+          src.liveSessionId,
+          anonymousSessionId,
+        );
         const binary = atob(prepared.background);
         if (binary.length !== d.w * d.h)
           throw new Error(
@@ -330,7 +371,10 @@ export function useTrackingSession() {
       }
       if (src.serverSessionId) {
         const anonymousSessionId = sessionRef.current;
-        const prepared = await prepareVideo(src.serverSessionId, anonymousSessionId);
+        const prepared = await prepareVideo(
+          src.serverSessionId,
+          anonymousSessionId,
+        );
         if (prepared.width !== d.w || prepared.height !== d.h) {
           throw new Error(
             "The tracking service returned inconsistent video dimensions.",
@@ -406,9 +450,9 @@ export function useTrackingSession() {
                   );
                 })();
         uploadAbortRef.current = null;
-        if (src.kind !== "video") {
-          const scale = Math.min(1, WORK_MAX_W / src.width);
+        if (src.kind === "camera") {
           try {
+            const scale = Math.min(1, WORK_MAX_W / src.width);
             src.liveSessionId = await createLiveSession(
               Math.round(src.width * scale),
               Math.round(src.height * scale),
@@ -455,6 +499,16 @@ export function useTrackingSession() {
 
   const redetectArena = useCallback(async () => {
     if (!background) return;
+    if (source?.kind === "demo" && source.preset) {
+      const scale = dims.w / source.width;
+      const { x, y, w, h } = source.preset.arena.rect;
+      setArena({
+        ...source.preset.arena,
+        rect: { x: x * scale, y: y * scale, w: w * scale, h: h * scale },
+      });
+      setTemplateId(source.preset.templateId);
+      return;
+    }
     const anonymousSessionId = sessionRef.current;
     const result = source?.liveSessionId
       ? await detectLiveArena(
@@ -468,11 +522,57 @@ export function useTrackingSession() {
     if (!result)
       throw new Error("The source is not connected to server-side processing.");
     applyDetectedMaze(result.detection, result.arena, templateId);
-  }, [background, source, applyDetectedMaze, templateId]);
+  }, [
+    background,
+    source,
+    applyDetectedMaze,
+    templateId,
+    dims.w,
+    setTemplateId,
+  ]);
+
+  const localArenaMask = useMemo(() => {
+    if (!arena) return null;
+    const polygon = arenaPolygon(arena);
+    return arenaMask(polygon, dims.w, dims.h, (point) =>
+      pointInPolygon(point, polygon),
+    );
+  }, [arena, dims]);
+
+  const detectLocalFrame = useCallback(
+    async (
+      src: FrameSource,
+      time: number,
+      previous: Point | null,
+    ): Promise<Detection> => {
+      const workspace = work.current;
+      if (!workspace || !background || !localArenaMask)
+        throw new Error("Local demo tracking is not ready.");
+      await src.seek(time);
+      src.draw(workspace.ctx, workspace.canvas.width, workspace.canvas.height);
+      return detectAnimal(
+        toGray(
+          workspace.ctx.getImageData(
+            0,
+            0,
+            workspace.canvas.width,
+            workspace.canvas.height,
+          ),
+        ),
+        background,
+        localArenaMask,
+        settings,
+        previous,
+      );
+    },
+    [background, localArenaMask, settings],
+  );
 
   /** Runs detection on the visible frame so users can tune the threshold before a full run. */
   const testDetection = useCallback(async () => {
     if (!source) return null;
+    if (source.kind === "demo")
+      return await detectLocalFrame(source, currentTime, null);
     if (source.serverSessionId) {
       const anonymousSessionId = sessionRef.current;
       if (!arena) return null;
@@ -506,10 +606,59 @@ export function useTrackingSession() {
       );
     }
     throw new Error("The source is not connected to server-side processing.");
-  }, [source, arena, currentTime, settings]);
+  }, [source, arena, currentTime, settings, detectLocalFrame]);
 
   const runTracking = useCallback(async () => {
     if (!source) return;
+    if (source.kind === "demo") {
+      if (!arena) {
+        setError("Select a valid arena before starting tracking.");
+        return;
+      }
+      cancelRef.current = false;
+      setStatus("tracking");
+      setError(null);
+      setTrack([]);
+      setServerSummary(null);
+      setServerMeasures([]);
+      setProgress(0);
+      const step = 1 / settings.fps;
+      const total = Math.floor(source.duration / step);
+      const points: TrackPoint[] = [];
+      let previous: Point | null = null;
+      try {
+        for (let i = 0; i <= total; i++) {
+          if (cancelRef.current) break;
+          const t = Math.min(i * step, source.duration);
+          const detection = await detectLocalFrame(source, t, previous);
+          if (detection.found) previous = detection;
+          points.push({ t, ...detection });
+          if (i % 5 === 0 || i === total) {
+            setTrack([...points]);
+            setProgress(total ? i / total : 1);
+            setCurrentTime(t);
+            setFrameVersion((version) => version + 1);
+            await new Promise((resolve) => setTimeout(resolve, 0));
+          }
+        }
+        if (points.length) {
+          setTrack(points);
+          setServerSummary(summarize(points, zones, pxPerCm));
+          setProgress(1);
+          setCurrentTime(points.at(-1)?.t ?? 0);
+          setFrameVersion((version) => version + 1);
+          setStatus("done");
+        } else {
+          setStatus("ready");
+        }
+      } catch (error) {
+        setError(
+          error instanceof Error ? error.message : "Demo tracking failed.",
+        );
+        setStatus("ready");
+      }
+      return;
+    }
     if (source.liveSessionId) {
       const anonymousSessionId = sessionRef.current;
       if (!arena) {
@@ -648,7 +797,7 @@ export function useTrackingSession() {
       return;
     }
     setError("The source is not connected to server-side processing.");
-  }, [source, arena, zones, pxPerCm, templateId, settings]);
+  }, [source, arena, zones, pxPerCm, templateId, settings, detectLocalFrame]);
 
   const stopTracking = useCallback(() => {
     cancelRef.current = true;
@@ -686,11 +835,15 @@ export function useTrackingSession() {
     const anonymousSessionId = sessionRef.current;
     if (!source?.liveSessionId)
       throw new Error("Live server tracking is not ready.");
-    const result = await finalizeLiveSession(source.liveSessionId, anonymousSessionId, {
-      zones,
-      pxPerCm,
-      templateId,
-    });
+    const result = await finalizeLiveSession(
+      source.liveSessionId,
+      anonymousSessionId,
+      {
+        zones,
+        pxPerCm,
+        templateId,
+      },
+    );
     setServerSummary(result.summary);
     setServerMeasures(result.measures);
     return result;

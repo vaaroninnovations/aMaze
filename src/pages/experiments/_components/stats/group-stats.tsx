@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useAnonymousQuery as useQuery } from "@/lib/anonymous-convex.ts";
+import { useSessionQuery as useQuery } from "@/lib/anonymous-convex.ts";
 import { BarChart3, Users } from "lucide-react";
 import { api } from "@/convex/_generated/api.js";
 import type { Doc, Id } from "@/convex/_generated/dataModel.d.ts";

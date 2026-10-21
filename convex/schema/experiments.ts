@@ -72,10 +72,13 @@ export const experimentTables = {
     description: v.optional(v.string()),
     /** Behavioral test template (open-field, y-maze...). */
     templateId: v.string(),
+    shareToken: v.optional(v.string()),
     // Denormalized counters so the experiment list never scans child tables.
     subjectCount: v.number(),
     trialCount: v.number(),
-  }).index("by_owner", ["ownerId"]),
+  })
+    .index("by_owner", ["ownerId"])
+    .index("by_share_token", ["shareToken"]),
 
   groups: defineTable({
     experimentId: v.id("experiments"),
