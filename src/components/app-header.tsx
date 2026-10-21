@@ -1,4 +1,5 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { useConvexAuth, useAuthActions } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
@@ -8,20 +9,38 @@ import { api } from "@/convex/_generated/api.js";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "./ui/button.tsx";
 import ThemeToggle from "./theme-toggle.tsx";
+import AccountAuthDialog from "./account-auth-dialog.tsx";
 
 const NAV = [
   { to: "/track", label: "Workspace", icon: ScanLine },
   { to: "/experiments", label: "Experiments", icon: FlaskConical },
 ];
+const POST_SIGN_IN_DESTINATION_KEY = "amaze:post-sign-in-destination";
 
 /** Logo, main navigation and account menu, shared by every page. */
 export default function AppHeader({ children }: { children?: ReactNode }) {
   const { isAuthenticated, isLoading } = useConvexAuth();
-  const { signIn, signOut } = useAuthActions();
+  const { signOut } = useAuthActions();
+  const location = useLocation();
+  const navigate = useNavigate();
   const user = useQuery(
     api.users.getCurrentUser,
     isAuthenticated ? {} : "skip",
   );
+  useEffect(() => {
+    if (isLoading) return;
+    if (!isAuthenticated) {
+      sessionStorage.removeItem(POST_SIGN_IN_DESTINATION_KEY);
+      return;
+    }
+    const destination = sessionStorage.getItem(POST_SIGN_IN_DESTINATION_KEY);
+    if (!destination) return;
+    sessionStorage.removeItem(POST_SIGN_IN_DESTINATION_KEY);
+    if (location.pathname !== destination) {
+      navigate(destination, { replace: true });
+    }
+  }, [isAuthenticated, isLoading, location.pathname, navigate]);
+
   const navItems = isAuthenticated
     ? NAV.filter((item) => item.to === "/track")
     : [];
@@ -107,18 +126,24 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
               </Button>
             </>
           ) : (
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={isLoading}
-              onClick={() =>
-                void signIn("google", {
-                  redirectTo: window.location.href,
-                }).catch(() => toast.error("Could not start Google sign-in."))
+            <AccountAuthDialog
+              redirectTo={new URL("/track", window.location.origin).toString()}
+              trigger={
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isLoading}
+                  onClick={() =>
+                    sessionStorage.setItem(
+                      POST_SIGN_IN_DESTINATION_KEY,
+                      "/track",
+                    )
+                  }
+                >
+                  <UserRound /> Sign in
+                </Button>
               }
-            >
-              <UserRound /> Sign in
-            </Button>
+            />
           )}
           <ThemeToggle />
         </div>

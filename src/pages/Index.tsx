@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
-import { useConvexAuth, useAuthActions } from "@convex-dev/auth/react";
+import { useConvexAuth } from "@convex-dev/auth/react";
 import heroImage from "../../generated-image-1791186058084.png";
 import {
   ArrowRight,
@@ -12,17 +12,10 @@ import {
   ScanSearch,
   Timer,
 } from "lucide-react";
-import { toast } from "sonner";
 import AppHeader from "@/components/app-header.tsx";
 import RodentBackground from "@/components/rodent-background.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog.tsx";
+import AccountAuthDialog from "@/components/account-auth-dialog.tsx";
 import { TEMPLATES } from "@/lib/tracking/templates.ts";
 
 const STATS = [
@@ -67,7 +60,6 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function Index() {
   const { isAuthenticated, isLoading } = useConvexAuth();
-  const { signIn } = useAuthActions();
   const navigate = useNavigate();
   const [signInDestination, setSignInDestination] = useState<string | null>(
     null,
@@ -86,32 +78,13 @@ export default function Index() {
 
   return (
     <div className="relative isolate min-h-screen bg-[#f5f9f8] text-[#142d31] selection:bg-[#0b887b]/20 dark:bg-[#071318] dark:text-[#e5f1f0] dark:selection:bg-[#5be2ce]/25">
-      <Dialog
+      <AccountAuthDialog
         open={signInDestination !== null}
         onOpenChange={(open) => {
           if (!open) setSignInDestination(null);
         }}
-      >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Sign in to start tracking</DialogTitle>
-            <DialogDescription>
-              Continue with Google to open the tracking workspace.
-            </DialogDescription>
-          </DialogHeader>
-          <Button
-            disabled={isLoading}
-            onClick={() => {
-              if (!signInDestination) return;
-              void signIn("google", { redirectTo: signInDestination }).catch(
-                () => toast.error("Could not start Google sign-in."),
-              );
-            }}
-          >
-            Sign in with Google
-          </Button>
-        </DialogContent>
-      </Dialog>
+        redirectTo={signInDestination ?? undefined}
+      />
       <RodentBackground />
       <div className="relative z-10 isolate overflow-hidden">
         <div

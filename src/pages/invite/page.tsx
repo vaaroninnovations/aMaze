@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react";
+import { useConvexAuth } from "@convex-dev/auth/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MailCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -9,12 +9,12 @@ import AppHeader from "@/components/app-header.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { errorMessage } from "@/lib/errors.ts";
+import AccountAuthDialog from "@/components/account-auth-dialog.tsx";
 
 export default function InvitationPage() {
   const { inviteToken = "" } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useConvexAuth();
-  const { signIn } = useAuthActions();
   const invitation = useQuery(api.experiments.sharing.getInvitation, {
     inviteToken,
   });
@@ -77,7 +77,7 @@ export default function InvitationPage() {
                 as a {invitation.role}.
               </p>
               <p className="mt-2 text-xs text-muted-foreground">
-                Accept using the Google account for {invitation.email}.
+                Accept using the account registered with {invitation.email}.
               </p>
             </div>
             {isAuthenticated ? (
@@ -96,16 +96,12 @@ export default function InvitationPage() {
                 )}
               </div>
             ) : (
-              <Button
-                disabled={isLoading}
-                onClick={() =>
-                  void signIn("google", {
-                    redirectTo: window.location.href,
-                  }).catch(() => toast.error("Could not start Google sign-in."))
+              <AccountAuthDialog
+                redirectTo={window.location.href}
+                trigger={
+                  <Button disabled={isLoading}>Sign in to accept</Button>
                 }
-              >
-                Continue with Google
-              </Button>
+              />
             )}
           </div>
         )}

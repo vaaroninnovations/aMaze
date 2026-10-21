@@ -8,6 +8,7 @@ import AppHeader from "@/components/app-header.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
+import AccountAuthDialog from "@/components/account-auth-dialog.tsx";
 
 export default function ProfilePage() {
   const { isAuthenticated, isLoading } = useConvexAuth();
@@ -56,8 +57,17 @@ export default function ProfilePage() {
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading account…</p>
         ) : !isAuthenticated ? (
-          <div className="rounded-lg border p-5 text-sm text-muted-foreground">
-            Sign in with Google to view and edit your profile.
+          <div className="space-y-4 rounded-lg border p-5">
+            <p className="text-sm text-muted-foreground">
+              Sign in or create an account to view and edit your profile.
+            </p>
+            <AccountAuthDialog
+              redirectTo={new URL(
+                "/profile",
+                window.location.origin,
+              ).toString()}
+              trigger={<Button>Sign in or create account</Button>}
+            />
           </div>
         ) : user ? (
           <form onSubmit={save} className="space-y-5 rounded-lg border p-5">
@@ -75,7 +85,7 @@ export default function ProfilePage() {
               )}
               <div className="min-w-0">
                 <p className="truncate font-medium">{user.email}</p>
-                <p className="text-sm text-muted-foreground">Google account</p>
+                <p className="text-sm text-muted-foreground">aMaze account</p>
               </div>
             </div>
             <div className="space-y-2">

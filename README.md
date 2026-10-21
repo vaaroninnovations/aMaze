@@ -11,7 +11,8 @@ Requirements: Node.js 22.12+ and pnpm 10.
 
 1. Copy `.env.example` to `.env`. Set `VITE_CONVEX_URL` and `CONVEX_SITE_URL`
    to the matching Convex deployment URLs. Set up Google sign-in and Convex Auth
-   on that deployment as described below.
+   on that deployment as described below. Email and password accounts are
+   available without additional provider credentials.
 2. Install dependencies with `pnpm install`.
 3. Start the web app and tracking service in separate terminals:
 
@@ -26,10 +27,11 @@ Requirements: Node.js 22.12+ and pnpm 10.
 The service requires FFmpeg and FFprobe on `PATH`. The Docker image installs
 them automatically.
 
-## Google Auth setup
+## Authentication setup
 
-The app uses Google through Convex Auth. Configure `SITE_URL` to the public web
-app origin and generate Convex Auth's signing keys for the deployment:
+The app supports Google OAuth and email/password accounts through Convex Auth.
+Configure `SITE_URL` to the public web app origin and generate Convex Auth's
+signing keys for the deployment:
 
 ```sh
 pnpm exec auth --prod --web-server-url https://amaze.drvara.si
@@ -81,6 +83,7 @@ but the API must remain on a VPS.
 
    The `VITE_*` values are public and compiled into the site; never put
    secrets in them.
+
 4. Build the frontend on the VPS:
 
    ```sh
@@ -118,12 +121,11 @@ video processing. Temporary uploads and live sessions are assigned to the
 authenticated Convex user. The built-in demo remains available without signing
 in.
 
-Users can sign in with Google, edit their profile, and claim the current
+Users can sign in with Google or email and password, edit their profile, and claim the current
 browser's anonymous projects on first sign-in. Project owners can create
 revocable read-only results links or invite viewers and editors. Email
 invitations are prepared as a `mailto:` draft so the owner sends them using
-their email client; invitees must accept while signed in with the invited
-Google account.
+their email client; invitees must accept while signed in with the invited email address.
 
 Temporary uploads and live sessions are held in process memory and on the
 mounted `tracking-data` volume. The service removes temporary data on startup
