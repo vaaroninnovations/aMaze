@@ -113,6 +113,31 @@ describe("accounts and sharing", () => {
     });
   }
 
+  type Account = Awaited<ReturnType<typeof createAccount>>;
+
+  async function createProject(owner: Account, name: string) {
+    return owner.mutation(api.experiments.experiments.create, {
+      name,
+      templateId: "open-field",
+    });
+  }
+
+  async function inviteCollaborator(
+    owner: Account,
+    collaborator: Account,
+    experimentId: Id<"experiments">,
+    email: string,
+    role: "viewer" | "editor",
+  ) {
+    const { inviteToken } = await owner.mutation(
+      api.experiments.sharing.invite,
+      { experimentId, email, role },
+    );
+    await collaborator.mutation(api.experiments.sharing.acceptInvitation, {
+      inviteToken,
+    });
+  }
+
   it("moves browser-owned projects to the signed-in account", async () => {
     const t = convexTest(schema, modules);
     const ownerKey = "f55b0920-3f3f-4a2c-9d9e-3262e437a836";
@@ -141,25 +166,15 @@ describe("accounts and sharing", () => {
     const t = convexTest(schema, modules);
     const owner = await createAccount(t, "owner@example.test");
     const collaborator = await createAccount(t, "collaborator@example.test");
-    const ownedId = await owner.mutation(api.experiments.experiments.create, {
-      name: "Private project",
-      templateId: "open-field",
-    });
-    const sharedId = await owner.mutation(api.experiments.experiments.create, {
-      name: "Shared project",
-      templateId: "open-field",
-    });
-    const { inviteToken } = await owner.mutation(
-      api.experiments.sharing.invite,
-      {
-        experimentId: sharedId,
-        email: "collaborator@example.test",
-        role: "editor",
-      },
+    const ownedId = await createProject(owner, "Private project");
+    const sharedId = await createProject(owner, "Shared project");
+    await inviteCollaborator(
+      owner,
+      collaborator,
+      sharedId,
+      "collaborator@example.test",
+      "editor",
     );
-    await collaborator.mutation(api.experiments.sharing.acceptInvitation, {
-      inviteToken,
-    });
 
     expect(
       await collaborator.query(api.experiments.experiments.listOwned, {
@@ -179,21 +194,14 @@ describe("accounts and sharing", () => {
     const t = convexTest(schema, modules);
     const owner = await createAccount(t, "owner@example.test");
     const collaborator = await createAccount(t, "collaborator@example.test");
-    const experimentId = await owner.mutation(
-      api.experiments.experiments.create,
-      { name: "Shared project", templateId: "open-field" },
+    const experimentId = await createProject(owner, "Shared project");
+    await inviteCollaborator(
+      owner,
+      collaborator,
+      experimentId,
+      "collaborator@example.test",
+      "editor",
     );
-    const { inviteToken } = await owner.mutation(
-      api.experiments.sharing.invite,
-      {
-        experimentId,
-        email: "collaborator@example.test",
-        role: "editor",
-      },
-    );
-    await collaborator.mutation(api.experiments.sharing.acceptInvitation, {
-      inviteToken,
-    });
 
     await expect(
       collaborator.mutation(api.experiments.experiments.rename, {
@@ -252,17 +260,14 @@ describe("accounts and sharing", () => {
     const t = convexTest(schema, modules);
     const owner = await createAccount(t, "owner@example.test");
     const collaborator = await createAccount(t, "colleague@example.test");
-    const experimentId = await owner.mutation(
-      api.experiments.experiments.create,
-      { name: "Collaborative study", templateId: "open-field" },
+    const experimentId = await createProject(owner, "Collaborative study");
+    await inviteCollaborator(
+      owner,
+      collaborator,
+      experimentId,
+      "colleague@example.test",
+      role,
     );
-    const { inviteToken } = await owner.mutation(
-      api.experiments.sharing.invite,
-      { experimentId, email: "colleague@example.test", role },
-    );
-    await collaborator.mutation(api.experiments.sharing.acceptInvitation, {
-      inviteToken,
-    });
 
     expect(
       await collaborator.query(api.experiments.experiments.get, {
@@ -316,9 +321,7 @@ describe("account preferences and deletion", () => {
       tokenIdentifier: `test:${email}`,
     });
     const storageId = await t.run((ctx) =>
-      ctx.storage.store(
-        new Blob(["not an image"], { type: "image/png" }),
-      ),
+      ctx.storage.store(new Blob(["not an image"], { type: "image/png" })),
     );
     await expect(
       user.action(api.users.saveProfileImage, { storageId }),

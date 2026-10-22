@@ -17,7 +17,7 @@ async function requireOwner(
       message: "Sign in to manage project sharing.",
     });
   }
-  const experiment = await ctx.db.get(experimentId);
+  const experiment = await ctx.db.get("experiments", experimentId);
   if (!experiment) {
     throw new ConvexError({ code: "NOT_FOUND", message: "Project not found." });
   }
@@ -38,7 +38,7 @@ export const updateShareLink = mutation({
   handler: async (ctx, args) => {
     const { experiment } = await requireOwner(ctx, args.experimentId);
     const shareToken = args.enabled ? crypto.randomUUID() : undefined;
-    await ctx.db.patch(experiment._id, { shareToken });
+    await ctx.db.patch("experiments", experiment._id, { shareToken });
     return shareToken ?? null;
   },
 });
@@ -81,7 +81,10 @@ export const invite = mutation({
         message: "Enter a valid email address.",
       });
     }
-    if (email === (await ctx.db.get(userId))?.email?.toLowerCase()) {
+    if (
+      email ===
+      (await ctx.db.get("users", userId))?.email?.toLowerCase()
+    ) {
       throw new ConvexError({
         code: "BAD_REQUEST",
         message: "You already own this project.",
@@ -96,7 +99,7 @@ export const invite = mutation({
     const existing = members.find((member) => member.email === email);
     const inviteToken = crypto.randomUUID();
     if (existing) {
-      await ctx.db.patch(existing._id, {
+      await ctx.db.patch("experimentMembers", existing._id, {
         role: args.role,
         status: "pending",
         userId: undefined,
@@ -135,14 +138,14 @@ export const removeMember = mutation({
   },
   handler: async (ctx, args) => {
     const { experiment } = await requireOwner(ctx, args.experimentId);
-    const member = await ctx.db.get(args.memberId);
+    const member = await ctx.db.get("experimentMembers", args.memberId);
     if (!member || member.experimentId !== experiment._id) {
       throw new ConvexError({
         code: "NOT_FOUND",
         message: "Invitation or collaborator not found.",
       });
     }
-    await ctx.db.delete(member._id);
+    await ctx.db.delete("experimentMembers", member._id);
     return null;
   },
 });
@@ -157,7 +160,7 @@ export const getInvitation = query({
       )
       .unique();
     if (!member || member.status !== "pending") return null;
-    const experiment = await ctx.db.get(member.experimentId);
+    const experiment = await ctx.db.get("experiments", member.experimentId);
     return experiment
       ? {
           email: member.email,
@@ -178,7 +181,7 @@ export const acceptInvitation = mutation({
         message: "Sign in with the invited Google account to accept.",
       });
     }
-    const user = await ctx.db.get(userId);
+    const user = await ctx.db.get("users", userId);
     if (!user?.email) {
       throw new ConvexError({
         code: "BAD_REQUEST",
@@ -201,7 +204,10 @@ export const acceptInvitation = mutation({
         message: "This invitation is invalid or belongs to another email.",
       });
     }
-    await ctx.db.patch(member._id, { userId, status: "accepted" });
+    await ctx.db.patch("experimentMembers", member._id, {
+      userId,
+      status: "accepted",
+    });
     return member.experimentId;
   },
 });
