@@ -200,7 +200,6 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
                 <Button
                   size="sm"
                   variant="outline"
-                  disabled={isLoading}
                   onClick={() =>
                     sessionStorage.setItem(
                       POST_SIGN_IN_DESTINATION_KEY,

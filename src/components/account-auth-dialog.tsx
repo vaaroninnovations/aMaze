@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from "react";
-import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react";
+import { useAuthActions } from "@convex-dev/auth/react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button.tsx";
@@ -31,7 +31,6 @@ export default function AccountAuthDialog({
   onOpenChange,
   redirectTo,
 }: AccountAuthDialogProps) {
-  const { isLoading } = useConvexAuth();
   const { signIn } = useAuthActions();
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const [mode, setMode] = useState<"signIn" | "signUp" | "reset">("signIn");
@@ -160,7 +159,7 @@ export default function AccountAuthDialog({
                 type="button"
                 variant="outline"
                 className="w-full"
-                disabled={submitting || isLoading || !acceptedTerms}
+                disabled={submitting || !acceptedTerms}
                 onClick={() => void signInWithGoogle()}
               >
                 <svg aria-hidden="true" viewBox="0 0 48 48" className="size-4">
@@ -315,7 +314,6 @@ export default function AccountAuthDialog({
               className="w-full"
               disabled={
                 submitting ||
-                isLoading ||
                 (mode === "signUp" && !acceptedTerms)
               }
             >
