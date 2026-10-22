@@ -71,9 +71,9 @@ export default function ProfilePage() {
         ) : user ? (
           <form onSubmit={save} className="space-y-5 rounded-lg border p-5">
             <div className="flex items-center gap-3">
-              {user.image ? (
+              {user.imageUrl ? (
                 <img
-                  src={user.image}
+                  src={user.imageUrl}
                   alt=""
                   className="size-12 rounded-full object-cover"
                 />
