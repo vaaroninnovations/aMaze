@@ -136,7 +136,10 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
                         src={user?.imageUrl ?? undefined}
                         alt={user?.name ?? "Account"}
                       />
-                      <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
+                      <AvatarFallback
+                        delayMs={0}
+                        className="bg-primary/15 text-xs font-semibold text-primary"
+                      >
                         {user ? initials(user.name) : <UserRound className="size-4" />}
                       </AvatarFallback>
                     </Avatar>
@@ -149,7 +152,10 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
                         src={user?.imageUrl ?? undefined}
                         alt={user?.name ?? "Account"}
                       />
-                      <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
+                      <AvatarFallback
+                        delayMs={0}
+                        className="bg-primary/15 text-xs font-semibold text-primary"
+                      >
                         {user ? initials(user.name) : "U"}
                       </AvatarFallback>
                     </Avatar>
