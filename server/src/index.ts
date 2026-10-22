@@ -80,6 +80,29 @@ type LiveSession = {
   previous: { x: number; y: number } | null;
 };
 
+type VideoTrackResult = {
+  track: TrackPoint[];
+  summary: ReturnType<typeof summarize>;
+  measures: {
+    label: string;
+    value: number | null;
+    unit: string;
+    digits: number;
+  }[];
+};
+
+type VideoTrackJob = {
+  owner: string;
+  status: "running" | "completed" | "failed" | "cancelled";
+  progress: number;
+  currentTime: number;
+  result: VideoTrackResult | null;
+  error: string | null;
+  updatedAt: number;
+  cancel: (() => void) | null;
+  deleteSessionWhenDone: boolean;
+};
+
 const allowedOrigins = (process.env.TRACKING_ALLOWED_ORIGINS ?? "")
   .split(",")
   .map((origin) => origin.trim())
@@ -107,6 +130,7 @@ const BACKGROUND_SAMPLES = 15;
 const sessions = new Map<string, Session>();
 const liveSessions = new Map<string, LiveSession>();
 const activeJobs = new Map<string, number>();
+const videoTrackJobs = new Map<string, VideoTrackJob>();
 
 const arenaSchema = z.object({
   rect: z.object({
@@ -492,6 +516,11 @@ async function decodeLiveFrame(
 async function removeSession(id: string) {
   const session = sessions.get(id);
   if (!session) return;
+  const job = videoTrackJobs.get(id);
+  if (job?.cancel) {
+    job.deleteSessionWhenDone = true;
+    return;
+  }
   sessions.delete(id);
   await rm(session.path, { force: true });
 }
@@ -1157,6 +1186,18 @@ async function main() {
         ],
         { stdio: ["ignore", "pipe", "pipe"] },
       );
+      const job: VideoTrackJob = {
+        owner: request.authSubject,
+        status: "running",
+        progress: 0,
+        currentTime: 0,
+        result: null,
+        error: null,
+        updatedAt: Date.now(),
+        cancel: () => child.kill("SIGTERM"),
+        deleteSessionWhenDone: false,
+      };
+      videoTrackJobs.set(request.params.id, job);
       activeJobs.set(
         request.authSubject,
         (activeJobs.get(request.authSubject) ?? 0) + 1,
@@ -1167,8 +1208,10 @@ async function main() {
         "cache-control": "no-cache, no-transform",
         "x-content-type-options": "nosniff",
       });
-      const send = (value: unknown) =>
+      const send = (value: unknown) => {
+        if (reply.raw.destroyed || reply.raw.writableEnded) return;
         reply.raw.write(`${JSON.stringify(value)}\n`);
+      };
       let pending = Buffer.alloc(0);
       let frameCount = 0;
       let previous: { x: number; y: number } | null = null;
@@ -1181,8 +1224,6 @@ async function main() {
       child.stderr.on("data", (chunk: Buffer) => {
         if (stderr.length < 64 * 1024) stderr += chunk.toString("utf8");
       });
-      const cancel = () => child.kill("SIGTERM");
-      reply.raw.once("close", cancel);
       try {
         for await (const chunk of child.stdout) {
           pending = Buffer.concat([pending, chunk as Buffer]);
@@ -1210,11 +1251,10 @@ async function main() {
             points.push({ t, ...detection });
             frameCount++;
             if (frameCount % Math.max(1, settings.fps * 2) === 0) {
-              send({
-                type: "progress",
-                value: Math.min(1, t / session.duration),
-                currentTime: t,
-              });
+              job.progress = Math.min(1, t / session.duration);
+              job.currentTime = t;
+              job.updatedAt = Date.now();
+              send({ type: "progress", value: job.progress, currentTime: t });
             }
           }
         }
@@ -1235,22 +1275,74 @@ async function main() {
           unit,
           digits,
         }));
+        job.status = "completed";
+        job.progress = 1;
+        job.currentTime = points.at(-1)?.t ?? 0;
+        job.result = { track: points, summary, measures };
+        job.updatedAt = Date.now();
         send({ type: "complete", track: points, summary, measures });
       } catch (error) {
         request.log.error({ err: error }, "Video tracking failed");
-        send({
-          type: "error",
-          error:
-            "The video could not be processed. Check the file and settings.",
-        });
+        if (job.status !== "cancelled") {
+          job.status = "failed";
+          job.error =
+            "The video could not be processed. Check the file and settings.";
+          job.updatedAt = Date.now();
+          send({ type: "error", error: job.error });
+        }
       } finally {
-        reply.raw.off("close", cancel);
+        job.cancel = null;
         activeJobs.set(
           request.authSubject,
           Math.max(0, (activeJobs.get(request.authSubject) ?? 1) - 1),
         );
-        reply.raw.end();
+        if (job.deleteSessionWhenDone) {
+          try {
+            await removeSession(request.params.id);
+          } catch (error) {
+            request.log.error({ err: error }, "Deferred upload cleanup failed");
+          }
+        }
+        if (!reply.raw.destroyed && !reply.raw.writableEnded) reply.raw.end();
       }
+    },
+  );
+
+  app.get<{ Params: { id: string } }>(
+    "/v1/sessions/:id/track",
+    async (request, reply) => {
+      if (!request.authSubject)
+        return sendError(reply, 401, "Authentication is required.");
+      const job = videoTrackJobs.get(request.params.id);
+      if (!job || job.owner !== request.authSubject) {
+        return sendError(reply, 404, "Tracking job not found or expired.");
+      }
+      job.updatedAt = Date.now();
+      return reply.send({
+        status: job.status,
+        progress: job.progress,
+        currentTime: job.currentTime,
+        result: job.result,
+        error: job.error,
+      });
+    },
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    "/v1/sessions/:id/track",
+    async (request, reply) => {
+      if (!request.authSubject)
+        return sendError(reply, 401, "Authentication is required.");
+      const job = videoTrackJobs.get(request.params.id);
+      if (!job || job.owner !== request.authSubject) {
+        return reply.code(204).send();
+      }
+      if (job.status === "running") {
+        job.status = "cancelled";
+        job.cancel?.();
+        job.updatedAt = Date.now();
+      }
+      return reply.code(204).send();
     },
   );
 
@@ -1292,6 +1384,14 @@ async function main() {
     for (const [id, session] of liveSessions) {
       if (Date.now() - session.lastAccessedAt > SESSION_TTL_MS) {
         liveSessions.delete(id);
+      }
+    }
+    for (const [id, job] of videoTrackJobs) {
+      if (
+        job.status !== "running" &&
+        Date.now() - job.updatedAt > SESSION_TTL_MS
+      ) {
+        videoTrackJobs.delete(id);
       }
     }
   }, 60_000);

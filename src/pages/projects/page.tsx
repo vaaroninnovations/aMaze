@@ -47,6 +47,7 @@ import { TEMPLATES, getTemplate } from "@/lib/tracking/templates.ts";
 import type { TemplateId } from "@/lib/tracking/types.ts";
 import { errorMessage } from "@/lib/errors.ts";
 import { decodeTrack } from "@/lib/experiments/track-codec.ts";
+import QueryBoundary from "../experiments/_components/query-boundary.tsx";
 
 type Project = Doc<"experiments"> & {
   lastModified: number;
@@ -96,18 +97,11 @@ function ProjectCard({
       while (!isDone) {
         const resultPage: FunctionReturnType<
           typeof api.experiments.trials.listByExperiment
-        > = await convex.query(
-          api.experiments.trials.listByExperiment,
-          {
-            experimentId: project._id,
-            paginationOpts: { numItems: 25, cursor },
-          },
-        );
-        for (
-          let offset = 0;
-          offset < resultPage.page.length;
-          offset += 5
-        ) {
+        > = await convex.query(api.experiments.trials.listByExperiment, {
+          experimentId: project._id,
+          paginationOpts: { numItems: 25, cursor },
+        });
+        for (let offset = 0; offset < resultPage.page.length; offset += 5) {
           const batch = resultPage.page.slice(offset, offset + 5);
           const exported = await Promise.all(
             batch.map(async (row) => {
@@ -191,8 +185,10 @@ function ProjectCard({
         lastModified: details.experiment.updatedAt,
       };
       downloadJson(
-        project.name.trim().replace(/[^a-z0-9-_]+/gi, "-").toLowerCase() ||
-          "project",
+        project.name
+          .trim()
+          .replace(/[^a-z0-9-_]+/gi, "-")
+          .toLowerCase() || "project",
         {
           exportedAt: new Date().toISOString(),
           experiment,
@@ -233,7 +229,9 @@ function ProjectCard({
         <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
           <div className="min-w-0">
             <p className="text-xs text-muted-foreground">Investigator</p>
-            <p className="truncate">{project.investigator || "Not specified"}</p>
+            <p className="truncate">
+              {project.investigator || "Not specified"}
+            </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Trials</p>
@@ -317,7 +315,7 @@ function ProjectCard({
   );
 }
 
-export default function ProjectsPage() {
+function ProjectsContent() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const {
     results: projects,
@@ -377,8 +375,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
+    <>
       <main className="mx-auto max-w-6xl space-y-6 p-4 py-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -411,7 +408,10 @@ export default function ProjectsPage() {
               Your saved experiments and analyses are tied to your account.
             </p>
             <AccountAuthDialog
-              redirectTo={new URL("/projects", window.location.origin).toString()}
+              redirectTo={new URL(
+                "/projects",
+                window.location.origin,
+              ).toString()}
               trigger={<Button>Sign in or create account</Button>}
             />
           </section>
@@ -448,7 +448,10 @@ export default function ProjectsPage() {
                 />
               </div>
               <Select value={type} onValueChange={setType}>
-                <SelectTrigger className="w-full" aria-label="Filter by maze type">
+                <SelectTrigger
+                  className="w-full"
+                  aria-label="Filter by maze type"
+                >
                   <SelectValue placeholder="All experiment types" />
                 </SelectTrigger>
                 <SelectContent>
@@ -519,7 +522,10 @@ export default function ProjectsPage() {
               Choose a clear name for this saved experiment.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={(event) => void saveRename(event)} className="space-y-4">
+          <form
+            onSubmit={(event) => void saveRename(event)}
+            className="space-y-4"
+          >
             <div className="space-y-2">
               <Label htmlFor="project-name">Project title</Label>
               <Input
@@ -545,6 +551,34 @@ export default function ProjectsPage() {
           </form>
         </DialogContent>
       </Dialog>
+    </>
+  );
+}
+
+export default function ProjectsPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <AppHeader />
+      <QueryBoundary
+        fallback={
+          <main className="mx-auto max-w-6xl p-4 py-8">
+            <section
+              role="alert"
+              className="space-y-4 rounded-xl border border-dashed p-8 text-center"
+            >
+              <h1 className="text-xl font-semibold">Could not load projects</h1>
+              <p className="text-sm text-muted-foreground">
+                Check your connection and refresh the page to try again.
+              </p>
+              <Button onClick={() => window.location.reload()}>
+                Reload page
+              </Button>
+            </section>
+          </main>
+        }
+      >
+        <ProjectsContent />
+      </QueryBoundary>
     </div>
   );
 }

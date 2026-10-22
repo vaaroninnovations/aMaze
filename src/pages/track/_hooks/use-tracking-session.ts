@@ -24,6 +24,7 @@ import {
 import type { TrackSummary } from "@/lib/tracking/metrics.ts";
 import {
   createLiveSession,
+  cancelVideoTrack,
   detectLiveArena,
   detectVideoArena,
   deleteLiveSession,
@@ -402,6 +403,11 @@ export function useTrackingSession() {
     ) => {
       cancelRef.current = true;
       uploadAbortRef.current?.abort();
+      if (source?.serverSessionId && trackAbortRef.current) {
+        void cancelVideoTrack(source.serverSessionId).catch((error: unknown) =>
+          console.error("Could not cancel server-side video tracking.", error),
+        );
+      }
       trackAbortRef.current?.abort();
       source?.dispose();
       setError(null);
@@ -462,6 +468,11 @@ export function useTrackingSession() {
   const reset = useCallback(() => {
     cancelRef.current = true;
     uploadAbortRef.current?.abort();
+    if (source?.serverSessionId && trackAbortRef.current) {
+      void cancelVideoTrack(source.serverSessionId).catch((error: unknown) =>
+        console.error("Could not cancel server-side video tracking.", error),
+      );
+    }
     trackAbortRef.current?.abort();
     source?.dispose();
     setSource(null);
@@ -761,8 +772,13 @@ export function useTrackingSession() {
 
   const stopTracking = useCallback(() => {
     cancelRef.current = true;
+    if (source?.serverSessionId && trackAbortRef.current) {
+      void cancelVideoTrack(source.serverSessionId).catch((error: unknown) =>
+        console.error("Could not cancel server-side video tracking.", error),
+      );
+    }
     trackAbortRef.current?.abort();
-  }, []);
+  }, [source]);
 
   const captureLiveJpeg = useCallback(async (): Promise<Blob | null> => {
     if (source?.kind !== "camera" || !work.current) return null;

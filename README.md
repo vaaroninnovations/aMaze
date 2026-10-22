@@ -76,6 +76,12 @@ https://<deployment>.convex.site/api/auth/callback/google
 service verifies Convex Auth access tokens using that deployment's public JWKS;
 Google credentials and private signing keys remain only in Convex.
 
+Video tracking jobs continue if their progress-stream connection closes. An
+authenticated `GET /v1/sessions/<session-id>/track` returns job status and, once
+complete, its result; `DELETE` on the same endpoint explicitly cancels a running
+job. Results remain available in memory for up to three hours and do not survive
+a tracking-service restart.
+
 ## Hostinger deployment
 
 This guide hosts both the static website and tracking API on a **Hostinger VPS**.

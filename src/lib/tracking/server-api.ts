@@ -47,6 +47,20 @@ const measureSchema = z.object({
   digits: z.number().int(),
 });
 
+const serverTrackSchema = z.object({
+  track: z.array(pointSchema),
+  summary: summarySchema,
+  measures: z.array(measureSchema),
+});
+
+const videoTrackJobSchema = z.object({
+  status: z.enum(["running", "completed", "failed", "cancelled"]),
+  progress: z.number().finite().min(0).max(1),
+  currentTime: z.number().finite().min(0),
+  result: serverTrackSchema.nullable(),
+  error: z.string().nullable(),
+});
+
 const preparedSchema = z.object({
   width: z.number().int().positive(),
   height: z.number().int().positive(),
@@ -466,14 +480,20 @@ export async function trackVideo(
   onProgress: (progress: number, currentTime: number) => void,
   signal: AbortSignal,
 ): Promise<ServerTrack> {
-  const response = await fetch(`${apiUrl()}/v1/sessions/${sessionId}/track`, {
-    method: "POST",
-    headers: await trackingHeaders({
-      "Content-Type": "application/json",
-    }),
-    body: JSON.stringify(options),
-    signal,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${apiUrl()}/v1/sessions/${sessionId}/track`, {
+      method: "POST",
+      headers: await trackingHeaders({
+        "Content-Type": "application/json",
+      }),
+      body: JSON.stringify(options),
+      signal,
+    });
+  } catch (error) {
+    if (signal.aborted) throw error;
+    return await resumeVideoTrack(sessionId, onProgress, signal);
+  }
   if (!response.ok) throw new Error(await parseError(response));
   if (!response.body)
     throw new Error("Tracking service returned an empty response.");
@@ -510,13 +530,65 @@ export async function trackVideo(
     consume(pending);
   } catch (error) {
     await reader.cancel().catch(() => undefined);
-    throw error;
+    if (signal.aborted) throw error;
+    return await resumeVideoTrack(sessionId, onProgress, signal);
   } finally {
     reader.releaseLock();
   }
-  if (!result)
-    throw new Error("Tracking service ended before returning results.");
+  if (!result) {
+    return await resumeVideoTrack(sessionId, onProgress, signal);
+  }
   return result;
+}
+
+export async function resumeVideoTrack(
+  sessionId: string,
+  onProgress: (progress: number, currentTime: number) => void,
+  signal: AbortSignal,
+): Promise<ServerTrack> {
+  while (true) {
+    const job = await requestJson(
+      `/v1/sessions/${sessionId}/track`,
+      videoTrackJobSchema,
+      { signal },
+    );
+    onProgress(job.progress, job.currentTime);
+    if (job.status === "completed" && job.result) return job.result;
+    if (job.status === "failed") {
+      throw new Error(job.error ?? "The video could not be processed.");
+    }
+    if (job.status === "cancelled") {
+      throw new Error("Video tracking was cancelled.");
+    }
+    await waitForTrackingPoll(signal);
+  }
+}
+
+function waitForTrackingPoll(signal: AbortSignal): Promise<void> {
+  if (signal.aborted) {
+    return Promise.reject(
+      new DOMException("The operation was aborted.", "AbortError"),
+    );
+  }
+  return new Promise((resolve, reject) => {
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(new DOMException("The operation was aborted.", "AbortError"));
+    };
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", onAbort);
+      resolve();
+    }, 1000);
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+export async function cancelVideoTrack(sessionId: string): Promise<void> {
+  const response = await fetch(`${apiUrl()}/v1/sessions/${sessionId}/track`, {
+    method: "DELETE",
+    headers: await trackingHeaders(),
+  });
+  if (!response.ok) throw new Error(await parseError(response));
 }
 
 export async function deleteVideoSession(sessionId: string): Promise<void> {
