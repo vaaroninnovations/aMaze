@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
 import type { Id } from "@/convex/_generated/dataModel.d.ts";
 import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
+import DataExportMenu from "@/components/data-export-menu.tsx";
 import { useSessionOwnerKey } from "@/lib/session-convex.ts";
 import AppHeader from "@/components/app-header.tsx";
 import ConfirmDialog from "@/components/confirm-dialog.tsx";
@@ -34,6 +35,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { Slider } from "@/components/ui/slider.tsx";
 import { errorMessage } from "@/lib/errors.ts";
+import { baseFilename } from "@/lib/tracking/export.ts";
 import { getTemplate } from "@/lib/tracking/templates.ts";
 import type { TemplateId, TrackPoint } from "@/lib/tracking/types.ts";
 import GroupBadge from "../_components/group-badge.tsx";
@@ -116,6 +118,43 @@ function TrialView({
     frameVersion: img ? 1 : 0,
     info: trial.info,
   };
+  const exportBase = baseFilename(
+    `${subject?.code ?? "subject"}-${trial.session}`,
+  );
+  const exportDatasets = [
+    {
+      label: "Tracking coordinates",
+      filename: `${exportBase}-coordinates`,
+      rows: () =>
+        track.map((point, index) => ({
+          sample: index + 1,
+          timestamp_s: point.t,
+          x_pixels: point.x,
+          y_pixels: point.y,
+          detected: point.found ? "yes" : "no",
+          area_pixels: point.area,
+        })),
+    },
+    {
+      label: "Behavioral measurements",
+      filename: `${exportBase}-measurements`,
+      rows: () => [
+        {
+          recorded_at_utc: trial.recordedAt,
+          test: getTemplate(trial.templateId as TemplateId).name,
+          subject: subject?.code ?? "Deleted subject",
+          group: group?.name ?? "",
+          session: trial.session,
+          ...Object.fromEntries(
+            trial.measures.map((measure) => [
+              measure.unit ? `${measure.label} (${measure.unit})` : measure.label,
+              measure.value,
+            ]),
+          ),
+        },
+      ],
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -143,29 +182,36 @@ function TrialView({
             {trial.sourceName} · {trial.fps} fps · arena {trial.arenaCm} cm
           </p>
         </div>
-        {canEdit && (
-          <ConfirmDialog
-            title="Delete this trial?"
-            description="The saved results, track, background image, and attached video are removed permanently."
-            onConfirm={async () => {
-              try {
-                await remove({ trialId, ...(ownerKey ? { ownerKey } : {}) });
-                navigate(`/experiments/${experimentId}`);
-              } catch (e) {
-                toast.error(errorMessage(e, "Could not delete the trial."));
-              }
-            }}
-            trigger={
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-muted-foreground hover:text-destructive"
-              >
-                <Trash2 /> Delete
-              </Button>
-            }
+        <div className="flex items-center gap-2">
+          <DataExportMenu
+            datasets={exportDatasets}
+            workbookName={`${exportBase}-trial`}
+            disabled={trackQuery.isPending || trackQuery.isError}
           />
-        )}
+          {canEdit && (
+            <ConfirmDialog
+              title="Delete this trial?"
+              description="The saved results, track, background image, and attached video are removed permanently."
+              onConfirm={async () => {
+                try {
+                  await remove({ trialId, ...(ownerKey ? { ownerKey } : {}) });
+                  navigate(`/experiments/${experimentId}`);
+                } catch (e) {
+                  toast.error(errorMessage(e, "Could not delete the trial."));
+                }
+              }}
+              trigger={
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 /> Delete
+                </Button>
+              }
+            />
+          )}
+        </div>
       </div>
 
       {trackQuery.isError ? (

@@ -16,6 +16,18 @@ const ExperimentPage = lazy(
 );
 const TrialPage = lazy(() => import("./pages/experiments/trial/page.tsx"));
 const ProfilePage = lazy(() => import("./pages/profile/page.tsx"));
+const ProjectsPage = lazy(() => import("./pages/projects/page.tsx"));
+const SettingsPage = lazy(() => import("./pages/settings/page.tsx"));
+const ResetPasswordPage = lazy(
+  () => import("./pages/reset-password/page.tsx"),
+);
+const PrivacyPolicyPage = lazy(
+  () => import("./pages/privacy-policy/page.tsx"),
+);
+const TermsOfServicePage = lazy(
+  () => import("./pages/terms-of-service/page.tsx"),
+);
+const ContactPage = lazy(() => import("./pages/contact/page.tsx"));
 const SharedProjectPage = lazy(() => import("./pages/share/page.tsx"));
 const InvitationPage = lazy(() => import("./pages/invite/page.tsx"));
 
@@ -68,6 +80,21 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route
+              path="/privacy-policy"
+              element={<PrivacyPolicyPage />}
+            />
+            <Route
+              path="/terms-of-service"
+              element={<TermsOfServicePage />}
+            />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route
+              path="/reset-password"
+              element={<ResetPasswordPage />}
+            />
             <Route path="/share/:shareToken" element={<SharedProjectPage />} />
             <Route path="/invite/:inviteToken" element={<InvitationPage />} />
             <Route path="/track" element={<TrackPage />} />

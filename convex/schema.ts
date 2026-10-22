@@ -8,6 +8,7 @@ export default defineSchema({
   users: defineTable({
     name: v.optional(v.string()),
     image: v.optional(v.string()),
+    profileImageStorageId: v.optional(v.id("_storage")),
     email: v.optional(v.string()),
     emailVerificationTime: v.optional(v.number()),
     phone: v.optional(v.string()),
@@ -15,6 +16,26 @@ export default defineSchema({
     isAnonymous: v.optional(v.boolean()),
     tokenIdentifier: v.optional(v.string()),
     institution: v.optional(v.string()),
+    acceptedTermsVersion: v.optional(v.string()),
+    acceptedTermsAt: v.optional(v.number()),
+    preferences: v.optional(
+      v.object({
+        theme: v.union(
+          v.literal("light"),
+          v.literal("dark"),
+          v.literal("system"),
+        ),
+        landingPage: v.union(
+          v.literal("/"),
+          v.literal("/track"),
+          v.literal("/projects"),
+          v.literal("/experiments"),
+        ),
+        defaultMazeType: v.string(),
+        measurementUnits: v.union(v.literal("metric"), v.literal("imperial")),
+        notifications: v.boolean(),
+      }),
+    ),
   })
     .index("email", ["email"])
     .index("phone", ["phone"])
@@ -31,6 +52,13 @@ export default defineSchema({
     .index("by_experiment", ["experimentId"])
     .index("by_user", ["userId"])
     .index("by_email", ["email"])
+    .index("by_invited_by", ["invitedBy"])
     .index("by_invite_token", ["inviteToken"]),
+  contactRateLimits: defineTable({
+    emailHash: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_email_and_time", ["emailHash", "createdAt"])
+    .index("by_time", ["createdAt"]),
   ...experimentTables,
 });

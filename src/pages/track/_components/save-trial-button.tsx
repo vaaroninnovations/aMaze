@@ -10,6 +10,7 @@ type Props = {
   info: TrialInfo;
   disabled: boolean;
   videoFile?: File;
+  onSaveStatusChange: (status: "saving" | "saved" | "failed") => void;
 };
 
 /** Opens the dialog to save this trial to an experiment. */
@@ -18,6 +19,7 @@ export default function SaveTrialButton({
   info,
   disabled,
   videoFile,
+  onSaveStatusChange,
 }: Props) {
   const [open, setOpen] = useState(false);
   return (
@@ -31,6 +33,7 @@ export default function SaveTrialButton({
           s={s}
           info={info}
           videoFile={videoFile}
+          onSaveStatusChange={onSaveStatusChange}
           open={open}
           onOpenChange={setOpen}
         />

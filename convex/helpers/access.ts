@@ -32,8 +32,11 @@ export async function findUser(
   }
 
   const authUserId = await getAuthUserId(ctx);
-  if (authUserId) {
-    const authUser = await ctx.db.get(authUserId);
+  const normalizedUserId = authUserId
+    ? ctx.db.normalizeId("users", authUserId)
+    : null;
+  if (normalizedUserId) {
+    const authUser = await ctx.db.get("users", normalizedUserId);
     if (authUser) return authUser;
   }
 

@@ -137,6 +137,85 @@ describe("accounts and sharing", () => {
     ).rejects.toThrow(/not initialized/);
   });
 
+  it("lists only projects owned by the authenticated account", async () => {
+    const t = convexTest(schema, modules);
+    const owner = await createAccount(t, "owner@example.test");
+    const collaborator = await createAccount(t, "collaborator@example.test");
+    const ownedId = await owner.mutation(api.experiments.experiments.create, {
+      name: "Private project",
+      templateId: "open-field",
+    });
+    const sharedId = await owner.mutation(api.experiments.experiments.create, {
+      name: "Shared project",
+      templateId: "open-field",
+    });
+    const { inviteToken } = await owner.mutation(
+      api.experiments.sharing.invite,
+      {
+        experimentId: sharedId,
+        email: "collaborator@example.test",
+        role: "editor",
+      },
+    );
+    await collaborator.mutation(api.experiments.sharing.acceptInvitation, {
+      inviteToken,
+    });
+
+    expect(
+      await collaborator.query(api.experiments.experiments.listOwned, {
+        paginationOpts: { numItems: 10, cursor: null },
+      }),
+    ).toMatchObject({ page: [] });
+    const ownedProjects = await owner.query(
+      api.experiments.experiments.listOwned,
+      { paginationOpts: { numItems: 10, cursor: null } },
+    );
+    expect(ownedProjects.page.map((project) => project._id).sort()).toEqual(
+      [ownedId, sharedId].sort(),
+    );
+  });
+
+  it("allows only project owners to rename or delete projects", async () => {
+    const t = convexTest(schema, modules);
+    const owner = await createAccount(t, "owner@example.test");
+    const collaborator = await createAccount(t, "collaborator@example.test");
+    const experimentId = await owner.mutation(
+      api.experiments.experiments.create,
+      { name: "Shared project", templateId: "open-field" },
+    );
+    const { inviteToken } = await owner.mutation(
+      api.experiments.sharing.invite,
+      {
+        experimentId,
+        email: "collaborator@example.test",
+        role: "editor",
+      },
+    );
+    await collaborator.mutation(api.experiments.sharing.acceptInvitation, {
+      inviteToken,
+    });
+
+    await expect(
+      collaborator.mutation(api.experiments.experiments.rename, {
+        experimentId,
+        name: "Renamed by collaborator",
+      }),
+    ).rejects.toThrow(/owner/);
+    await expect(
+      collaborator.mutation(api.experiments.experiments.remove, {
+        experimentId,
+      }),
+    ).rejects.toThrow(/owner/);
+    await owner.mutation(api.experiments.experiments.rename, {
+      experimentId,
+      name: "Renamed by owner",
+    });
+    expect(
+      (await owner.query(api.experiments.experiments.get, { experimentId }))
+        .experiment.name,
+    ).toBe("Renamed by owner");
+  });
+
   it("creates revocable read-only project links", async () => {
     const t = convexTest(schema, modules);
     const owner = await createAccount(t, "owner@example.test");
@@ -202,6 +281,81 @@ describe("accounts and sharing", () => {
     } else {
       await expect(createSubject).rejects.toThrow(/access/);
     }
+  });
+});
+
+describe("account preferences and deletion", () => {
+  it("persists account preferences", async () => {
+    const { alice } = await setup();
+    const preferences = {
+      theme: "dark" as const,
+      landingPage: "/projects" as const,
+      defaultMazeType: "elevated-plus",
+      measurementUnits: "imperial" as const,
+      notifications: false,
+    };
+    await alice.mutation(api.users.updatePreferences, { preferences });
+    expect(await alice.query(api.users.getCurrentUser, {})).toMatchObject({
+      preferences,
+    });
+  });
+
+  it("rejects profile uploads without supported image metadata", async () => {
+    const t = convexTest(schema, modules);
+    const email = "avatar@example.test";
+    const userId = await t.run((ctx) =>
+      ctx.db.insert("users", {
+        email,
+        name: "Avatar",
+        tokenIdentifier: `test:${email}`,
+      }),
+    );
+    const user = t.withIdentity({
+      subject: `${userId}|test-session`,
+      email,
+      tokenIdentifier: `test:${email}`,
+    });
+    const storageId = await t.run((ctx) =>
+      ctx.storage.store(
+        new Blob(["not an image"], { type: "image/png" }),
+      ),
+    );
+    await expect(
+      user.action(api.users.saveProfileImage, { storageId }),
+    ).rejects.toThrow(/Choose a JPEG, PNG, or WebP image/);
+  });
+
+  it("revokes account access before scheduling project cleanup", async () => {
+    const t = convexTest(schema, modules);
+    const email = "delete-me@example.test";
+    const userId = await t.run((ctx) =>
+      ctx.db.insert("users", {
+        email,
+        name: "Delete me",
+        tokenIdentifier: `test:${email}`,
+      }),
+    );
+    const sessionId = await t.run((ctx) =>
+      ctx.db.insert("authSessions", {
+        userId,
+        expirationTime: Date.now() + 60_000,
+      }),
+    );
+    const account = t.withIdentity({
+      subject: `${userId}|${sessionId}`,
+      email,
+      tokenIdentifier: `test:${email}`,
+    });
+    await account.mutation(api.experiments.experiments.create, {
+      name: "Will be deleted",
+      templateId: "open-field",
+    });
+
+    await account.mutation(api.users.deleteAccount, {});
+    expect(await t.run((ctx) => ctx.db.get("users", userId))).toBeNull();
+    await expect(
+      account.query(api.experiments.experiments.list, {}),
+    ).rejects.toThrow();
   });
 });
 

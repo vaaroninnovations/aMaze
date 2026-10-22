@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as contact from "../contact.js";
 import type * as experiments_experiments from "../experiments/experiments.js";
 import type * as experiments_groups from "../experiments/groups.js";
 import type * as experiments_sharing from "../experiments/sharing.js";
@@ -27,6 +28,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  contact: typeof contact;
   "experiments/experiments": typeof experiments_experiments;
   "experiments/groups": typeof experiments_groups;
   "experiments/sharing": typeof experiments_sharing;

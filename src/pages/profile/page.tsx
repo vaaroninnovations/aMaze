@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { useConvexAuth } from "@convex-dev/auth/react";
 import { UserRound } from "lucide-react";
@@ -17,21 +17,20 @@ export default function ProfilePage() {
     isAuthenticated ? {} : "skip",
   );
   const updateProfile = useMutation(api.users.updateProfile);
-  const [name, setName] = useState("");
-  const [institution, setInstitution] = useState("");
+  const [name, setName] = useState<string | undefined>();
+  const [institution, setInstitution] = useState<string | undefined>();
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    setName(user.name ?? "");
-    setInstitution(user.institution ?? "");
-  }, [user]);
+  const currentName = name ?? user?.name ?? "";
+  const currentInstitution = institution ?? user?.institution ?? "";
 
   const save = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSaving(true);
     try {
-      await updateProfile({ name, institution });
+      await updateProfile({
+        name: currentName,
+        institution: currentInstitution,
+      });
       toast.success("Profile updated.");
     } catch (error) {
       toast.error(
@@ -92,7 +91,7 @@ export default function ProfilePage() {
               <Label htmlFor="profile-name">Name</Label>
               <Input
                 id="profile-name"
-                value={name}
+                value={currentName}
                 onChange={(event) => setName(event.target.value)}
                 maxLength={120}
                 required
@@ -102,7 +101,7 @@ export default function ProfilePage() {
               <Label htmlFor="profile-institution">Institution</Label>
               <Input
                 id="profile-institution"
-                value={institution}
+                value={currentInstitution}
                 onChange={(event) => setInstitution(event.target.value)}
                 maxLength={160}
                 placeholder="Optional"

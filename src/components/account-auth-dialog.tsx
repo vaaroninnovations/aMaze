@@ -1,5 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -12,8 +13,10 @@ import {
 } from "@/components/ui/dialog.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
+import { Checkbox } from "@/components/ui/checkbox.tsx";
 
 const POST_SIGN_IN_DESTINATION_KEY = "amaze:post-sign-in-destination";
+const TERMS_VERSION = "2026-10-22";
 
 type AccountAuthDialogProps = {
   trigger?: ReactNode;
@@ -31,12 +34,13 @@ export default function AccountAuthDialog({
   const { isLoading } = useConvexAuth();
   const { signIn } = useAuthActions();
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
-  const [mode, setMode] = useState<"signIn" | "signUp">("signIn");
+  const [mode, setMode] = useState<"signIn" | "signUp" | "reset">("signIn");
   const [name, setName] = useState("");
   const [institution, setInstitution] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const isOpen = controlledOpen ?? uncontrolledOpen;
 
@@ -65,6 +69,19 @@ export default function AccountAuthDialog({
     rememberDestination();
     setSubmitting(true);
     try {
+      if (mode === "reset") {
+        await signIn("password", {
+          flow: "reset",
+          email: email.trim(),
+          redirectTo: "/reset-password",
+        });
+        toast.success(
+          "If a password account matches that email, a reset link has been sent.",
+        );
+        setAcceptedTerms(false);
+        setMode("signIn");
+        return;
+      }
       const params =
         mode === "signUp"
           ? {
@@ -73,6 +90,7 @@ export default function AccountAuthDialog({
               institution: institution.trim(),
               email: email.trim(),
               password,
+              acceptedTermsVersion: TERMS_VERSION,
               ...(redirectTo ? { redirectTo } : {}),
             }
           : {
@@ -86,7 +104,9 @@ export default function AccountAuthDialog({
     } catch (error) {
       sessionStorage.removeItem(POST_SIGN_IN_DESTINATION_KEY);
       toast.error(
-        error instanceof Error
+        mode === "reset"
+          ? "Could not send the reset email. Check your address and try again."
+          : error instanceof Error
           ? error.message
           : mode === "signUp"
             ? "Could not create your account."
@@ -98,6 +118,10 @@ export default function AccountAuthDialog({
   };
 
   const signInWithGoogle = async () => {
+    if (!acceptedTerms) {
+      toast.error("Please accept the Terms of Service and Privacy Policy.");
+      return;
+    }
     rememberDestination();
     setSubmitting(true);
     try {
@@ -115,47 +139,93 @@ export default function AccountAuthDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {mode === "signUp" ? "Create your aMaze account" : "Welcome back"}
+            {mode === "signUp"
+              ? "Create your aMaze account"
+              : mode === "reset"
+                ? "Reset your password"
+                : "Welcome back"}
           </DialogTitle>
           <DialogDescription>
             {mode === "signUp"
               ? "Save your projects and manage your research workspace."
-              : "Sign in to continue to your aMaze workspace."}
+              : mode === "reset"
+                ? "We’ll email a secure, time-limited link if this address has a password account."
+                : "Sign in to continue to your aMaze workspace."}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-5">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            disabled={submitting || isLoading}
-            onClick={() => void signInWithGoogle()}
-          >
-            <svg aria-hidden="true" viewBox="0 0 48 48" className="size-4">
-              <path
-                fill="#4285F4"
-                d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15Z"
-              />
-              <path
-                fill="#34A853"
-                d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 2-6.9 2-5.3 0-9.8-3.6-11.4-8.5H5.8v5.3A20 20 0 0 0 24 44Z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.3H5.8a20 20 0 0 0 0 17.8l6.8-5.3Z"
-              />
-              <path
-                fill="#EA4335"
-                d="M24 11.9c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.9 29.5 4 24 4A20 20 0 0 0 5.8 15.1l6.8 5.3c1.6-4.9 6.1-8.5 11.4-8.5Z"
-              />
-            </svg>
-            Continue with Google
-          </Button>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            or use email
-            <span className="h-px flex-1 bg-border" />
-          </div>
+          {mode !== "reset" && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={submitting || isLoading || !acceptedTerms}
+                onClick={() => void signInWithGoogle()}
+              >
+                <svg aria-hidden="true" viewBox="0 0 48 48" className="size-4">
+                  <path
+                    fill="#4285F4"
+                    d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.8 6.1-15Z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 2-6.9 2-5.3 0-9.8-3.6-11.4-8.5H5.8v5.3A20 20 0 0 0 24 44Z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M12.6 27.6a12 12 0 0 1 0-7.2v-5.3H5.8a20 20 0 0 0 0 17.8l6.8-5.3Z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M24 11.9c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.9 29.5 4 24 4A20 20 0 0 0 5.8 15.1l6.8 5.3c1.6-4.9 6.1-8.5 11.4-8.5Z"
+                  />
+                </svg>
+                Continue with Google
+              </Button>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="h-px flex-1 bg-border" />
+                or use email
+                <span className="h-px flex-1 bg-border" />
+              </div>
+              <p className="text-center text-xs leading-5 text-muted-foreground">
+                Read our Terms of Service and Privacy Policy before continuing.
+              </p>
+              <div className="flex items-start gap-2">
+                <Checkbox
+                  id="account-accept-terms"
+                  checked={acceptedTerms}
+                  onCheckedChange={(checked) =>
+                    setAcceptedTerms(checked === true)
+                  }
+                  aria-required="true"
+                  className="mt-0.5"
+                />
+                <Label
+                  htmlFor="account-accept-terms"
+                  className="cursor-pointer text-xs font-normal leading-5 text-muted-foreground"
+                >
+                  By continuing, you agree to our{" "}
+                  <Link
+                    to="/terms-of-service"
+                    onClick={(event) => event.stopPropagation()}
+                    className="font-medium text-primary underline underline-offset-4"
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    to="/privacy-policy"
+                    onClick={(event) => event.stopPropagation()}
+                    className="font-medium text-primary underline underline-offset-4"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </Label>
+              </div>
+            </>
+          )}
           <form onSubmit={(event) => void submit(event)} className="space-y-4">
             {mode === "signUp" && (
               <>
@@ -186,6 +256,12 @@ export default function AccountAuthDialog({
                 </div>
               </>
             )}
+            {mode === "signUp" && (
+              <p className="text-xs leading-5 text-muted-foreground">
+                Creating an account records your acceptance of terms version{" "}
+                {TERMS_VERSION}.
+              </p>
+            )}
             <div className="space-y-2">
               <Label htmlFor="account-email">Email</Label>
               <Input
@@ -197,25 +273,27 @@ export default function AccountAuthDialog({
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="account-password">Password</Label>
-              <Input
-                id="account-password"
-                type="password"
-                autoComplete={
-                  mode === "signUp" ? "new-password" : "current-password"
-                }
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                minLength={8}
-                required
-              />
-              {mode === "signUp" && (
-                <p className="text-xs text-muted-foreground">
-                  Use at least 8 characters.
-                </p>
-              )}
-            </div>
+            {mode !== "reset" && (
+              <div className="space-y-2">
+                <Label htmlFor="account-password">Password</Label>
+                <Input
+                  id="account-password"
+                  type="password"
+                  autoComplete={
+                    mode === "signUp" ? "new-password" : "current-password"
+                  }
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  minLength={8}
+                  required
+                />
+                {mode === "signUp" && (
+                  <p className="text-xs text-muted-foreground">
+                    Use at least 8 characters.
+                  </p>
+                )}
+              </div>
+            )}
             {mode === "signUp" && (
               <div className="space-y-2">
                 <Label htmlFor="account-confirm-password">
@@ -235,25 +313,59 @@ export default function AccountAuthDialog({
             <Button
               type="submit"
               className="w-full"
-              disabled={submitting || isLoading}
+              disabled={
+                submitting ||
+                isLoading ||
+                (mode === "signUp" && !acceptedTerms)
+              }
             >
               {submitting
                 ? "Please wait…"
                 : mode === "signUp"
                   ? "Create account"
-                  : "Sign in"}
+                  : mode === "reset"
+                    ? "Send reset link"
+                    : "Sign in"}
             </Button>
           </form>
-          <p className="text-center text-sm text-muted-foreground">
-            {mode === "signUp" ? "Already have an account?" : "New to aMaze?"}{" "}
+          {mode === "signIn" && (
             <button
               type="button"
-              className="font-medium text-primary underline-offset-4 hover:underline"
-              onClick={() => setMode(mode === "signUp" ? "signIn" : "signUp")}
+              className="block w-full text-center text-sm font-medium text-primary underline-offset-4 hover:underline"
+              onClick={() => {
+                setAcceptedTerms(false);
+                setMode("reset");
+              }}
             >
-              {mode === "signUp" ? "Sign in" : "Create an account"}
+              Forgot password?
             </button>
-          </p>
+          )}
+          {mode === "reset" ? (
+            <button
+              type="button"
+              className="block w-full text-center text-sm font-medium text-primary underline-offset-4 hover:underline"
+              onClick={() => {
+                setAcceptedTerms(false);
+                setMode("signIn");
+              }}
+            >
+              Back to sign in
+            </button>
+          ) : (
+            <p className="text-center text-sm text-muted-foreground">
+              {mode === "signUp" ? "Already have an account?" : "New to aMaze?"}{" "}
+              <button
+                type="button"
+                className="font-medium text-primary underline-offset-4 hover:underline"
+                onClick={() => {
+                  setAcceptedTerms(false);
+                  setMode(mode === "signUp" ? "signIn" : "signUp");
+                }}
+              >
+                {mode === "signUp" ? "Sign in" : "Create an account"}
+              </button>
+            </p>
+          )}
         </div>
       </DialogContent>
     </Dialog>

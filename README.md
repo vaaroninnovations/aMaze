@@ -48,6 +48,23 @@ pnpm exec convex env set AUTH_GOOGLE_SECRET --prod
 Keep `JWT_PRIVATE_KEY` and Google client secrets in Convex environment variables,
 never in the Vite `.env` file or browser bundle.
 
+Password reset uses Resend from the Convex backend. Verify the sender domain in
+Resend, then configure these variables on the same Convex deployment:
+
+```sh
+pnpm exec convex env set RESEND_API_KEY --prod
+pnpm exec convex env set AUTH_EMAIL_FROM --prod
+```
+
+Use a sender address authorized by your Resend account (for example,
+`aMaze <no-reply@example.com>`). These values must only be set in Convex, never
+in a `VITE_*` variable or the frontend `.env` file. Password-reset links expire
+after one hour and can only change an existing password account.
+The public `/contact` form uses the same Resend configuration and sender
+address; messages are delivered to `vaaroninnovations@gmail.com` and are not
+stored in the application database. Contact requests are limited to three per
+email address and 60 total per rolling hour.
+
 In Google Cloud Console, create a Web application OAuth client and add this
 authorized redirect URI:
 
@@ -126,6 +143,24 @@ browser's anonymous projects on first sign-in. Project owners can create
 revocable read-only results links or invite viewers and editors. Email
 invitations are prepared as a `mailto:` draft so the owner sends them using
 their email client; invitees must accept while signed in with the invited email address.
+
+Authenticated users can also manage their owned experiments at `/projects` and
+their profile, workspace preferences, and account security at `/settings`.
+Project records continue to use the existing experiments, subjects, trials,
+and Convex Storage collections. JSON backups include saved tracking samples
+and analysis data (up to 1,000 trials, 500,000 points, and 100 MB); attached
+video files remain in Convex Storage and are not duplicated in backup files.
+The existing experiment report and CSV/XLSX exports remain available from
+project detail and trial pages. Account deletion requires a session created in
+the preceding 15 minutes, revokes authentication records immediately, and
+schedules related project and file cleanup on Convex.
+
+The account and experiment schema additions are backward-compatible and
+optional for existing records. There is no manual data migration or new
+environment variable. Deploy the updated Convex backend before the frontend,
+then rebuild and publish the static app using the existing Hostinger steps
+below. Configure `RESEND_API_KEY` and `AUTH_EMAIL_FROM` in the production
+Convex deployment to enable password-reset emails.
 
 Temporary uploads and live sessions are held in process memory and on the
 mounted `tracking-data` volume. The service removes temporary data on startup

@@ -90,7 +90,7 @@ function ExperimentDetail({
           {canEdit && (
             <>
               <Button size="sm" variant="secondary" asChild>
-                <Link to="/track">
+                <Link to={`/track?experimentId=${experimentId}`}>
                   <ScanLine /> Track a trial
                 </Link>
               </Button>
@@ -127,33 +127,35 @@ function ExperimentDetail({
                   </Button>
                 }
               />
-              <ConfirmDialog
-                title={`Delete "${experiment.name}"?`}
-                description={`This permanently deletes ${experiment.subjectCount} subjects and ${experiment.trialCount} saved trials.`}
-                onConfirm={async () => {
-                  try {
-                    await remove({
-                      experimentId,
-                      ...(ownerKey ? { ownerKey } : {}),
-                    });
-                    navigate("/experiments");
-                  } catch (e) {
-                    toast.error(
-                      errorMessage(e, "Could not delete the experiment."),
-                    );
+              {isOwner && (
+                <ConfirmDialog
+                  title={`Delete "${experiment.name}"?`}
+                  description={`This permanently deletes ${experiment.subjectCount} subjects and ${experiment.trialCount} saved trials.`}
+                  onConfirm={async () => {
+                    try {
+                      await remove({
+                        experimentId,
+                        ...(ownerKey ? { ownerKey } : {}),
+                      });
+                      navigate("/experiments");
+                    } catch (e) {
+                      toast.error(
+                        errorMessage(e, "Could not delete the experiment."),
+                      );
+                    }
+                  }}
+                  trigger={
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="size-8 text-muted-foreground hover:text-destructive"
+                      aria-label="Delete experiment"
+                    >
+                      <Trash2 />
+                    </Button>
                   }
-                }}
-                trigger={
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-8 text-muted-foreground hover:text-destructive"
-                    aria-label="Delete experiment"
-                  >
-                    <Trash2 />
-                  </Button>
-                }
-              />
+                />
+              )}
             </>
           )}
           {isOwner && (

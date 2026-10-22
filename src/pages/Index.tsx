@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useConvexAuth } from "@convex-dev/auth/react";
+import { useQuery } from "convex/react";
 import heroImage from "../../generated-image-1791186058084.png";
 import {
   ArrowRight,
@@ -16,7 +17,9 @@ import AppHeader from "@/components/app-header.tsx";
 import RodentBackground from "@/components/rodent-background.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import AccountAuthDialog from "@/components/account-auth-dialog.tsx";
+import SiteFooter from "@/components/site-footer.tsx";
 import { TEMPLATES } from "@/lib/tracking/templates.ts";
+import { api } from "@/convex/_generated/api.js";
 
 const STATS = [
   { label: "center", value: "14.2", unit: "s" },
@@ -61,9 +64,25 @@ const ease = [0.22, 1, 0.36, 1] as const;
 export default function Index() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const navigate = useNavigate();
+  const user = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? {} : "skip",
+  );
   const [signInDestination, setSignInDestination] = useState<string | null>(
     null,
   );
+
+  useEffect(() => {
+    const landingPage = user?.preferences?.landingPage;
+    if (
+      isAuthenticated &&
+      landingPage &&
+      landingPage !== "/" &&
+      window.location.pathname === "/"
+    ) {
+      navigate(landingPage, { replace: true });
+    }
+  }, [isAuthenticated, navigate, user?.preferences?.landingPage]);
 
   const openWorkspace = (destination: string) => {
     if (isLoading) return;
@@ -301,15 +320,7 @@ export default function Index() {
           </div>
         </section>
 
-        <footer className="border-t border-[#c9d9d7] dark:border-white/[0.08]">
-          <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-3 px-5 py-6 font-mono text-[10px] uppercase tracking-wider text-[#526d6b] sm:px-8 dark:text-[#78918f] lg:px-10">
-            <span>
-              © {new Date().getFullYear()} aMaze · Advanced Rodent Behaviour
-              Tracking &amp; Analytics
-            </span>
-            <span>For research use</span>
-          </div>
-        </footer>
+        <SiteFooter />
       </div>
     </div>
   );

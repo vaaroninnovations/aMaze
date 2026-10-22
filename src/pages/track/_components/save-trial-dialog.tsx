@@ -4,7 +4,7 @@ import {
   useSessionMutation as useMutation,
   useSessionQuery as useQuery,
 } from "@/lib/session-convex.ts";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { CloudUpload, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
@@ -41,6 +41,7 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   videoFile?: File;
+  onSaveStatusChange: (status: "saving" | "saved" | "failed") => void;
 };
 
 const NEW = "new";
@@ -63,13 +64,17 @@ export default function SaveTrialDialog({
   open,
   onOpenChange,
   videoFile,
+  onSaveStatusChange,
 }: Props) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const experiments = useQuery(
     api.experiments.experiments.list,
     open ? {} : "skip",
   );
-  const [pickedExperimentId, setExperimentId] = useState<string>("");
+  const [pickedExperimentId, setExperimentId] = useState(
+    () => searchParams.get("experimentId") ?? "",
+  );
   const [newExperiment, setNewExperiment] = useState(info.experimentNo.trim());
   const [pickedSubjectId, setSubjectId] = useState<string>("");
   const [newSubject, setNewSubject] = useState(info.animalNo.trim());
@@ -122,6 +127,7 @@ export default function SaveTrialDialog({
   const handleSave = async () => {
     if (!s.arena || !canSave) return;
     setSaving(true);
+    onSaveStatusChange("saving");
     try {
       const expId = isNewExperiment
         ? await createExperiment({
@@ -170,11 +176,14 @@ export default function SaveTrialDialog({
         pxPerCm: s.pxPerCm,
         arenaCm: s.arenaCm,
         fps: s.settings.fps,
+        settings: s.settings,
+        templateParams: s.params,
         trackStorageId,
         snapshotStorageId,
         videoStorageId,
       });
       onOpenChange(false);
+      onSaveStatusChange("saved");
       toast.success("Trial saved", {
         action: {
           label: "View",
@@ -182,6 +191,7 @@ export default function SaveTrialDialog({
         },
       });
     } catch (e) {
+      onSaveStatusChange("failed");
       toast.error(
         errorMessage(
           e,

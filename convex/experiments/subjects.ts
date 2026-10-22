@@ -56,7 +56,10 @@ export const create = mutation({
       notes: optionalText(args.notes),
       trialCount: 0,
     });
-    await ctx.db.patch("experiments", experiment._id, { subjectCount: experiment.subjectCount + 1 });
+    await ctx.db.patch("experiments", experiment._id, {
+      subjectCount: experiment.subjectCount + 1,
+      updatedAt: Date.now(),
+    });
     return id;
   },
 });
@@ -68,7 +71,11 @@ export const update = mutation({
     ownerKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { subject } = await requireSubject(ctx, args.subjectId, args.ownerKey);
+    const { subject, experiment } = await requireSubject(
+      ctx,
+      args.subjectId,
+      args.ownerKey,
+    );
     const code = cleanText(args.code, "Subject ID", 60);
     await assertUniqueCode(ctx, subject.experimentId, code, subject._id);
     await assertGroupInExperiment(ctx, args.groupId, subject.experimentId, args.ownerKey);
@@ -77,6 +84,9 @@ export const update = mutation({
       groupId: args.groupId,
       sex: args.sex,
       notes: optionalText(args.notes),
+    });
+    await ctx.db.patch("experiments", experiment._id, {
+      updatedAt: Date.now(),
     });
     return null;
   },
@@ -99,6 +109,7 @@ export const remove = mutation({
     await ctx.db.patch("experiments", experiment._id, {
       subjectCount: Math.max(experiment.subjectCount - 1, 0),
       trialCount: Math.max(experiment.trialCount - trials.length, 0),
+      updatedAt: Date.now(),
     });
     return null;
   },

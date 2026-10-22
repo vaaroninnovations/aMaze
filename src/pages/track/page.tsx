@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useQuery } from "convex/react";
 import { Camera, FileVideo, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { getAnonymousSessionId } from "@/lib/anonymous-session.ts";
+import { api } from "@/convex/_generated/api.js";
+import type { Id } from "@/convex/_generated/dataModel.d.ts";
+import { useSessionOwnerKey } from "@/lib/session-convex.ts";
 import AppHeader from "@/components/app-header.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Progress } from "@/components/ui/progress.tsx";
@@ -31,17 +35,56 @@ import { formatClock } from "./_lib/camera-source.ts";
 export default function TrackPage() {
   const anonymousSessionId = getAnonymousSessionId();
   const s = useTrackingSession();
+  const {
+    ownerKey,
+    isLoading: authLoading,
+    isAuthenticated,
+  } = useSessionOwnerKey();
   const fileRef = useRef<HTMLInputElement>(null);
   const demoLoadedRef = useRef(false);
+  const projectTemplateAppliedRef = useRef(false);
   const [probe, setProbe] = useState<Detection | null>(null);
+  const [saveState, setSaveState] = useState<{
+    key: string;
+    status: "saving" | "saved" | "failed";
+  } | null>(null);
   const live = useLiveTracking(s);
   const trialInfo = useTrialInfo();
   const [searchParams] = useSearchParams();
+  const experimentId = searchParams.get("experimentId");
+  const project = useQuery(
+    api.experiments.experiments.get,
+    !authLoading && experimentId
+      ? {
+          experimentId: experimentId as Id<"experiments">,
+          ...(ownerKey ? { ownerKey } : {}),
+        }
+      : "skip",
+  );
+  const account = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? {} : "skip",
+  );
   const demoParam = searchParams.get("demo");
   const wantsDemo = demoParam !== null;
   const demoTemplate =
     demoParam && demoParam !== "1" ? (demoParam as TemplateId) : undefined;
   const { load } = s;
+
+  useEffect(() => {
+    if (projectTemplateAppliedRef.current || s.status !== "empty") return;
+    const templateId =
+      project?.experiment.templateId ?? account?.preferences?.defaultMazeType;
+    if (!templateId) return;
+    s.setTemplateId(templateId as TemplateId);
+    projectTemplateAppliedRef.current = true;
+  }, [
+    account?.preferences?.defaultMazeType,
+    project?.experiment.templateId,
+    s,
+    s.status,
+    s.setTemplateId,
+  ]);
 
   // Landing page "Try the demo" link opens the workspace with the demo loaded.
   useEffect(() => {
@@ -53,6 +96,31 @@ export default function TrackPage() {
   }, [wantsDemo]);
 
   const summary = s.serverSummary;
+  const saveKey = JSON.stringify({
+    source: s.source?.name,
+    live: s.isLive,
+    templateId: s.templateId,
+    arena: s.arena,
+    zones: s.zones,
+    settings: s.settings,
+    trackCount: s.track.length,
+    lastPoint: s.track.at(-1),
+    info: trialInfo.info,
+  });
+  const saveStatus =
+    saveState?.key === saveKey ? saveState.status : "unsaved";
+
+  useEffect(() => {
+    if (s.status !== "done" || s.track.length === 0 || saveStatus === "saved") {
+      return;
+    }
+    const warnBeforeLeaving = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warnBeforeLeaving);
+    return () => window.removeEventListener("beforeunload", warnBeforeLeaving);
+  }, [s.status, s.track.length, saveStatus]);
 
   const handleProbe = async () => {
     const det = await s.testDetection();
@@ -256,7 +324,24 @@ export default function TrackPage() {
                           live.recording?.file ?? s.source?.originalFile
                         }
                         disabled={s.status !== "done"}
+                        onSaveStatusChange={(status) =>
+                          setSaveState({ key: saveKey, status })
+                        }
                       />
+                      {s.status === "done" && (
+                        <span
+                          className="self-center text-xs text-muted-foreground"
+                          aria-live="polite"
+                        >
+                          {saveStatus === "saved"
+                            ? "Saved"
+                            : saveStatus === "saving"
+                              ? "Saving…"
+                              : saveStatus === "failed"
+                                ? "Save failed"
+                                : "Unsaved changes"}
+                        </span>
+                      )}
                     </>
                   }
                 />

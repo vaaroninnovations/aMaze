@@ -65,6 +65,23 @@ export const trialInfoValidator = v.object({
   investigator: v.string(),
 });
 
+export const trackingSettingsValidator = v.object({
+  mode: v.union(
+    v.literal("background"),
+    v.literal("dark"),
+    v.literal("light"),
+  ),
+  threshold: v.number(),
+  minArea: v.number(),
+  fps: v.number(),
+});
+
+export const templateParamsValidator = v.object({
+  size: v.number(),
+  rotation: v.number(),
+  variant: v.string(),
+});
+
 export const experimentTables = {
   experiments: defineTable({
     ownerId: v.id("users"),
@@ -73,6 +90,7 @@ export const experimentTables = {
     /** Behavioral test template (open-field, y-maze...). */
     templateId: v.string(),
     shareToken: v.optional(v.string()),
+    updatedAt: v.optional(v.number()),
     // Denormalized counters so the experiment list never scans child tables.
     subjectCount: v.number(),
     trialCount: v.number(),
@@ -112,6 +130,8 @@ export const experimentTables = {
     pxPerCm: v.number(),
     arenaCm: v.number(),
     fps: v.number(),
+    settings: v.optional(trackingSettingsValidator),
+    templateParams: v.optional(templateParamsValidator),
     summary: summaryValidator,
     measures: v.array(measureValidator),
     /** Frame-by-frame track as compact JSON in file storage (too large for a document). */

@@ -12,12 +12,20 @@ export const create = mutation({
     ownerKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await requireExperiment(ctx, args.experimentId, args.ownerKey);
-    return await ctx.db.insert("groups", {
+    const experiment = await requireExperiment(
+      ctx,
+      args.experimentId,
+      args.ownerKey,
+    );
+    const groupId = await ctx.db.insert("groups", {
       experimentId: args.experimentId,
       name: cleanText(args.name, "Group name", 60),
       color: cleanText(args.color, "Color", 32),
     });
+    await ctx.db.patch("experiments", experiment._id, {
+      updatedAt: Date.now(),
+    });
+    return groupId;
   },
 });
 
@@ -29,10 +37,17 @@ export const update = mutation({
     ownerKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await requireGroup(ctx, args.groupId, args.ownerKey);
+    const { group, experiment } = await requireGroup(
+      ctx,
+      args.groupId,
+      args.ownerKey,
+    );
     await ctx.db.patch("groups", args.groupId, {
       name: cleanText(args.name, "Group name", 60),
       color: cleanText(args.color, "Color", 32),
+    });
+    await ctx.db.patch("experiments", experiment._id, {
+      updatedAt: Date.now(),
     });
     return null;
   },
@@ -42,7 +57,11 @@ export const update = mutation({
 export const remove = mutation({
   args: { groupId: v.id("groups"), ownerKey: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    const { group } = await requireGroup(ctx, args.groupId, args.ownerKey);
+    const { group, experiment } = await requireGroup(
+      ctx,
+      args.groupId,
+      args.ownerKey,
+    );
     const subjects = await ctx.db
       .query("subjects")
       .withIndex("by_experiment_and_code", (q) => q.eq("experimentId", group.experimentId))
@@ -51,6 +70,9 @@ export const remove = mutation({
       if (s.groupId === group._id) await ctx.db.patch("subjects", s._id, { groupId: null });
     }
     await ctx.db.delete("groups", group._id);
+    await ctx.db.patch("experiments", experiment._id, {
+      updatedAt: Date.now(),
+    });
     return null;
   },
 });

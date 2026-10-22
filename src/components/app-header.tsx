@@ -3,11 +3,31 @@ import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { useConvexAuth, useAuthActions } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
-import { FlaskConical, LogOut, ScanLine, UserRound } from "lucide-react";
+import {
+  FlaskConical,
+  FolderKanban,
+  LogOut,
+  ScanLine,
+  Settings,
+  UserRound,
+} from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api.js";
 import { cn } from "@/lib/utils.ts";
 import { Button } from "./ui/button.tsx";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "./ui/avatar.tsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu.tsx";
 import ThemeToggle from "./theme-toggle.tsx";
 import AccountAuthDialog from "./account-auth-dialog.tsx";
 
@@ -16,6 +36,13 @@ const NAV = [
   { to: "/experiments", label: "Experiments", icon: FlaskConical },
 ];
 const POST_SIGN_IN_DESTINATION_KEY = "amaze:post-sign-in-destination";
+
+function initials(name?: string) {
+  const parts = name?.trim().split(/\s+/).filter(Boolean) ?? [];
+  return parts.length
+    ? `${parts[0]?.[0] ?? ""}${parts.length > 1 ? (parts.at(-1)?.[0] ?? "") : ""}`.toUpperCase()
+    : "U";
+}
 
 /** Logo, main navigation and account menu, shared by every page. */
 export default function AppHeader({ children }: { children?: ReactNode }) {
@@ -95,35 +122,70 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
           {children}
           {isAuthenticated ? (
             <>
-              <Button size="sm" variant="ghost" asChild>
-                <Link to="/profile">
-                  {user?.image ? (
-                    <img
-                      src={user.image}
-                      alt=""
-                      className="size-5 rounded-full object-cover"
-                    />
-                  ) : (
-                    <UserRound />
-                  )}
-                  <span className="hidden max-w-32 truncate sm:inline">
-                    {user?.name ?? "Profile"}
-                  </span>
-                </Link>
-              </Button>
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                aria-label="Sign out"
-                title="Sign out"
-                onClick={() =>
-                  void signOut().catch(() =>
-                    toast.error("Could not sign out. Please try again."),
-                  )
-                }
-              >
-                <LogOut />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-9 rounded-full p-0 ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label="Open account menu"
+                    title="Account menu"
+                  >
+                    <Avatar className="size-8 border border-border">
+                      <AvatarImage
+                        src={user?.imageUrl ?? undefined}
+                        alt={user?.name ?? "Account"}
+                      />
+                      <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
+                        {user ? initials(user.name) : <UserRound className="size-4" />}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={8} className="w-64">
+                  <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
+                    <Avatar className="size-9">
+                      <AvatarImage
+                        src={user?.imageUrl ?? undefined}
+                        alt={user?.name ?? "Account"}
+                      />
+                      <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
+                        {user ? initials(user.name) : "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold text-foreground">
+                        {user?.name || "Your account"}
+                      </span>
+                      <span className="block truncate text-xs font-normal text-muted-foreground">
+                        {user?.email ?? ""}
+                      </span>
+                    </span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link to="/projects">
+                      <FolderKanban /> My Projects
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link to="/settings">
+                      <Settings /> Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={() =>
+                      void signOut().catch(() =>
+                        toast.error("Could not sign out. Please try again."),
+                      )
+                    }
+                  >
+                    <LogOut /> Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <AccountAuthDialog

@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
 import { internal } from "../_generated/api";
 import { internalMutation, mutation, query } from "../_generated/server";
 import {
@@ -47,6 +48,42 @@ export const list = query({
       )
       .sort((a, b) => b._creationTime - a._creationTime)
       .slice(0, MAX_EXPERIMENTS);
+  },
+});
+
+/** Account dashboard listing: only experiments owned by the authenticated user. */
+export const listOwned = query({
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+    const result = await ctx.db
+      .query("experiments")
+      .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
+      .order("desc")
+      .paginate(args.paginationOpts);
+    const page = await Promise.all(
+      result.page.map(async (experiment) => {
+        const latestTrial = await ctx.db
+          .query("trials")
+          .withIndex("by_experiment_and_recorded_at", (q) =>
+            q.eq("experimentId", experiment._id),
+          )
+          .order("desc")
+          .first();
+        return {
+          ...experiment,
+          lastModified:
+            experiment.updatedAt ??
+            latestTrial?._creationTime ??
+            experiment._creationTime,
+          investigator: latestTrial?.info?.investigator ?? "",
+          lastSourceName: latestTrial?.sourceName ?? null,
+          lastRecordedAt: latestTrial?.recordedAt ?? null,
+          hasVideo: Boolean(latestTrial?.videoStorageId),
+        };
+      }),
+    );
+    return { ...result, page };
   },
 });
 
@@ -100,6 +137,7 @@ export const create = mutation({
       templateId: args.templateId,
       subjectCount: 0,
       trialCount: 0,
+      updatedAt: Date.now(),
     });
   },
 });
@@ -118,6 +156,32 @@ export const update = mutation({
       name: cleanText(args.name, "Name"),
       description: optionalText(args.description),
       templateId: args.templateId,
+      updatedAt: Date.now(),
+    });
+    return null;
+  },
+});
+
+export const rename = mutation({
+  args: { experimentId: v.id("experiments"), name: v.string() },
+  handler: async (ctx, args) => {
+    const user = await requireUser(ctx);
+    const experiment = await ctx.db.get("experiments", args.experimentId);
+    if (!experiment) {
+      throw new ConvexError({
+        code: "NOT_FOUND",
+        message: "Project not found.",
+      });
+    }
+    if (experiment.ownerId !== user._id) {
+      throw new ConvexError({
+        code: "FORBIDDEN",
+        message: "Only the project owner can rename this project.",
+      });
+    }
+    await ctx.db.patch("experiments", experiment._id, {
+      name: cleanText(args.name, "Name"),
+      updatedAt: Date.now(),
     });
     return null;
   },
@@ -131,13 +195,20 @@ export const remove = mutation({
       args.experimentId,
       args.ownerKey,
     );
+    const user = await requireUser(ctx, args.ownerKey);
+    if (experiment.ownerId !== user._id) {
+      throw new ConvexError({
+        code: "FORBIDDEN",
+        message: "Only the project owner can delete this project.",
+      });
+    }
     await ctx.db.delete("experiments", args.experimentId);
     const memberships = await ctx.db
       .query("experimentMembers")
       .withIndex("by_experiment", (q) => q.eq("experimentId", experiment._id))
       .take(MAX_CHILDREN);
     for (const membership of memberships) {
-      await ctx.db.delete(membership._id);
+      await ctx.db.delete("experimentMembers", membership._id);
     }
     // Children can outnumber one transaction's limits, so clean them up in batches.
     await ctx.scheduler.runAfter(0, internal.experiments.experiments.purge, {

@@ -26,7 +26,9 @@ import {
   arenaValidator,
   measureValidator,
   summaryValidator,
+  templateParamsValidator,
   trialInfoValidator,
+  trackingSettingsValidator,
   zoneValidator,
 } from "../schema/experiments.ts";
 
@@ -77,6 +79,8 @@ const saveArgs = {
   pxPerCm: v.number(),
   arenaCm: v.number(),
   fps: v.number(),
+  settings: v.optional(trackingSettingsValidator),
+  templateParams: v.optional(templateParamsValidator),
   trackStorageId: v.id("_storage"),
   snapshotStorageId: v.union(v.id("_storage"), v.null()),
   videoStorageId: v.optional(v.id("_storage")),
@@ -142,6 +146,33 @@ export const save = action({
       throw new ConvexError({
         code: "BAD_REQUEST",
         message: "The trial dimensions or calibration values are invalid.",
+      });
+    }
+    if (
+      args.settings &&
+      (!Number.isInteger(args.settings.threshold) ||
+        args.settings.threshold < 0 ||
+        args.settings.threshold > 255 ||
+        args.settings.minArea <= 0 ||
+        args.settings.minArea > 100_000 ||
+        args.settings.fps !== args.fps)
+    ) {
+      throw new ConvexError({
+        code: "BAD_REQUEST",
+        message: "The tracking settings are invalid.",
+      });
+    }
+    if (
+      args.templateParams &&
+      (args.templateParams.size <= 0 ||
+        args.templateParams.size > 1 ||
+        args.templateParams.rotation < -360 ||
+        args.templateParams.rotation > 360 ||
+        args.templateParams.variant.length > 60)
+    ) {
+      throw new ConvexError({
+        code: "BAD_REQUEST",
+        message: "The selected maze parameters are invalid.",
       });
     }
 
@@ -267,6 +298,7 @@ export const saveComputed = internalMutation({
     });
     await ctx.db.patch("experiments", experiment._id, {
       trialCount: experiment.trialCount + 1,
+      updatedAt: Date.now(),
     });
     return id;
   },
@@ -427,10 +459,17 @@ export const update = mutation({
     const trial = await ctx.db.get("trials", args.trialId);
     if (!trial)
       throw new ConvexError({ code: "NOT_FOUND", message: "Trial not found." });
-    await requireExperiment(ctx, trial.experimentId, args.ownerKey);
+    const experiment = await requireExperiment(
+      ctx,
+      trial.experimentId,
+      args.ownerKey,
+    );
     await ctx.db.patch("trials", trial._id, {
       session: cleanText(args.session, "Session", 60),
       notes: optionalText(args.notes),
+    });
+    await ctx.db.patch("experiments", experiment._id, {
+      updatedAt: Date.now(),
     });
     return null;
   },
@@ -455,6 +494,7 @@ export const remove = mutation({
       });
     await ctx.db.patch("experiments", experiment._id, {
       trialCount: Math.max(experiment.trialCount - 1, 0),
+      updatedAt: Date.now(),
     });
     return null;
   },
