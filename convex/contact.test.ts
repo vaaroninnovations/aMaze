@@ -14,7 +14,9 @@ const validSubmission = {
 };
 
 describe("contact form", () => {
-  const send = vi.fn(async () => new Response(null, { status: 202 }));
+  const send = vi.fn<typeof fetch>(
+    async () => new Response(null, { status: 202 }),
+  );
 
   beforeEach(() => {
     send.mockClear();
