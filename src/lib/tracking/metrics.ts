@@ -52,7 +52,10 @@ export function summarize(points: TrackPoint[], zones: Zone[], pxPerCm: number):
     const dt = prev ? p.t - prev.t : 0;
     const rawCm = prev ? distance(prev, p) / pxPerCm : 0;
     const stepCm = rawCm < JITTER_CM ? 0 : rawCm;
-    const speed = dt > 0 ? stepCm / dt : 0;
+    // Guard against division by near-zero timestamp delta and cap spike artifacts
+    const effectiveDt = Math.max(dt, 0.02);
+    const rawSpeed = dt > 0 ? stepCm / effectiveDt : 0;
+    const speed = Math.min(rawSpeed, 100);
     totalDistance += stepCm;
     if (speed > maxSpeed) maxSpeed = speed;
     if (dt > 0) {

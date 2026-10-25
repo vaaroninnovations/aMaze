@@ -738,87 +738,120 @@ export default function ProjectDetailsPage() {
               </div>
 
               {/* Responsive SVG Speed Chart */}
-              <div className="relative mt-4 h-60 w-full">
-                <svg
-                  viewBox="0 0 1000 240"
-                  className="h-full w-full overflow-visible"
-                  preserveAspectRatio="none"
-                  onMouseLeave={() => setHoveredSpeedPoint(null)}
-                >
-                  <defs>
-                    <linearGradient id="speedGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#52d8c4" stopOpacity="0.45" />
-                      <stop offset="100%" stopColor="#52d8c4" stopOpacity="0.02" />
-                    </linearGradient>
-                  </defs>
+              <div className="relative mt-4 h-60 w-full overflow-hidden">
+                {(() => {
+                  const pts = activeTrial.speedSeries;
+                  const speedValues = pts.map((p) => p.speed).filter((v) => Number.isFinite(v));
+                  const maxSpeedRecorded = speedValues.length ? Math.max(...speedValues) : 25;
 
-                  {/* Horizontal Grid lines */}
-                  {[0, 10, 20, 30].map((v) => {
-                    const y = 220 - (v / 35) * 200;
-                    return (
-                      <g key={v}>
-                        <line x1="40" y1={y} x2="980" y2={y} stroke="rgba(150, 150, 150, 0.15)" strokeDasharray="3 3" />
-                        <text x="32" y={y + 4} textAnchor="end" fontSize="10" fill="gray" fontFamily="monospace">
-                          {v}
-                        </text>
-                      </g>
-                    );
-                  })}
+                  // Dynamic clean upper bound
+                  function computeChartYMax(val: number) {
+                    if (val <= 25) return 30;
+                    if (val <= 35) return 40;
+                    if (val <= 45) return 50;
+                    if (val <= 70) return 80;
+                    if (val <= 90) return 100;
+                    if (val <= 140) return 150;
+                    if (val <= 190) return 200;
+                    if (val <= 280) return 300;
+                    return Math.max(30, Math.ceil(val / 50) * 50);
+                  }
 
-                  {/* Immobility Threshold Line at 2 cm/s */}
-                  {(() => {
-                    const yThresh = 220 - (2.0 / 35) * 200;
-                    return (
+                  const yMax = computeChartYMax(maxSpeedRecorded);
+                  const gridTicks = [
+                    0,
+                    Math.round(yMax * 0.25),
+                    Math.round(yMax * 0.5),
+                    Math.round(yMax * 0.75),
+                    yMax,
+                  ];
+
+                  const getY = (speed: number) => {
+                    const clamped = Math.max(0, Math.min(speed, yMax));
+                    return 220 - (clamped / yMax) * 200;
+                  };
+
+                  const maxT = Math.max(1, activeTrial.durationSeconds);
+                  const pathData =
+                    pts.length >= 2
+                      ? pts
+                          .map((p, i) => {
+                            const x = 40 + (Math.max(0, Math.min(p.t, maxT)) / maxT) * 940;
+                            const y = getY(p.speed);
+                            return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+                          })
+                          .join(" ")
+                      : "";
+
+                  const closePath = pathData ? `${pathData} L 980 220 L 40 220 Z` : "";
+                  const yThresh = getY(2.0);
+
+                  return (
+                    <svg
+                      viewBox="0 0 1000 240"
+                      className="h-full w-full overflow-hidden"
+                      preserveAspectRatio="none"
+                      onMouseLeave={() => setHoveredSpeedPoint(null)}
+                    >
+                      <defs>
+                        <clipPath id="speedPlotClip">
+                          <rect x="40" y="10" width="940" height="215" rx="2" />
+                        </clipPath>
+                        <linearGradient id="speedGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#52d8c4" stopOpacity="0.45" />
+                          <stop offset="100%" stopColor="#52d8c4" stopOpacity="0.02" />
+                        </linearGradient>
+                      </defs>
+
+                      {/* Horizontal Grid lines */}
+                      {gridTicks.map((v) => {
+                        const y = getY(v);
+                        return (
+                          <g key={v}>
+                            <line x1="40" y1={y} x2="980" y2={y} stroke="rgba(150, 150, 150, 0.15)" strokeDasharray="3 3" />
+                            <text x="32" y={y + 4} textAnchor="end" fontSize="10" fill="gray" fontFamily="monospace">
+                              {v}
+                            </text>
+                          </g>
+                        );
+                      })}
+
+                      {/* Immobility Threshold Line at 2 cm/s */}
                       <g>
                         <line x1="40" y1={yThresh} x2="980" y2={yThresh} stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="4 4" />
                         <text x="985" y={yThresh + 3} fontSize="9" fill="#f59e0b" fontFamily="monospace">
                           Freezing &lt; 2 cm/s
                         </text>
                       </g>
-                    );
-                  })()}
 
-                  {/* Chart Area Fill & Stroke */}
-                  {(() => {
-                    const pts = activeTrial.speedSeries;
-                    if (pts.length < 2) return null;
-                    const maxT = activeTrial.durationSeconds;
-                    const pathData = pts
-                      .map((p, i) => {
-                        const x = 40 + (p.t / maxT) * 940;
-                        const y = 220 - (p.speed / 35) * 200;
-                        return `${i === 0 ? "M" : "L"} ${x} ${y}`;
-                      })
-                      .join(" ");
+                      {/* Clipped Area Fill & Line Stroke */}
+                      {pathData && (
+                        <g clipPath="url(#speedPlotClip)">
+                          <path d={closePath} fill="url(#speedGrad)" />
+                          <path d={pathData} fill="none" stroke="#08796f" strokeWidth="2" className="dark:stroke-[#52d8c4]" />
+                        </g>
+                      )}
 
-                    const closePath = `${pathData} L 980 220 L 40 220 Z`;
-
-                    return (
-                      <>
-                        <path d={closePath} fill="url(#speedGrad)" />
-                        <path d={pathData} fill="none" stroke="#08796f" strokeWidth="2" className="dark:stroke-[#52d8c4]" />
-                      </>
-                    );
-                  })()}
-
-                  {/* Interactive hover overlays */}
-                  {activeTrial.speedSeries.map((p, i) => {
-                    if (i % 6 !== 0) return null;
-                    const x = 40 + (p.t / activeTrial.durationSeconds) * 940;
-                    const y = 220 - (p.speed / 35) * 200;
-                    return (
-                      <circle
-                        key={p.t}
-                        cx={x}
-                        cy={y}
-                        r="4"
-                        fill="transparent"
-                        className="cursor-pointer hover:fill-[#52d8c4]"
-                        onMouseEnter={() => setHoveredSpeedPoint(p)}
-                      />
-                    );
-                  })}
-                </svg>
+                      {/* Interactive hover overlays */}
+                      {pts.map((p, i) => {
+                        if (i % 6 !== 0) return null;
+                        const x = 40 + (Math.max(0, Math.min(p.t, maxT)) / maxT) * 940;
+                        const y = getY(p.speed);
+                        return (
+                          <circle
+                            key={`${p.t}-${i}`}
+                            cx={x}
+                            cy={y}
+                            r="4"
+                            fill="transparent"
+                            className="cursor-pointer hover:fill-[#52d8c4]"
+                            onMouseEnter={() => setHoveredSpeedPoint(p)}
+                          />
+                        );
+                      })}
+                    </svg>
+                  );
+                })()}
               </div>
 
               {/* Time Axis Labels */}
@@ -879,9 +912,12 @@ export default function ProjectDetailsPage() {
                   Total locomotor distance accumulated steadily over the trial timeline.
                 </p>
 
-                <div className="relative mt-4 h-48 w-full">
-                  <svg viewBox="0 0 500 180" className="h-full w-full" preserveAspectRatio="none">
+                <div className="relative mt-4 h-48 w-full overflow-hidden">
+                  <svg viewBox="0 0 500 180" className="h-full w-full overflow-hidden" preserveAspectRatio="none">
                     <defs>
+                      <clipPath id="distPlotClip">
+                        <rect x="30" y="10" width="450" height="155" rx="2" />
+                      </clipPath>
                       <linearGradient id="distGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.4" />
                         <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.02" />
@@ -897,17 +933,17 @@ export default function ProjectDetailsPage() {
                       const coords: [number, number][] = [];
                       for (const p of pts) {
                         acc += (p.speed * 0.5) / 100;
-                        const x = 30 + (p.t / maxT) * 450;
+                        const x = 30 + (Math.max(0, Math.min(p.t, maxT)) / maxT) * 450;
                         const y = 160 - (Math.min(totalDist, acc) / Math.max(1, totalDist)) * 140;
                         coords.push([x, y]);
                       }
                       const pathStr = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c[0]} ${c[1]}`).join(" ");
                       const areaStr = `${pathStr} L 480 160 L 30 160 Z`;
                       return (
-                        <>
+                        <g clipPath="url(#distPlotClip)">
                           <path d={areaStr} fill="url(#distGrad)" />
                           <path d={pathStr} fill="none" stroke="#38bdf8" strokeWidth="2" />
-                        </>
+                        </g>
                       );
                     })()}
                   </svg>

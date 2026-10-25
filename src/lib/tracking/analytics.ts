@@ -25,7 +25,11 @@ export function speedSeries(points: TrackPoint[], pxPerCm: number, smoothWindow 
     if (!prev) return { t: p.t, speed: 0 };
     const dt = p.t - prev.t;
     const cm = distance(prev, p) / pxPerCm;
-    return { t: p.t, speed: dt > 0 && cm >= JITTER_CM ? cm / dt : 0 };
+    // Guard against near-zero time step and clamp tracking jump artifacts
+    const effectiveDt = Math.max(dt, 0.02);
+    const rawSpeed = dt > 0 && cm >= JITTER_CM ? cm / effectiveDt : 0;
+    const speed = Math.min(rawSpeed, 100);
+    return { t: p.t, speed };
   });
   const half = Math.floor(Math.max(smoothWindow, 1) / 2);
   if (half === 0) return raw;
