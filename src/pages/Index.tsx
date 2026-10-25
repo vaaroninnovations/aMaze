@@ -77,8 +77,7 @@ export default function Index() {
       navigate(destination);
       return;
     }
-    setAuthDialogMode("signIn");
-    setAuthDialogOpen(true);
+    navigate(`/login?redirectTo=${encodeURIComponent(destination)}`);
   };
 
   return (
@@ -151,8 +150,11 @@ export default function Index() {
                   size="lg"
                   disabled={isLoading}
                   onClick={() => {
-                    setAuthDialogMode(isAuthenticated ? "signIn" : "signUp");
-                    setAuthDialogOpen(true);
+                    if (isAuthenticated) {
+                      navigate("/dashboard");
+                    } else {
+                      navigate("/login");
+                    }
                   }}
                   className="h-12 border border-[#08796f] bg-[#08796f] px-6 font-semibold text-white shadow-[0_0_28px_rgba(8,121,111,0.16)] hover:bg-[#066b62] dark:border-[#65ddcc]/25 dark:bg-[#44cbb9] dark:text-[#041614] dark:shadow-[0_0_28px_rgba(68,203,185,0.18)] dark:hover:bg-[#6de0d1]"
                 >

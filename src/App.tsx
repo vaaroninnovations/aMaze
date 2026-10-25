@@ -10,6 +10,7 @@ import PrivacyPolicyPage from "./pages/legal/privacy.tsx";
 import DisclaimerPage from "./pages/legal/disclaimer.tsx";
 import TermsOfServicePage from "./pages/legal/terms.tsx";
 import ContactPage from "./pages/contact/page.tsx";
+import LoginPage from "./pages/auth/login.tsx";
 
 /**
  * aMaze App
@@ -48,6 +49,11 @@ export default function App() {
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/contact-us" element={<ContactPage />} />
+
+          {/* Authentication Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signin" element={<LoginPage />} />
+          <Route path="/signup" element={<LoginPage defaultMode="signUp" />} />
 
           {/* Catch-all fallback */}
           <Route path="*" element={<Index />} />
