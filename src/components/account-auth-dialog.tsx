@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useState, useEffect, type FormEvent, type ReactNode } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -72,6 +72,12 @@ export default function AccountAuthDialog({
 
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const [mode, setMode] = useState<"signIn" | "signUp" | "reset">(defaultMode);
+
+  useEffect(() => {
+    if (defaultMode) {
+      setMode(defaultMode);
+    }
+  }, [defaultMode, controlledOpen, uncontrolledOpen]);
 
   // Form Fields
   const [name, setName] = useState("");

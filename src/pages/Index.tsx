@@ -64,25 +64,12 @@ const ease = [0.22, 1, 0.36, 1] as const;
 export default function Index() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const navigate = useNavigate();
-  const user = useQuery(
+  useQuery(
     api.users.getCurrentUser,
     isAuthenticated ? {} : "skip",
   );
-  const [signInDestination, setSignInDestination] = useState<string | null>(
-    null,
-  );
-
-  useEffect(() => {
-    const landingPage = user?.preferences?.landingPage;
-    if (
-      isAuthenticated &&
-      landingPage &&
-      landingPage !== "/" &&
-      window.location.pathname === "/"
-    ) {
-      navigate(landingPage, { replace: true });
-    }
-  }, [isAuthenticated, navigate, user?.preferences?.landingPage]);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [authDialogMode, setAuthDialogMode] = useState<"signIn" | "signUp">("signUp");
 
   const openWorkspace = (destination: string) => {
     if (isLoading) return;
@@ -90,19 +77,17 @@ export default function Index() {
       navigate(destination);
       return;
     }
-    setSignInDestination(
-      new URL(destination, window.location.origin).toString(),
-    );
+    setAuthDialogMode("signIn");
+    setAuthDialogOpen(true);
   };
 
   return (
     <div className="relative isolate min-h-screen bg-[#f5f9f8] text-[#142d31] selection:bg-[#0b887b]/20 dark:bg-[#071318] dark:text-[#e5f1f0] dark:selection:bg-[#5be2ce]/25">
       <AccountAuthDialog
-        open={signInDestination !== null}
-        onOpenChange={(open) => {
-          if (!open) setSignInDestination(null);
-        }}
-        redirectTo={signInDestination ?? undefined}
+        open={authDialogOpen}
+        onOpenChange={setAuthDialogOpen}
+        defaultMode={authDialogMode}
+        redirectTo="/dashboard"
       />
       <RodentBackground />
       <div className="relative z-10 isolate overflow-hidden">
@@ -165,7 +150,10 @@ export default function Index() {
                 <Button
                   size="lg"
                   disabled={isLoading}
-                  onClick={() => navigate("/dashboard")}
+                  onClick={() => {
+                    setAuthDialogMode(isAuthenticated ? "signIn" : "signUp");
+                    setAuthDialogOpen(true);
+                  }}
                   className="h-12 border border-[#08796f] bg-[#08796f] px-6 font-semibold text-white shadow-[0_0_28px_rgba(8,121,111,0.16)] hover:bg-[#066b62] dark:border-[#65ddcc]/25 dark:bg-[#44cbb9] dark:text-[#041614] dark:shadow-[0_0_28px_rgba(68,203,185,0.18)] dark:hover:bg-[#6de0d1]"
                 >
                   Start tracking <ArrowRight />
@@ -174,7 +162,7 @@ export default function Index() {
                   size="lg"
                   variant="secondary"
                   disabled={isLoading}
-                  onClick={() => navigate("/dashboard")}
+                  onClick={() => navigate("/track")}
                   className="h-12 border border-[#aebfbd] bg-white/70 px-5 text-[#203d40] hover:bg-white hover:text-[#102b30] dark:border-white/10 dark:bg-white/[0.045] dark:text-[#d1dfdd] dark:hover:bg-white/[0.09] dark:hover:text-white"
                 >
                   Try the demo video

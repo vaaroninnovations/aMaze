@@ -64,6 +64,11 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
       sessionStorage.removeItem(POST_SIGN_IN_DESTINATION_KEY);
       return;
     }
+    // If the user deliberately navigated to the home page, clear any pending destination
+    if (location.pathname === "/") {
+      sessionStorage.removeItem(POST_SIGN_IN_DESTINATION_KEY);
+      return;
+    }
     const destination = sessionStorage.getItem(POST_SIGN_IN_DESTINATION_KEY);
     if (!destination) return;
     sessionStorage.removeItem(POST_SIGN_IN_DESTINATION_KEY);

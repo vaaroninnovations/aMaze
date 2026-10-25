@@ -317,45 +317,62 @@ export default function UserDashboard() {
   // Persistent State
   // ----------------------------------------
   const [projects, setProjects] = useState<ProjectItem[]>(() => {
-    const saved = localStorage.getItem("amaze:projects");
-    return saved ? JSON.parse(saved) : INITIAL_PROJECTS;
+    if (typeof window === "undefined") return INITIAL_PROJECTS;
+    try {
+      const saved = localStorage.getItem("amaze:projects");
+      return saved ? JSON.parse(saved) : INITIAL_PROJECTS;
+    } catch {
+      return INITIAL_PROJECTS;
+    }
   });
 
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
-    const saved = localStorage.getItem("amaze:user_profile");
-    return saved
-      ? JSON.parse(saved)
-      : {
-          name: "Dr. Alex Morgan",
-          email: "a.morgan@cam.ac.uk",
-          institution: "University of Cambridge",
-          department: "Department of Physiology, Development & Neuroscience",
-          role: "Senior Behavioral Neurobiologist",
-          researchFocus: "Neural circuitry of anxiety and spatial memory encoding in rodent models",
-        };
+    const fallback: UserProfile = {
+      name: "Dr. Alex Morgan",
+      email: "a.morgan@cam.ac.uk",
+      institution: "University of Cambridge",
+      department: "Department of Physiology, Development & Neuroscience",
+      role: "Senior Behavioral Neurobiologist",
+      researchFocus: "Neural circuitry of anxiety and spatial memory encoding in rodent models",
+    };
+    if (typeof window === "undefined") return fallback;
+    try {
+      const saved = localStorage.getItem("amaze:user_profile");
+      return saved ? JSON.parse(saved) : fallback;
+    } catch {
+      return fallback;
+    }
   });
 
   const [settings, setSettings] = useState<UserSettings>(() => {
-    const saved = localStorage.getItem("amaze:settings");
-    return saved
-      ? JSON.parse(saved)
-      : {
-          autoArenaDetect: true,
-          fpsDownsampling: "30",
-          distanceUnit: "cm",
-          immobilityThreshold: 1.5,
-          autoSaveInterval: 30,
-          themePreference: "system",
-          exportFormat: "json",
-        };
+    const fallbackSettings: UserSettings = {
+      autoArenaDetect: true,
+      fpsDownsampling: "30",
+      distanceUnit: "cm",
+      immobilityThreshold: 1.5,
+      autoSaveInterval: 30,
+      themePreference: "system",
+      exportFormat: "json",
+    };
+    if (typeof window === "undefined") return fallbackSettings;
+    try {
+      const saved = localStorage.getItem("amaze:settings");
+      return saved ? JSON.parse(saved) : fallbackSettings;
+    } catch {
+      return fallbackSettings;
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem("amaze:projects", JSON.stringify(projects));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("amaze:projects", JSON.stringify(projects));
+    }
   }, [projects]);
 
   useEffect(() => {
-    localStorage.setItem("amaze:user_profile", JSON.stringify(userProfile));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("amaze:user_profile", JSON.stringify(userProfile));
+    }
   }, [userProfile]);
 
   useEffect(() => {
