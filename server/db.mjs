@@ -1,0 +1,338 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Data directory can be set via DATA_DIR environment variable
+const DATA_DIR = process.env.DATA_DIR || path.resolve(__dirname, "../data");
+const UPLOADS_DIR = path.join(DATA_DIR, "uploads");
+const TRIALS_DIR = path.join(DATA_DIR, "trials");
+const PROJECTS_FILE = path.join(DATA_DIR, "projects.json");
+const USERS_FILE = path.join(DATA_DIR, "users.json");
+
+// Ensure necessary directories exist
+export function initDatabase() {
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  if (!fs.existsSync(TRIALS_DIR)) fs.mkdirSync(TRIALS_DIR, { recursive: true });
+
+  // Seed default projects if projects.json does not exist
+  if (!fs.existsSync(PROJECTS_FILE)) {
+    const defaultProjects = [
+      {
+        id: "proj-1",
+        name: "Novel Spatial Memory & Reversal Learning",
+        description: "Hippocampal-dependent spatial learning and cognitive flexibility using Morris Water Maze hidden platform paradigms.",
+        templateId: "water_maze",
+        templateName: "Morris Water Maze",
+        templateShort: "MWM",
+        templateColor: "bg-teal-500/15 text-teal-600 border-teal-500/30 dark:text-teal-400",
+        investigator: "Dr. Alex Morgan",
+        institution: "Cambridge Neurobiology Lab",
+        strain: "C57BL/6J Wild Type (n=16)",
+        trialCount: 32,
+        subjectCount: 16,
+        totalDuration: "03h 45m",
+        lastModified: "10 mins ago",
+        createdAt: "2026-10-14",
+        status: "active",
+        confidence: 99.4,
+        tags: ["Spatial Memory", "Hippocampus", "Water Maze"],
+        metricsSummary: [
+          { label: "Escape Latency", value: "14.6", unit: "s" },
+          { label: "Target Dwell", value: "48.2", unit: "%" },
+          { label: "Platform Cross", value: "4.2", unit: "avg" },
+        ],
+      },
+      {
+        id: "proj-2",
+        name: "Social Odor Recognition & Olfactory Investigation",
+        description: "Investigating olfactory social memory persistence in transgenic models of Alzheimer's disease across delays.",
+        templateId: "novel_object",
+        templateName: "Novel Object / Odor",
+        templateShort: "NOR",
+        templateColor: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30 dark:text-emerald-400",
+        investigator: "Sarah Jenkins, PhD",
+        institution: "Behavioral Genomics Unit",
+        strain: "APP/PS1 Transgenic (n=14)",
+        trialCount: 42,
+        subjectCount: 14,
+        totalDuration: "04h 12m",
+        lastModified: "2 hours ago",
+        createdAt: "2026-10-12",
+        status: "in_analysis",
+        confidence: 98.7,
+        tags: ["Alzheimers", "Spatial Learning", "Memory"],
+        metricsSummary: [
+          { label: "Escape Latency", value: "22.8", unit: "s" },
+          { label: "Quadrant Bias", value: "54.2", unit: "%" },
+          { label: "Primary Errors", value: "2.8", unit: "avg" },
+        ],
+      },
+      {
+        id: "proj-3",
+        name: "Dopamine Transporter Knockout Locomotion",
+        description: "Open field exploratory hyperactivity and thigmotaxis analysis in DAT-KO vs Wild Type.",
+        templateId: "open_field",
+        templateName: "Open Field Test",
+        templateShort: "OFT",
+        templateColor: "bg-cyan-500/15 text-cyan-600 border-cyan-500/30 dark:text-cyan-400",
+        investigator: "Dr. Alex Morgan",
+        institution: "Cambridge Neurobiology Lab",
+        strain: "DAT-KO & WT Littermates (n=20)",
+        trialCount: 36,
+        subjectCount: 20,
+        totalDuration: "03h 30m",
+        lastModified: "Yesterday",
+        createdAt: "2026-10-05",
+        status: "completed",
+        confidence: 99.8,
+        tags: ["Locomotion", "Dopamine", "Exploration"],
+        metricsSummary: [
+          { label: "Total Distance", value: "2,410", unit: "cm" },
+          { label: "Center Dwell", value: "14.2", unit: "s" },
+          { label: "Thigmotaxis Index", value: "81.6", unit: "%" },
+        ],
+      },
+      {
+        id: "proj-4",
+        name: "Prefrontal Lesion Novel Object Recognition",
+        description: "Evaluating recognition memory and perceptual novelty discrimination across temporal delays.",
+        templateId: "nor",
+        templateName: "Novel Object Recognition",
+        templateShort: "NOR",
+        templateColor: "bg-purple-500/15 text-purple-600 border-purple-500/30 dark:text-purple-400",
+        investigator: "Marcus Chen, PhD",
+        institution: "Institute of Behavioral Science",
+        strain: "Long-Evans Rats (n=12)",
+        trialCount: 24,
+        subjectCount: 12,
+        totalDuration: "02h 10m",
+        lastModified: "3 days ago",
+        createdAt: "2026-09-28",
+        status: "completed",
+        confidence: 97.9,
+        tags: ["Recognition", "PFC", "Novelty"],
+        metricsSummary: [
+          { label: "Discrim. Index", value: "+0.38", unit: "" },
+          { label: "Novel Dwell", value: "48.2", unit: "s" },
+          { label: "Familiar Dwell", value: "21.6", unit: "s" },
+        ],
+      },
+      {
+        id: "proj-5",
+        name: "Working Memory Spontaneous Alternation",
+        description: "Short-term spatial working memory in symmetrical Y-maze without explicit reward.",
+        templateId: "y_maze",
+        templateName: "Y-Maze Alternation",
+        templateShort: "YM",
+        templateColor: "bg-indigo-500/15 text-indigo-600 border-indigo-500/30 dark:text-indigo-400",
+        investigator: "Elena Vance, MSc",
+        institution: "Dept. of Cognitive Neuroscience",
+        strain: "C57BL/6J WT (n=16)",
+        trialCount: 20,
+        subjectCount: 16,
+        totalDuration: "01h 40m",
+        lastModified: "5 days ago",
+        createdAt: "2026-09-20",
+        status: "completed",
+        confidence: 99.1,
+        tags: ["Working Memory", "PFC", "Alternation"],
+        metricsSummary: [
+          { label: "Alternation Rate", value: "68.4", unit: "%" },
+          { label: "Total Arm Entries", value: "28.4", unit: "avg" },
+          { label: "Center Dwell", value: "18.2", unit: "s" },
+        ],
+      },
+    ];
+    saveJson(PROJECTS_FILE, defaultProjects);
+  }
+
+  // Seed default users file
+  if (!fs.existsSync(USERS_FILE)) {
+    const defaultUsers = [
+      {
+        id: "user-default",
+        name: "Dr. Alex Morgan",
+        email: "a.morgan@cam.ac.uk",
+        institution: "University of Cambridge",
+        department: "Dept. of Physiology, Development & Neuroscience",
+        role: "Senior Behavioral Neurobiologist",
+        orcid: "0000-0002-1825-0097",
+        provider: "local",
+        createdAt: new Date().toISOString(),
+      },
+    ];
+    saveJson(USERS_FILE, defaultUsers);
+  }
+}
+
+// Helper for atomic file saving
+function saveJson(filePath, data) {
+  const tempPath = `${filePath}.${Date.now()}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), "utf8");
+  fs.renameSync(tempPath, filePath);
+}
+
+function readJson(filePath, fallback = []) {
+  try {
+    if (!fs.existsSync(filePath)) return fallback;
+    const raw = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error(`Error reading ${filePath}:`, err);
+    return fallback;
+  }
+}
+
+// -------------------------------------------------------------------------
+// PROJECTS
+// -------------------------------------------------------------------------
+export function getAllProjects() {
+  return readJson(PROJECTS_FILE, []);
+}
+
+export function getProjectById(id) {
+  const projects = getAllProjects();
+  return projects.find((p) => p.id === id) || null;
+}
+
+export function saveProject(project) {
+  const projects = getAllProjects();
+  const index = projects.findIndex((p) => p.id === project.id);
+  if (index !== -1) {
+    projects[index] = { ...projects[index], ...project, lastModified: "Just now" };
+  } else {
+    projects.unshift({
+      ...project,
+      id: project.id || `proj-${Date.now()}`,
+      createdAt: new Date().toISOString().split("T")[0],
+      lastModified: "Just now",
+      trialCount: project.trialCount || 0,
+    });
+  }
+  saveJson(PROJECTS_FILE, projects);
+  return project;
+}
+
+export function deleteProject(id) {
+  const projects = getAllProjects();
+  const filtered = projects.filter((p) => p.id !== id);
+  saveJson(PROJECTS_FILE, filtered);
+
+  // Also remove trials for this project
+  const trialsPath = path.join(TRIALS_DIR, `${id}.json`);
+  if (fs.existsSync(trialsPath)) {
+    try {
+      fs.unlinkSync(trialsPath);
+    } catch {}
+  }
+  return true;
+}
+
+// -------------------------------------------------------------------------
+// TRIALS
+// -------------------------------------------------------------------------
+export function getTrialsForProject(projectId) {
+  const trialsPath = path.join(TRIALS_DIR, `${projectId}.json`);
+  return readJson(trialsPath, []);
+}
+
+export function saveTrial(trial) {
+  const projectId = trial.projectId;
+  const trialsPath = path.join(TRIALS_DIR, `${projectId}.json`);
+  const existing = getTrialsForProject(projectId);
+
+  const updatedTrial = {
+    ...trial,
+    id: trial.id || `trial-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    trialNumber: existing.length + 1,
+    createdAt: trial.createdAt || new Date().toISOString(),
+  };
+
+  const updatedTrials = [updatedTrial, ...existing];
+  saveJson(trialsPath, updatedTrials);
+
+  // Update trialCount and metrics in projects.json
+  const projects = getAllProjects();
+  const projIdx = projects.findIndex((p) => p.id === projectId);
+  if (projIdx !== -1) {
+    projects[projIdx].trialCount = updatedTrials.length;
+    projects[projIdx].lastModified = "Just now";
+    projects[projIdx].status = "completed";
+    if (trial.metrics) {
+      projects[projIdx].metricsSummary = [
+        { label: "Total Distance", value: `${(trial.metrics.totalDistanceCm / 100).toFixed(1)}`, unit: "m" },
+        { label: trial.metrics.primaryIndexLabel || "Primary Metric", value: trial.metrics.primaryIndexValue || "Recorded", unit: "" },
+        { label: "Mean Speed", value: `${trial.metrics.meanSpeedCmS}`, unit: "cm/s" },
+      ];
+    }
+    saveJson(PROJECTS_FILE, projects);
+  }
+
+  return updatedTrial;
+}
+
+export function getTrialById(trialId) {
+  // Search across all trial files
+  const files = fs.readdirSync(TRIALS_DIR);
+  for (const f of files) {
+    if (f.endsWith(".json")) {
+      const trials = readJson(path.join(TRIALS_DIR, f), []);
+      const found = trials.find((t) => t.id === trialId);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+// -------------------------------------------------------------------------
+// USERS & AUTH
+// -------------------------------------------------------------------------
+export function getAllUsers() {
+  return readJson(USERS_FILE, []);
+}
+
+export function findUserByGoogleId(googleId) {
+  const users = getAllUsers();
+  return users.find((u) => u.googleId === googleId) || null;
+}
+
+export function findUserByOrcid(orcid) {
+  const users = getAllUsers();
+  return users.find((u) => u.orcid === orcid) || null;
+}
+
+export function findUserByEmail(email) {
+  const users = getAllUsers();
+  return users.find((u) => u.email && u.email.toLowerCase() === email.toLowerCase()) || null;
+}
+
+export function findUserById(id) {
+  const users = getAllUsers();
+  return users.find((u) => u.id === id) || null;
+}
+
+export function saveUser(user) {
+  const users = getAllUsers();
+  const index = users.findIndex((u) => (user.id && u.id === user.id) || (user.email && u.email === user.email));
+  if (index !== -1) {
+    users[index] = { ...users[index], ...user, updatedAt: new Date().toISOString() };
+    saveJson(USERS_FILE, users);
+    return users[index];
+  } else {
+    const newUser = {
+      ...user,
+      id: user.id || `user-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    users.push(newUser);
+    saveJson(USERS_FILE, users);
+    return newUser;
+  }
+}
+
+export { DATA_DIR, UPLOADS_DIR };

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "user-default",
+    "name": "Dr. Alex Morgan",
+    "email": "a.morgan@cam.ac.uk",
+    "institution": "University of Cambridge",
+    "department": "Dept. of Physiology, Development & Neuroscience",
+    "role": "Senior Behavioral Neurobiologist",
+    "orcid": "0000-0002-1825-0097",
+    "provider": "local",
+    "createdAt": "2026-10-25T15:51:56.034Z"
+  }
+]

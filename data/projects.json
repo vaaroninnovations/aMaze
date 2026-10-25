@@ -1,0 +1,207 @@
+[
+  {
+    "id": "proj-1",
+    "name": "Novel Spatial Memory & Reversal Learning",
+    "description": "Hippocampal-dependent spatial learning and cognitive flexibility using Morris Water Maze hidden platform paradigms.",
+    "templateId": "water_maze",
+    "templateName": "Morris Water Maze",
+    "templateShort": "MWM",
+    "templateColor": "bg-teal-500/15 text-teal-600 border-teal-500/30 dark:text-teal-400",
+    "investigator": "Dr. Alex Morgan",
+    "institution": "Cambridge Neurobiology Lab",
+    "strain": "C57BL/6J Wild Type (n=16)",
+    "trialCount": 1,
+    "subjectCount": 16,
+    "totalDuration": "03h 45m",
+    "lastModified": "Just now",
+    "createdAt": "2026-10-14",
+    "status": "completed",
+    "confidence": 99.4,
+    "tags": [
+      "Spatial Memory",
+      "Hippocampus",
+      "Water Maze"
+    ],
+    "metricsSummary": [
+      {
+        "label": "Total Distance",
+        "value": "15.2",
+        "unit": "m"
+      },
+      {
+        "label": "Target Dwell",
+        "value": "52.8%",
+        "unit": ""
+      },
+      {
+        "label": "Mean Speed",
+        "value": "18.2",
+        "unit": "cm/s"
+      }
+    ]
+  },
+  {
+    "id": "proj-2",
+    "name": "Social Odor Recognition & Olfactory Investigation",
+    "description": "Investigating olfactory social memory persistence in transgenic models of Alzheimer's disease across delays.",
+    "templateId": "novel_object",
+    "templateName": "Novel Object / Odor",
+    "templateShort": "NOR",
+    "templateColor": "bg-emerald-500/15 text-emerald-600 border-emerald-500/30 dark:text-emerald-400",
+    "investigator": "Sarah Jenkins, PhD",
+    "institution": "Behavioral Genomics Unit",
+    "strain": "APP/PS1 Transgenic (n=14)",
+    "trialCount": 42,
+    "subjectCount": 14,
+    "totalDuration": "04h 12m",
+    "lastModified": "2 hours ago",
+    "createdAt": "2026-10-12",
+    "status": "in_analysis",
+    "confidence": 98.7,
+    "tags": [
+      "Alzheimers",
+      "Spatial Learning",
+      "Memory"
+    ],
+    "metricsSummary": [
+      {
+        "label": "Escape Latency",
+        "value": "22.8",
+        "unit": "s"
+      },
+      {
+        "label": "Quadrant Bias",
+        "value": "54.2",
+        "unit": "%"
+      },
+      {
+        "label": "Primary Errors",
+        "value": "2.8",
+        "unit": "avg"
+      }
+    ]
+  },
+  {
+    "id": "proj-3",
+    "name": "Dopamine Transporter Knockout Locomotion",
+    "description": "Open field exploratory hyperactivity and thigmotaxis analysis in DAT-KO vs Wild Type.",
+    "templateId": "open_field",
+    "templateName": "Open Field Test",
+    "templateShort": "OFT",
+    "templateColor": "bg-cyan-500/15 text-cyan-600 border-cyan-500/30 dark:text-cyan-400",
+    "investigator": "Dr. Alex Morgan",
+    "institution": "Cambridge Neurobiology Lab",
+    "strain": "DAT-KO & WT Littermates (n=20)",
+    "trialCount": 36,
+    "subjectCount": 20,
+    "totalDuration": "03h 30m",
+    "lastModified": "Yesterday",
+    "createdAt": "2026-10-05",
+    "status": "completed",
+    "confidence": 99.8,
+    "tags": [
+      "Locomotion",
+      "Dopamine",
+      "Exploration"
+    ],
+    "metricsSummary": [
+      {
+        "label": "Total Distance",
+        "value": "2,410",
+        "unit": "cm"
+      },
+      {
+        "label": "Center Dwell",
+        "value": "14.2",
+        "unit": "s"
+      },
+      {
+        "label": "Thigmotaxis Index",
+        "value": "81.6",
+        "unit": "%"
+      }
+    ]
+  },
+  {
+    "id": "proj-4",
+    "name": "Prefrontal Lesion Novel Object Recognition",
+    "description": "Evaluating recognition memory and perceptual novelty discrimination across temporal delays.",
+    "templateId": "nor",
+    "templateName": "Novel Object Recognition",
+    "templateShort": "NOR",
+    "templateColor": "bg-purple-500/15 text-purple-600 border-purple-500/30 dark:text-purple-400",
+    "investigator": "Marcus Chen, PhD",
+    "institution": "Institute of Behavioral Science",
+    "strain": "Long-Evans Rats (n=12)",
+    "trialCount": 24,
+    "subjectCount": 12,
+    "totalDuration": "02h 10m",
+    "lastModified": "3 days ago",
+    "createdAt": "2026-09-28",
+    "status": "completed",
+    "confidence": 97.9,
+    "tags": [
+      "Recognition",
+      "PFC",
+      "Novelty"
+    ],
+    "metricsSummary": [
+      {
+        "label": "Discrim. Index",
+        "value": "+0.38",
+        "unit": ""
+      },
+      {
+        "label": "Novel Dwell",
+        "value": "48.2",
+        "unit": "s"
+      },
+      {
+        "label": "Familiar Dwell",
+        "value": "21.6",
+        "unit": "s"
+      }
+    ]
+  },
+  {
+    "id": "proj-5",
+    "name": "Working Memory Spontaneous Alternation",
+    "description": "Short-term spatial working memory in symmetrical Y-maze without explicit reward.",
+    "templateId": "y_maze",
+    "templateName": "Y-Maze Alternation",
+    "templateShort": "YM",
+    "templateColor": "bg-indigo-500/15 text-indigo-600 border-indigo-500/30 dark:text-indigo-400",
+    "investigator": "Elena Vance, MSc",
+    "institution": "Dept. of Cognitive Neuroscience",
+    "strain": "C57BL/6J WT (n=16)",
+    "trialCount": 20,
+    "subjectCount": 16,
+    "totalDuration": "01h 40m",
+    "lastModified": "5 days ago",
+    "createdAt": "2026-09-20",
+    "status": "completed",
+    "confidence": 99.1,
+    "tags": [
+      "Working Memory",
+      "PFC",
+      "Alternation"
+    ],
+    "metricsSummary": [
+      {
+        "label": "Alternation Rate",
+        "value": "68.4",
+        "unit": "%"
+      },
+      {
+        "label": "Total Arm Entries",
+        "value": "28.4",
+        "unit": "avg"
+      },
+      {
+        "label": "Center Dwell",
+        "value": "18.2",
+        "unit": "s"
+      }
+    ]
+  }
+]
