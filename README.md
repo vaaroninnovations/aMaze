@@ -47,6 +47,13 @@
 - 1-click automated deployment script (`deploy.sh`).
 - Detailed setup guide in [`DEPLOYMENT.md`](./DEPLOYMENT.md).
 
+### 5. Legal, Compliance & Contact
+- **Privacy Statement** (`/privacy`, `/privacy-policy`): Full scientific researcher data ownership, on-device/private server processing, and GDPR compliance.
+- **Scientific Disclaimer** (`/disclaimer`): Research Use Only (RUO), non-clinical and non-diagnostic notices, computer vision variance disclosures, and ethical animal welfare protocols (IACUC, ARRIVE, Directive 2010/63/EU).
+- **Terms of Service** (`/terms`, `/terms-of-service`): Permitted academic and commercial uses, platform licensing, and intellectual property terms.
+- **Contact Channels** (`/contact`): Interactive scientific inquiry submission, direct support email (`contact@drvara.si`), and official website access (`https://drvara.si`).
+- **Copyright**: © 2026 **@drvara.si**. All rights reserved.
+
 ---
 
 ## 🚀 Quick Start (Development)
@@ -114,14 +121,18 @@ docker compose up -d --build
 npx vitest run
 ```
 
-All 56 unit and integration test suites cover:
+All 61 unit and integration test suites cover:
 - Geometry and zone containment algorithms
 - Metric and speed calculations
 - Statistical computations (t-tests, ANOVA, SEM)
 - Data export and report generation
+- Legal, privacy, and disclaimer snapshot rendering
 - State stores and API communication
 
 ---
 
-## 📜 License
-Distributed under the MIT License.
+## 📜 Copyright & Contact
+- **Copyright**: © 2026 **@drvara.si**. All rights reserved.
+- **Website**: [https://drvara.si](https://drvara.si)
+- **Email**: [contact@drvara.si](mailto:contact@drvara.si)
+- **License**: Distributed under the MIT License.

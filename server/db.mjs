@@ -11,6 +11,7 @@ const UPLOADS_DIR = path.join(DATA_DIR, "uploads");
 const TRIALS_DIR = path.join(DATA_DIR, "trials");
 const PROJECTS_FILE = path.join(DATA_DIR, "projects.json");
 const USERS_FILE = path.join(DATA_DIR, "users.json");
+const CONTACTS_FILE = path.join(DATA_DIR, "contacts.json");
 
 // Ensure necessary directories exist
 export function initDatabase() {
@@ -333,6 +334,22 @@ export function saveUser(user) {
     saveJson(USERS_FILE, users);
     return newUser;
   }
+}
+
+export function getContactMessages() {
+  return readJson(CONTACTS_FILE, []);
+}
+
+export function saveContactMessage(msg) {
+  const messages = getContactMessages();
+  const entry = {
+    ...msg,
+    id: msg.id || `msg-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    createdAt: msg.createdAt || new Date().toISOString(),
+  };
+  messages.push(entry);
+  saveJson(CONTACTS_FILE, messages);
+  return entry;
 }
 
 export { DATA_DIR, UPLOADS_DIR };

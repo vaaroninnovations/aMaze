@@ -10,6 +10,7 @@ import {
   getTrialsForProject,
   getTrialById,
   saveTrial,
+  saveContactMessage,
   UPLOADS_DIR,
 } from "./db.mjs";
 
@@ -52,6 +53,39 @@ apiRouter.get("/health", (_req, res) => {
       heapTotalMb: (memory.heapTotal / 1024 / 1024).toFixed(1),
     },
   });
+});
+
+// -------------------------------------------------------------------------
+// CONTACT & SUPPORT INQUIRIES
+// -------------------------------------------------------------------------
+apiRouter.post("/contact", (req, res) => {
+  try {
+    const { name, email, institution, category, subject, message } = req.body || {};
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: "Missing required fields: name, email, and message are required." });
+    }
+
+    const saved = saveContactMessage({
+      name,
+      email,
+      institution: institution || "Unspecified",
+      category: category || "General",
+      subject: subject || "Inquiry from website",
+      message,
+      userAgent: req.headers["user-agent"] || "",
+      ip: req.ip || req.socket.remoteAddress || "",
+    });
+
+    console.log(`[Contact] New inquiry from ${name} <${email}>: ${saved.subject}`);
+    res.status(201).json({
+      success: true,
+      message: "Thank you for contacting @drvara.si. Your message has been received.",
+      id: saved.id,
+    });
+  } catch (err) {
+    console.error("[Contact] Error saving message:", err);
+    res.status(500).json({ error: "Failed to process inquiry", details: err.message });
+  }
 });
 
 // -------------------------------------------------------------------------

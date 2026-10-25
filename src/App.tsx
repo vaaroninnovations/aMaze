@@ -6,6 +6,10 @@ import ExperimentalSetupPage from "./pages/setup/page.tsx";
 import TrackPage from "./pages/track/page.tsx";
 import ExperimentalRunPage from "./pages/experiment/page.tsx";
 import ProjectDetailsPage from "./pages/project/page.tsx";
+import PrivacyPolicyPage from "./pages/legal/privacy.tsx";
+import DisclaimerPage from "./pages/legal/disclaimer.tsx";
+import TermsOfServicePage from "./pages/legal/terms.tsx";
+import ContactPage from "./pages/contact/page.tsx";
 
 /**
  * aMaze App
@@ -14,6 +18,11 @@ import ProjectDetailsPage from "./pages/project/page.tsx";
  * - Page 3: Experimental Setup (`/setup`)
  * - Page 4: Experimental Run / Live Tracking (`/track`, `/experiment/run`)
  * - Page 5: Project Details & Results (`/project/:projectId`, `/projects/:projectId`)
+ * - Legal & Compliance:
+ *   - Privacy Statement (`/privacy`, `/privacy-policy`)
+ *   - Disclaimer (`/disclaimer`)
+ *   - Terms of Service (`/terms`, `/terms-of-service`)
+ *   - Contact (`/contact`, `/contact-us`)
  */
 export default function App() {
   return (
@@ -30,6 +39,16 @@ export default function App() {
           <Route path="/project/:projectId" element={<ProjectDetailsPage />} />
           <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
           <Route path="/project" element={<ProjectDetailsPage />} />
+
+          {/* Legal, Compliance & Contact Routes */}
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/disclaimer" element={<DisclaimerPage />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
+          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/contact-us" element={<ContactPage />} />
+
           {/* Catch-all fallback */}
           <Route path="*" element={<Index />} />
         </Routes>

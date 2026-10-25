@@ -83,6 +83,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar.tsx";
 import ThemeToggle from "@/components/theme-toggle.tsx";
+import SiteFooter from "@/components/site-footer.tsx";
 
 // ==========================================
 // TYPES & DATA STRUCTURES
@@ -1569,6 +1570,8 @@ export default function UserDashboard() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <SiteFooter />
     </div>
   );
 }

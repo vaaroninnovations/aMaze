@@ -44,6 +44,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card.tsx";
 import ThemeToggle from "@/components/theme-toggle.tsx";
+import SiteFooter from "@/components/site-footer.tsx";
 import {
   getProjectById,
   getProjectTrials,
@@ -1313,6 +1314,8 @@ export default function ProjectDetailsPage() {
           </div>
         )}
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

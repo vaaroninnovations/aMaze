@@ -8,8 +8,10 @@ import {
   FolderKanban,
   LayoutDashboard,
   LogOut,
+  Mail,
   ScanLine,
   Settings,
+  ShieldCheck,
   UserRound,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -183,6 +185,16 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
                       <Settings /> Settings
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link to="/privacy">
+                      <ShieldCheck /> Legal &amp; Privacy
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link to="/contact">
+                      <Mail /> Contact Us
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     variant="destructive"
@@ -216,6 +228,17 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
               }
             />
           )}
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="hidden sm:inline-flex text-xs text-muted-foreground hover:text-foreground h-8 px-2.5"
+          >
+            <Link to="/contact" className="flex items-center gap-1.5">
+              <Mail className="size-3.5" />
+              <span>Contact</span>
+            </Link>
+          </Button>
           <ThemeToggle />
         </div>
       </div>

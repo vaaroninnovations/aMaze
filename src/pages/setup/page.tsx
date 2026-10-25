@@ -17,6 +17,7 @@ import AnimalStack, { ANIMAL_CARDS, type AnimalCardData } from "./components/ani
 import MazeCoverflow, { MAZE_LIST, type MazeConfig } from "./components/maze-coverflow.tsx";
 import ExperimentTimer from "./components/experiment-timer.tsx";
 import ThemeToggle from "@/components/theme-toggle.tsx";
+import SiteFooter from "@/components/site-footer.tsx";
 import { Button } from "@/components/ui/button.tsx";
 
 type SetupStep = "animal" | "maze" | "timer";
@@ -186,6 +187,8 @@ export default function ExperimentalSetupPage() {
           />
         )}
       </main>
+
+      <SiteFooter />
     </div>
   );
 }
