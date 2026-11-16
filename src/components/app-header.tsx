@@ -1,4 +1,5 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import BrandLogo from "./brand-logo.tsx";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { useConvexAuth, useAuthActions } from "@convex-dev/auth/react";
@@ -89,25 +90,7 @@ export default function AppHeader({ children }: { children?: ReactNode }) {
             to="/"
             className="flex shrink-0 cursor-pointer items-center gap-2.5"
           >
-            <span className="grid size-7 place-items-center rounded-md border border-[#08796f]/30 bg-[#08796f]/[0.07] text-[#08796f] dark:border-[#68dfce]/30 dark:bg-[#48cdbb]/10 dark:text-[#59dbc7]">
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                className="size-[18px]"
-              >
-                <path
-                  d="M4 4h16v16H4zM8 4v5h4v6h4v5M12 9h4v4M8 15h4"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="square"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            <span className="font-sans text-[15px] font-semibold tracking-[-0.04em]">
-              α<span className="text-[#08796f] dark:text-[#59dbc7]">Maze</span>
-            </span>
+            <BrandLogo markClassName="size-8" wordmarkClassName="text-[17px]" />
           </Link>
           <nav className="flex items-center gap-1.5">
             {navItems.map((n) => (

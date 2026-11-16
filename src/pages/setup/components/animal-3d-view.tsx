@@ -369,7 +369,7 @@ export default function Animal3DView({
     keyLight.shadow.bias = -0.0004;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xdcf3f5, 0.7);
+    const fillLight = new THREE.DirectionalLight(0xe5eeff, 0.7);
     fillLight.position.set(-4.0, 2.0, -1.5);
     scene.add(fillLight);
 

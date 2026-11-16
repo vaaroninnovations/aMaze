@@ -76,15 +76,15 @@ export default function ExperimentalSetupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7faf9] text-[#142d31] selection:bg-[#08796f]/20 dark:bg-[#071318] dark:text-[#e4f0ef]">
+    <div className="min-h-screen bg-[#f7faf9] text-[#1d293e] selection:bg-[#2a5ed3]/20 dark:bg-[#0a111d] dark:text-[#e7edf9]">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 border-b border-[#c8d9d7]/70 bg-white/80 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#071318]/80">
+      <header className="sticky top-0 z-40 border-b border-[#ccd5e6]/70 bg-white/80 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#0a111d]/80">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Left: Breadcrumbs & Return */}
           <div className="flex items-center gap-3">
             <Link
               to="/dashboard"
-              className="flex items-center gap-1.5 rounded-lg border border-[#c8d9d7] bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 shadow-2xs hover:bg-[#eef5f4] dark:border-white/10 dark:bg-[#0c1f25] dark:text-zinc-200"
+              className="flex items-center gap-1.5 rounded-lg border border-[#ccd5e6] bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 shadow-2xs hover:bg-[#f0f3fa] dark:border-white/10 dark:bg-[#121c2d] dark:text-zinc-200"
             >
               <ArrowLeft className="size-3.5" />
               <span>Dashboard</span>
@@ -93,7 +93,7 @@ export default function ExperimentalSetupPage() {
             <span className="text-muted-foreground/40">/</span>
 
             <div className="flex items-center gap-2">
-              <FlaskConical className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+              <FlaskConical className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
               <span className="text-xs font-bold tracking-tight text-foreground sm:text-sm">
                 Experimental Setup
               </span>
@@ -108,7 +108,7 @@ export default function ExperimentalSetupPage() {
               onClick={() => setCurrentStep("animal")}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-xs font-bold transition-all ${
                 currentStep === "animal"
-                  ? "bg-[#08796f] text-white shadow-xs dark:bg-[#44cbb9] dark:text-[#041614]"
+                  ? "bg-[#2a5ed3] text-white shadow-xs dark:bg-[#52a7ff] dark:text-[#0a1222]"
                   : "bg-black/5 text-muted-foreground hover:bg-black/10 dark:bg-white/5"
               }`}
             >
@@ -124,7 +124,7 @@ export default function ExperimentalSetupPage() {
               onClick={() => setCurrentStep("maze")}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-xs font-bold transition-all ${
                 currentStep === "maze"
-                  ? "bg-[#08796f] text-white shadow-xs dark:bg-[#44cbb9] dark:text-[#041614]"
+                  ? "bg-[#2a5ed3] text-white shadow-xs dark:bg-[#52a7ff] dark:text-[#0a1222]"
                   : "bg-black/5 text-muted-foreground hover:bg-black/10 dark:bg-white/5"
               }`}
             >
@@ -140,7 +140,7 @@ export default function ExperimentalSetupPage() {
               onClick={() => setCurrentStep("timer")}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-xs font-bold transition-all ${
                 currentStep === "timer"
-                  ? "bg-[#08796f] text-white shadow-xs dark:bg-[#44cbb9] dark:text-[#041614]"
+                  ? "bg-[#2a5ed3] text-white shadow-xs dark:bg-[#52a7ff] dark:text-[#0a1222]"
                   : "bg-black/5 text-muted-foreground hover:bg-black/10 dark:bg-white/5"
               }`}
             >

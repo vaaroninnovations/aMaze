@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import BrandLogo from "@/components/brand-logo.tsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthActions } from "@convex-dev/auth/react";
 import {
@@ -559,11 +560,11 @@ export default function UserDashboard() {
   // ==========================================
 
   return (
-    <div className="min-h-screen bg-[#f7faf9] text-[#142d31] selection:bg-[#08796f]/20 dark:bg-[#071318] dark:text-[#e4f0ef]">
+    <div className="min-h-screen bg-[#f7faf9] text-[#1d293e] selection:bg-[#2a5ed3]/20 dark:bg-[#0a111d] dark:text-[#e7edf9]">
       {/* ==================================================== */}
       {/* 1. TOP NAV BAR WITH USER AVATAR, PROFILE & SETTINGS  */}
       {/* ==================================================== */}
-      <header className="sticky top-0 z-40 border-b border-[#c8d9d7]/70 bg-white/80 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#071318]/80">
+      <header className="sticky top-0 z-40 border-b border-[#ccd5e6]/70 bg-white/80 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#0a111d]/80">
         <div className="mx-auto flex h-15 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Left: Brand & Navigation */}
           <div className="flex items-center gap-6 md:gap-8">
@@ -572,25 +573,7 @@ export default function UserDashboard() {
               className="group flex cursor-pointer items-center gap-2.5 transition-transform hover:scale-[1.02]"
               title="Return to Home"
             >
-              <span className="grid size-8 place-items-center rounded-lg border border-[#08796f]/30 bg-[#08796f]/[0.08] text-[#08796f] shadow-xs transition-colors group-hover:bg-[#08796f]/15 dark:border-[#52d8c4]/30 dark:bg-[#52d8c4]/10 dark:text-[#52d8c4]">
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="size-5"
-                >
-                  <path
-                    d="M4 4h16v16H4zM8 4v5h4v6h4v5M12 9h4v4M8 15h4"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="square"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              <span className="text-[17px] font-semibold tracking-[-0.035em]">
-                α<span className="text-[#08796f] dark:text-[#52d8c4]">Maze</span>
-              </span>
+              <BrandLogo markClassName="size-9" wordmarkClassName="text-[19px]" />
             </Link>
           </div>
 
@@ -600,7 +583,7 @@ export default function UserDashboard() {
             <Button
               size="sm"
               onClick={() => setIsCreateOpen(true)}
-              className="hidden h-9 items-center gap-1.5 border border-[#08796f] bg-[#08796f] px-3.5 font-medium text-white shadow-xs hover:bg-[#066a61] sm:inline-flex dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+              className="hidden h-9 items-center gap-1.5 border border-[#2a5ed3] bg-[#2a5ed3] px-3.5 font-medium text-white shadow-xs hover:bg-[#2752ba] sm:inline-flex dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
             >
               <Plus className="size-4 stroke-[2.5]" />
               <span>Create Project</span>
@@ -614,7 +597,7 @@ export default function UserDashboard() {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="group relative flex cursor-pointer items-center gap-2 rounded-full border border-[#b8cbc8] p-0.5 outline-none ring-offset-background transition-all hover:border-[#08796f] focus-visible:ring-2 focus-visible:ring-[#08796f] dark:border-white/15 dark:hover:border-[#52d8c4]"
+                  className="group relative flex cursor-pointer items-center gap-2 rounded-full border border-[#bcc7d9] p-0.5 outline-none ring-offset-background transition-all hover:border-[#2a5ed3] focus-visible:ring-2 focus-visible:ring-[#2a5ed3] dark:border-white/15 dark:hover:border-[#6ab4ff]"
                   aria-label="User Account and Settings Menu"
                   title="Open user profile & settings"
                 >
@@ -622,24 +605,24 @@ export default function UserDashboard() {
                     {userProfile.avatarUrl ? (
                       <AvatarImage src={userProfile.avatarUrl} alt={userProfile.name} />
                     ) : null}
-                    <AvatarFallback className="bg-gradient-to-br from-[#08796f]/20 to-[#08796f]/40 font-mono text-xs font-bold text-[#08796f] dark:from-[#52d8c4]/20 dark:to-[#52d8c4]/40 dark:text-[#52d8c4]">
+                    <AvatarFallback className="bg-gradient-to-br from-[#2a5ed3]/20 to-[#2a5ed3]/40 font-mono text-xs font-bold text-[#2a5ed3] dark:from-[#6ab4ff]/20 dark:to-[#6ab4ff]/40 dark:text-[#6ab4ff]">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
                   {/* Online / Active Indicator Dot */}
-                  <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-[#071318]" />
+                  <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-[#0a111d]" />
                 </button>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
                 align="end"
                 sideOffset={8}
-                className="w-72 rounded-xl border border-[#c4d6d4] bg-white/95 p-1.5 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#0b1a1f]"
+                className="w-72 rounded-xl border border-[#c8d2e4] bg-white/95 p-1.5 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#101826]"
               >
                 {/* User Bio Header */}
-                <div className="flex items-center gap-3 rounded-lg bg-[#f0f6f5] p-3 dark:bg-white/[0.04]">
-                  <Avatar className="size-10 border border-[#b2c8c5] dark:border-white/15">
-                    <AvatarFallback className="bg-[#08796f] font-mono text-sm font-semibold text-white dark:bg-[#44cbb9] dark:text-[#041614]">
+                <div className="flex items-center gap-3 rounded-lg bg-[#f1f5fb] p-3 dark:bg-white/[0.04]">
+                  <Avatar className="size-10 border border-[#b7c3d8] dark:border-white/15">
+                    <AvatarFallback className="bg-[#2a5ed3] font-mono text-sm font-semibold text-white dark:bg-[#52a7ff] dark:text-[#0a1222]">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -650,7 +633,7 @@ export default function UserDashboard() {
                     <p className="truncate text-[11px] text-muted-foreground">
                       {userProfile.email}
                     </p>
-                    <span className="mt-1 inline-flex items-center gap-1 rounded bg-[#08796f]/10 px-1.5 py-0.5 text-[9px] font-medium text-[#08796f] dark:bg-[#52d8c4]/15 dark:text-[#52d8c4]">
+                    <span className="mt-1 inline-flex items-center gap-1 rounded bg-[#2a5ed3]/10 px-1.5 py-0.5 text-[9px] font-medium text-[#2a5ed3] dark:bg-[#6ab4ff]/15 dark:text-[#6ab4ff]">
                       <Building2 className="size-2.5" />
                       {userProfile.institution.split(" ")[0] || "Laboratory"}
                     </span>
@@ -663,9 +646,9 @@ export default function UserDashboard() {
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     onClick={() => setIsProfileOpen(true)}
-                    className="flex cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-xs font-medium transition-colors hover:bg-[#08796f]/10 hover:text-[#08796f] dark:hover:bg-[#52d8c4]/10 dark:hover:text-[#52d8c4]"
+                    className="flex cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-xs font-medium transition-colors hover:bg-[#2a5ed3]/10 hover:text-[#2a5ed3] dark:hover:bg-[#6ab4ff]/10 dark:hover:text-[#6ab4ff]"
                   >
-                    <UserCog className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+                    <UserCog className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                     <div className="flex-1">
                       <p className="font-semibold">User Profile Management</p>
                       <p className="text-[10px] text-muted-foreground">
@@ -677,9 +660,9 @@ export default function UserDashboard() {
                   {/* Settings Item */}
                   <DropdownMenuItem
                     onClick={() => setIsSettingsOpen(true)}
-                    className="flex cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-xs font-medium transition-colors hover:bg-[#08796f]/10 hover:text-[#08796f] dark:hover:bg-[#52d8c4]/10 dark:hover:text-[#52d8c4]"
+                    className="flex cursor-pointer items-center gap-2.5 rounded-md px-2.5 py-2 text-xs font-medium transition-colors hover:bg-[#2a5ed3]/10 hover:text-[#2a5ed3] dark:hover:bg-[#6ab4ff]/10 dark:hover:text-[#6ab4ff]"
                   >
-                    <SettingsIcon className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+                    <SettingsIcon className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                     <div className="flex-1">
                       <p className="font-semibold">Settings &amp; Calibration</p>
                       <p className="text-[10px] text-muted-foreground">
@@ -716,14 +699,14 @@ export default function UserDashboard() {
         {/* Welcome Banner & Actions */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="flex items-center gap-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-[#08796f] dark:text-[#52d8c4]">
-              <span className="size-2 animate-pulse rounded-full bg-[#08796f] dark:bg-[#52d8c4]" />
+            <div className="flex items-center gap-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2a5ed3] dark:text-[#6ab4ff]">
+              <span className="size-2 animate-pulse rounded-full bg-[#2a5ed3] dark:bg-[#6ab4ff]" />
               Neurobehavioral Research Portal
             </div>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#11292c] sm:text-3xl dark:text-[#edf7f5]">
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#1a2539] sm:text-3xl dark:text-[#eff5ff]">
               Welcome back, {userProfile.name}
             </h1>
-            <p className="mt-1 text-xs text-[#526d6a] sm:text-sm dark:text-[#90a8a5]">
+            <p className="mt-1 text-xs text-[#596780] sm:text-sm dark:text-[#96a3ba]">
               {userProfile.department} · {userProfile.institution}
             </p>
           </div>
@@ -732,7 +715,7 @@ export default function UserDashboard() {
             <Button
               size="sm"
               onClick={() => setIsCreateOpen(true)}
-              className="h-10 border border-[#08796f] bg-[#08796f] px-4 font-semibold text-white shadow-[0_2px_12px_rgba(8,121,111,0.22)] hover:bg-[#066a61] dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+              className="h-10 border border-[#2a5ed3] bg-[#2a5ed3] px-4 font-semibold text-white shadow-[0_2px_12px_rgba(42,94,211,0.22)] hover:bg-[#2752ba] dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
             >
               <Plus className="mr-1.5 size-4 stroke-[2.5]" />
               Create Project
@@ -742,14 +725,14 @@ export default function UserDashboard() {
 
         {/* Quick Scientific Stats Strip */}
         <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-          <div className="rounded-xl border border-[#cde0dd] bg-white p-4 shadow-2xs dark:border-white/[0.07] dark:bg-[#0b1b20]">
+          <div className="rounded-xl border border-[#d1dcee] bg-white p-4 shadow-2xs dark:border-white/[0.07] dark:bg-[#101827]">
             <div className="flex items-center justify-between text-muted-foreground">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#506c6a] dark:text-[#88a3a0]">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#586680] dark:text-[#8f9db7]">
                 Total Projects
               </span>
-              <FolderKanban className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+              <FolderKanban className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
             </div>
-            <p className="mt-2 text-2xl font-bold tracking-tight text-[#133033] dark:text-white">
+            <p className="mt-2 text-2xl font-bold tracking-tight text-[#1e2b42] dark:text-white">
               {projects.length}
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
@@ -757,14 +740,14 @@ export default function UserDashboard() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[#cde0dd] bg-white p-4 shadow-2xs dark:border-white/[0.07] dark:bg-[#0b1b20]">
+          <div className="rounded-xl border border-[#d1dcee] bg-white p-4 shadow-2xs dark:border-white/[0.07] dark:bg-[#101827]">
             <div className="flex items-center justify-between text-muted-foreground">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#506c6a] dark:text-[#88a3a0]">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#586680] dark:text-[#8f9db7]">
                 Recorded Trials
               </span>
-              <Activity className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+              <Activity className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
             </div>
-            <p className="mt-2 text-2xl font-bold tracking-tight text-[#133033] dark:text-white">
+            <p className="mt-2 text-2xl font-bold tracking-tight text-[#1e2b42] dark:text-white">
               {totalTrials}
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
@@ -772,14 +755,14 @@ export default function UserDashboard() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[#cde0dd] bg-white p-4 shadow-2xs dark:border-white/[0.07] dark:bg-[#0b1b20]">
+          <div className="rounded-xl border border-[#d1dcee] bg-white p-4 shadow-2xs dark:border-white/[0.07] dark:bg-[#101827]">
             <div className="flex items-center justify-between text-muted-foreground">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#506c6a] dark:text-[#88a3a0]">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#586680] dark:text-[#8f9db7]">
                 Animal Subjects
               </span>
-              <Users className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+              <Users className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
             </div>
-            <p className="mt-2 text-2xl font-bold tracking-tight text-[#133033] dark:text-white">
+            <p className="mt-2 text-2xl font-bold tracking-tight text-[#1e2b42] dark:text-white">
               {totalSubjects}
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
@@ -787,14 +770,14 @@ export default function UserDashboard() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-[#cde0dd] bg-white p-4 shadow-2xs dark:border-white/[0.07] dark:bg-[#0b1b20]">
+          <div className="rounded-xl border border-[#d1dcee] bg-white p-4 shadow-2xs dark:border-white/[0.07] dark:bg-[#101827]">
             <div className="flex items-center justify-between text-muted-foreground">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-[#506c6a] dark:text-[#88a3a0]">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[#586680] dark:text-[#8f9db7]">
                 Arena Accuracy
               </span>
-              <ScanSearch className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+              <ScanSearch className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
             </div>
-            <p className="mt-2 text-2xl font-bold tracking-tight text-[#133033] dark:text-white">
+            <p className="mt-2 text-2xl font-bold tracking-tight text-[#1e2b42] dark:text-white">
               99.2%
             </p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
@@ -810,10 +793,10 @@ export default function UserDashboard() {
           {/* Section Header & Filters Toolbar */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-semibold tracking-tight text-[#11292c] dark:text-[#edf7f5]">
+              <h2 className="text-xl font-semibold tracking-tight text-[#1a2539] dark:text-[#eff5ff]">
                 Recent Projects
               </h2>
-              <span className="rounded-full border border-[#cde0dd] bg-white px-2.5 py-0.5 font-mono text-xs font-semibold text-[#08796f] shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-[#52d8c4]">
+              <span className="rounded-full border border-[#d1dcee] bg-white px-2.5 py-0.5 font-mono text-xs font-semibold text-[#2a5ed3] shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-[#6ab4ff]">
                 {filteredProjects.length}
               </span>
             </div>
@@ -827,7 +810,7 @@ export default function UserDashboard() {
                   placeholder="Search projects, tags..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 border-[#c5d7d5] bg-white pl-8 text-xs shadow-2xs dark:border-white/10 dark:bg-white/[0.04]"
+                  className="h-9 border-[#c9d3e5] bg-white pl-8 text-xs shadow-2xs dark:border-white/10 dark:bg-white/[0.04]"
                 />
               </div>
 
@@ -836,7 +819,7 @@ export default function UserDashboard() {
                 aria-label="Filter by Paradigm"
                 value={selectedTemplateFilter}
                 onChange={(e) => setSelectedTemplateFilter(e.target.value)}
-                className="h-9 rounded-md border border-[#c5d7d5] bg-white px-2.5 text-xs text-[#203c3f] shadow-2xs outline-none focus:border-[#08796f] dark:border-white/10 dark:bg-[#0b1b20] dark:text-[#cfe0de]"
+                className="h-9 rounded-md border border-[#c9d3e5] bg-white px-2.5 text-xs text-[#2a374f] shadow-2xs outline-none focus:border-[#2a5ed3] dark:border-white/10 dark:bg-[#101827] dark:text-[#d3dced]"
               >
                 <option value="all">All Paradigms</option>
                 <option value="open_field">Open Field (OFT)</option>
@@ -847,13 +830,13 @@ export default function UserDashboard() {
               </select>
 
               {/* View Toggle (Grid / List) */}
-              <div className="flex items-center rounded-md border border-[#c5d7d5] bg-white p-0.5 shadow-2xs dark:border-white/10 dark:bg-white/[0.04]">
+              <div className="flex items-center rounded-md border border-[#c9d3e5] bg-white p-0.5 shadow-2xs dark:border-white/10 dark:bg-white/[0.04]">
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
                   className={`rounded p-1.5 transition-colors ${
                     viewMode === "grid"
-                      ? "bg-[#08796f]/15 text-[#08796f] dark:bg-[#52d8c4]/20 dark:text-[#52d8c4]"
+                      ? "bg-[#2a5ed3]/15 text-[#2a5ed3] dark:bg-[#6ab4ff]/20 dark:text-[#6ab4ff]"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                   title="Grid view"
@@ -865,7 +848,7 @@ export default function UserDashboard() {
                   onClick={() => setViewMode("table")}
                   className={`rounded p-1.5 transition-colors ${
                     viewMode === "table"
-                      ? "bg-[#08796f]/15 text-[#08796f] dark:bg-[#52d8c4]/20 dark:text-[#52d8c4]"
+                      ? "bg-[#2a5ed3]/15 text-[#2a5ed3] dark:bg-[#6ab4ff]/20 dark:text-[#6ab4ff]"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                   title="List view"
@@ -885,18 +868,18 @@ export default function UserDashboard() {
               <button
                 type="button"
                 onClick={() => setIsCreateOpen(true)}
-                className="group relative flex min-h-[250px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#bed2cf] bg-[#f1f7f6]/60 p-6 text-center transition-all hover:border-[#08796f] hover:bg-white dark:border-white/15 dark:bg-[#0a181d]/50 dark:hover:border-[#52d8c4] dark:hover:bg-[#0c1f26]"
+                className="group relative flex min-h-[250px] flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#c3cee1] bg-[#f2f6fc]/60 p-6 text-center transition-all hover:border-[#2a5ed3] hover:bg-white dark:border-white/15 dark:bg-[#0e1623]/50 dark:hover:border-[#6ab4ff] dark:hover:bg-[#121c2e]"
               >
-                <div className="grid size-12 place-items-center rounded-full border border-[#08796f]/30 bg-[#08796f]/10 text-[#08796f] transition-transform group-hover:scale-110 dark:border-[#52d8c4]/30 dark:bg-[#52d8c4]/15 dark:text-[#52d8c4]">
+                <div className="grid size-12 place-items-center rounded-full border border-[#2a5ed3]/30 bg-[#2a5ed3]/10 text-[#2a5ed3] transition-transform group-hover:scale-110 dark:border-[#6ab4ff]/30 dark:bg-[#6ab4ff]/15 dark:text-[#6ab4ff]">
                   <Plus className="size-6 stroke-[2.5]" />
                 </div>
-                <h3 className="mt-4 font-semibold text-[#16363a] dark:text-[#ecf7f5]">
+                <h3 className="mt-4 font-semibold text-[#22304b] dark:text-[#eff5ff]">
                   Create New Project
                 </h3>
                 <p className="mt-1.5 max-w-[220px] text-xs text-muted-foreground">
                   Initialize behavioral tracking arena, assign animal subjects, and calibrate camera.
                 </p>
-                <span className="mt-4 inline-flex items-center gap-1 font-mono text-[11px] font-medium text-[#08796f] dark:text-[#52d8c4]">
+                <span className="mt-4 inline-flex items-center gap-1 font-mono text-[11px] font-medium text-[#2a5ed3] dark:text-[#6ab4ff]">
                   Configure &amp; Launch <ArrowRight className="size-3" />
                 </span>
               </button>
@@ -906,7 +889,7 @@ export default function UserDashboard() {
                 <div
                   key={project.id}
                   onClick={() => navigate(`/project/${encodeURIComponent(project.id)}`)}
-                  className="group relative flex cursor-pointer flex-col justify-between rounded-xl border border-[#c9dcd9] bg-white p-5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-[#08796f]/40 hover:shadow-md dark:border-white/[0.08] dark:bg-[#0b1b20] dark:hover:border-[#52d8c4]/35"
+                  className="group relative flex cursor-pointer flex-col justify-between rounded-xl border border-[#cdd8ea] bg-white p-5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-[#2a5ed3]/40 hover:shadow-md dark:border-white/[0.08] dark:bg-[#101827] dark:hover:border-[#6ab4ff]/35"
                 >
                   {/* Top Bar of Project Card */}
                   <div>
@@ -935,13 +918,13 @@ export default function UserDashboard() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
                             align="end"
-                            className="w-48 rounded-lg border border-[#c4d6d4] bg-white p-1 text-xs shadow-lg dark:border-white/10 dark:bg-[#0c1e24]"
+                            className="w-48 rounded-lg border border-[#c8d2e4] bg-white p-1 text-xs shadow-lg dark:border-white/10 dark:bg-[#121b2c]"
                           >
                             <DropdownMenuItem
                               onClick={() => {
                                 navigate(`/project/${encodeURIComponent(project.id)}`);
                               }}
-                              className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 font-medium hover:bg-[#08796f]/10 hover:text-[#08796f] dark:hover:bg-[#52d8c4]/15 dark:hover:text-[#52d8c4]"
+                              className="flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 font-medium hover:bg-[#2a5ed3]/10 hover:text-[#2a5ed3] dark:hover:bg-[#6ab4ff]/15 dark:hover:text-[#6ab4ff]"
                             >
                               <Eye className="size-3.5" />
                               <span>View Project Details &amp; Results</span>
@@ -985,26 +968,26 @@ export default function UserDashboard() {
                     {/* Title & Description */}
                     <h3
                       onClick={() => navigate(`/project/${encodeURIComponent(project.id)}`)}
-                      className="mt-3 cursor-pointer font-semibold tracking-tight text-[#153438] transition-colors hover:text-[#08796f] dark:text-[#ecf7f5] dark:hover:text-[#52d8c4]"
+                      className="mt-3 cursor-pointer font-semibold tracking-tight text-[#212e48] transition-colors hover:text-[#2a5ed3] dark:text-[#eff5ff] dark:hover:text-[#6ab4ff]"
                       title="View Project Details & Results"
                     >
                       {project.name}
                     </h3>
                     <p
                       onClick={() => navigate(`/project/${encodeURIComponent(project.id)}`)}
-                      className="mt-1 line-clamp-2 cursor-pointer text-xs leading-relaxed text-[#4f6c69] hover:text-foreground dark:text-[#8ea9a6]"
+                      className="mt-1 line-clamp-2 cursor-pointer text-xs leading-relaxed text-[#576680] hover:text-foreground dark:text-[#95a3bd]"
                     >
                       {project.description}
                     </p>
 
                     {/* Meta info tags */}
-                    <div className="mt-3.5 flex flex-wrap items-center gap-2 font-mono text-[10px] text-[#55716f] dark:text-[#85a19e]">
-                      <span className="flex items-center gap-1 rounded bg-[#f0f6f5] px-2 py-0.5 dark:bg-white/[0.04]">
-                        <User className="size-3 text-[#08796f] dark:text-[#52d8c4]" />
+                    <div className="mt-3.5 flex flex-wrap items-center gap-2 font-mono text-[10px] text-[#5d6b85] dark:text-[#8c9bb5]">
+                      <span className="flex items-center gap-1 rounded bg-[#f1f5fb] px-2 py-0.5 dark:bg-white/[0.04]">
+                        <User className="size-3 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                         {project.investigator}
                       </span>
-                      <span className="flex items-center gap-1 rounded bg-[#f0f6f5] px-2 py-0.5 dark:bg-white/[0.04]">
-                        <MousePointer className="size-3 text-[#08796f] dark:text-[#52d8c4]" />
+                      <span className="flex items-center gap-1 rounded bg-[#f1f5fb] px-2 py-0.5 dark:bg-white/[0.04]">
+                        <MousePointer className="size-3 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                         {project.strain}
                       </span>
                     </div>
@@ -1012,10 +995,10 @@ export default function UserDashboard() {
                     {/* Quantitative Key Measures Preview */}
                     <div
                       onClick={() => navigate(`/project/${encodeURIComponent(project.id)}`)}
-                      className="mt-4 cursor-pointer rounded-lg border border-[#d3e5e2] bg-[#f8fbfa] p-2.5 transition-colors hover:border-[#08796f]/40 dark:border-white/[0.06] dark:bg-white/[0.02]"
+                      className="mt-4 cursor-pointer rounded-lg border border-[#d7e1f3] bg-[#f8fbfa] p-2.5 transition-colors hover:border-[#2a5ed3]/40 dark:border-white/[0.06] dark:bg-white/[0.02]"
                       title="Click to view full results, graphs & tables"
                     >
-                      <div className="grid grid-cols-3 divide-x divide-[#d3e5e2] dark:divide-white/[0.06]">
+                      <div className="grid grid-cols-3 divide-x divide-[#d7e1f3] dark:divide-white/[0.06]">
                         {project.metricsSummary.map((m, idx) => (
                           <div
                             key={idx}
@@ -1024,7 +1007,7 @@ export default function UserDashboard() {
                             <span className="truncate font-mono text-[8px] uppercase tracking-wider text-muted-foreground">
                               {m.label}
                             </span>
-                            <span className="mt-0.5 font-mono text-xs font-semibold text-[#183a3e] dark:text-[#dcf2ee]">
+                            <span className="mt-0.5 font-mono text-xs font-semibold text-[#253450] dark:text-[#e3edff]">
                               {m.value}{" "}
                               {m.unit && (
                                 <span className="font-normal text-[9px] text-muted-foreground">
@@ -1039,11 +1022,11 @@ export default function UserDashboard() {
                   </div>
 
                   {/* Footer Stats & Actions */}
-                  <div className="mt-5 border-t border-[#e2edea] pt-3 text-xs dark:border-white/[0.07]">
+                  <div className="mt-5 border-t border-[#e4eaf6] pt-3 text-xs dark:border-white/[0.07]">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 font-mono text-[10px] text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <Activity className="size-3 text-[#08796f] dark:text-[#52d8c4]" />
+                          <Activity className="size-3 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                           {project.trialCount} trials
                         </span>
                         <span>·</span>
@@ -1061,9 +1044,9 @@ export default function UserDashboard() {
                             e.stopPropagation();
                             navigate(`/project/${encodeURIComponent(project.id)}`);
                           }}
-                          className="h-7 gap-1 border-[#c8d9d7] px-2 text-[11px] font-semibold text-foreground shadow-2xs hover:bg-[#eef5f4] dark:border-white/10 dark:hover:bg-white/10"
+                          className="h-7 gap-1 border-[#ccd5e6] px-2 text-[11px] font-semibold text-foreground shadow-2xs hover:bg-[#f0f3fa] dark:border-white/10 dark:hover:bg-white/10"
                         >
-                          <Eye className="size-3 text-[#08796f] dark:text-[#52d8c4]" />
+                          <Eye className="size-3 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                           Details &amp; Graphs
                         </Button>
                         <Button
@@ -1072,7 +1055,7 @@ export default function UserDashboard() {
                             e.stopPropagation();
                             navigate(`/setup?projectId=${encodeURIComponent(project.id)}`);
                           }}
-                          className="h-7 gap-1 bg-[#08796f] px-2 text-[11px] font-semibold text-white shadow-2xs hover:bg-[#0a8b80] dark:bg-[#52d8c4] dark:text-[#041614] dark:hover:bg-[#44cbb9]"
+                          className="h-7 gap-1 bg-[#2a5ed3] px-2 text-[11px] font-semibold text-white shadow-2xs hover:bg-[#236ff0] dark:bg-[#6ab4ff] dark:text-[#0a1222] dark:hover:bg-[#52a7ff]"
                         >
                           Track <ArrowRight className="size-3" />
                         </Button>
@@ -1086,10 +1069,10 @@ export default function UserDashboard() {
             /* -------------------------------------------------- */
             /* Table View of Recent Projects                      */
             /* -------------------------------------------------- */
-            <div className="overflow-hidden rounded-xl border border-[#c9dcd9] bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+            <div className="overflow-hidden rounded-xl border border-[#cdd8ea] bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="border-b border-[#d8e8e5] bg-[#f5f9f8] font-mono text-[10px] uppercase tracking-wider text-muted-foreground dark:border-white/[0.08] dark:bg-white/[0.02]">
+                  <thead className="border-b border-[#dce4f4] bg-[#f6f8fc] font-mono text-[10px] uppercase tracking-wider text-muted-foreground dark:border-white/[0.08] dark:bg-white/[0.02]">
                     <tr>
                       <th className="px-4 py-3">Project &amp; Paradigm</th>
                       <th className="px-4 py-3">Investigator &amp; Animal</th>
@@ -1099,11 +1082,11 @@ export default function UserDashboard() {
                       <th className="px-4 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e4efec] dark:divide-white/[0.06]">
+                  <tbody className="divide-y divide-[#e6ecf8] dark:divide-white/[0.06]">
                     {filteredProjects.map((p) => (
                       <tr
                         key={p.id}
-                        className="transition-colors hover:bg-[#f6faf9] dark:hover:bg-white/[0.02]"
+                        className="transition-colors hover:bg-[#f7f9fd] dark:hover:bg-white/[0.02]"
                       >
                         <td className="px-4 py-3.5">
                           <div className="flex items-center gap-2.5">
@@ -1117,7 +1100,7 @@ export default function UserDashboard() {
                               onClick={() => navigate(`/project/${encodeURIComponent(p.id)}`)}
                               title="View Project Details & Results"
                             >
-                              <p className="font-semibold text-[#16363a] transition-colors hover:text-[#08796f] dark:text-[#ecf7f5] dark:hover:text-[#52d8c4]">
+                              <p className="font-semibold text-[#22304b] transition-colors hover:text-[#2a5ed3] dark:text-[#eff5ff] dark:hover:text-[#6ab4ff]">
                                 {p.name}
                               </p>
                               <p className="text-[11px] text-muted-foreground">
@@ -1148,15 +1131,15 @@ export default function UserDashboard() {
                               size="sm"
                               variant="outline"
                               onClick={() => navigate(`/project/${encodeURIComponent(p.id)}`)}
-                              className="h-7 px-2 text-xs border-[#c8d9d7] dark:border-white/10"
+                              className="h-7 px-2 text-xs border-[#ccd5e6] dark:border-white/10"
                             >
-                              <Eye className="size-3 mr-1 text-[#08796f] dark:text-[#52d8c4]" />
+                              <Eye className="size-3 mr-1 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                               Details
                             </Button>
                             <Button
                               size="sm"
                               onClick={() => navigate(`/setup?projectId=${encodeURIComponent(p.id)}`)}
-                              className="h-7 px-2 text-xs bg-[#08796f] text-white hover:bg-[#0a8b80] dark:bg-[#52d8c4] dark:text-[#041614]"
+                              className="h-7 px-2 text-xs bg-[#2a5ed3] text-white hover:bg-[#236ff0] dark:bg-[#6ab4ff] dark:text-[#0a1222]"
                             >
                               Track
                             </Button>
@@ -1180,7 +1163,7 @@ export default function UserDashboard() {
 
           {/* Empty Search Fallback */}
           {filteredProjects.length === 0 && (
-            <div className="rounded-xl border border-dashed border-[#bed2cf] bg-white py-12 text-center dark:border-white/10 dark:bg-transparent">
+            <div className="rounded-xl border border-dashed border-[#c3cee1] bg-white py-12 text-center dark:border-white/10 dark:bg-transparent">
               <FlaskConical className="mx-auto size-8 text-muted-foreground/60" />
               <h3 className="mt-3 font-semibold">No matching projects found</h3>
               <p className="mt-1 text-xs text-muted-foreground">
@@ -1206,10 +1189,10 @@ export default function UserDashboard() {
       {/* 4. "CREATE PROJECT" DIALOG                           */}
       {/* ==================================================== */}
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent className="max-w-xl border border-[#c4d7d4] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0a181d]">
+        <DialogContent className="max-w-xl border border-[#c8d3e5] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0e1623]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-bold">
-              <FlaskConical className="size-5 text-[#08796f] dark:text-[#52d8c4]" />
+              <FlaskConical className="size-5 text-[#2a5ed3] dark:text-[#6ab4ff]" />
               Create Behavioral Tracking Project
             </DialogTitle>
             <DialogDescription className="text-xs">
@@ -1308,15 +1291,15 @@ export default function UserDashboard() {
                       }
                       className={`flex flex-col items-start rounded-lg border p-2.5 text-left transition-all ${
                         isSelected
-                          ? "border-[#08796f] bg-[#08796f]/[0.08] ring-1 ring-[#08796f] dark:border-[#52d8c4] dark:bg-[#52d8c4]/15 dark:ring-[#52d8c4]"
-                          : "border-[#d0e0de] bg-[#f9fcfa] hover:border-[#08796f]/40 dark:border-white/10 dark:bg-white/[0.02]"
+                          ? "border-[#2a5ed3] bg-[#2a5ed3]/[0.08] ring-1 ring-[#2a5ed3] dark:border-[#6ab4ff] dark:bg-[#6ab4ff]/15 dark:ring-[#6ab4ff]"
+                          : "border-[#d4ddec] bg-[#f9fbff] hover:border-[#2a5ed3]/40 dark:border-white/10 dark:bg-white/[0.02]"
                       }`}
                     >
                       <div className="flex w-full items-center justify-between">
-                        <span className="font-mono text-[10px] font-bold text-[#08796f] dark:text-[#52d8c4]">
+                        <span className="font-mono text-[10px] font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">
                           {t.short}
                         </span>
-                        {isSelected && <Check className="size-3.5 text-[#08796f] dark:text-[#52d8c4]" />}
+                        {isSelected && <Check className="size-3.5 text-[#2a5ed3] dark:text-[#6ab4ff]" />}
                       </div>
                       <span className="mt-1 text-xs font-semibold leading-tight text-foreground">
                         {t.name}
@@ -1339,7 +1322,7 @@ export default function UserDashboard() {
               <Button
                 type="submit"
                 size="sm"
-                className="border border-[#08796f] bg-[#08796f] px-5 font-semibold text-white shadow-xs hover:bg-[#066a61] dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+                className="border border-[#2a5ed3] bg-[#2a5ed3] px-5 font-semibold text-white shadow-xs hover:bg-[#2752ba] dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
               >
                 Create Project
               </Button>
@@ -1352,10 +1335,10 @@ export default function UserDashboard() {
       {/* 5. "USER PROFILE MANAGEMENT" DIALOG                  */}
       {/* ==================================================== */}
       <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-        <DialogContent className="max-w-md border border-[#c4d7d4] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0a181d]">
+        <DialogContent className="max-w-md border border-[#c8d3e5] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0e1623]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-bold">
-              <UserCog className="size-5 text-[#08796f] dark:text-[#52d8c4]" />
+              <UserCog className="size-5 text-[#2a5ed3] dark:text-[#6ab4ff]" />
               User Profile Management
             </DialogTitle>
             <DialogDescription className="text-xs">
@@ -1365,9 +1348,9 @@ export default function UserDashboard() {
 
           <form onSubmit={handleSaveProfile} className="mt-3 space-y-4">
             {/* Avatar & Display Name preview */}
-            <div className="flex items-center gap-3.5 rounded-lg border border-[#d2e4e1] bg-[#f5faf8] p-3 dark:border-white/10 dark:bg-white/[0.03]">
-              <Avatar className="size-12 border border-[#08796f]/40 dark:border-[#52d8c4]/40">
-                <AvatarFallback className="bg-[#08796f] font-mono text-base font-bold text-white dark:bg-[#44cbb9] dark:text-[#041614]">
+            <div className="flex items-center gap-3.5 rounded-lg border border-[#d6e0f2] bg-[#f6f9fe] p-3 dark:border-white/10 dark:bg-white/[0.03]">
+              <Avatar className="size-12 border border-[#2a5ed3]/40 dark:border-[#6ab4ff]/40">
+                <AvatarFallback className="bg-[#2a5ed3] font-mono text-base font-bold text-white dark:bg-[#52a7ff] dark:text-[#0a1222]">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -1457,7 +1440,7 @@ export default function UserDashboard() {
               <Button
                 type="submit"
                 size="sm"
-                className="border border-[#08796f] bg-[#08796f] px-5 font-semibold text-white shadow-xs hover:bg-[#066a61] dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+                className="border border-[#2a5ed3] bg-[#2a5ed3] px-5 font-semibold text-white shadow-xs hover:bg-[#2752ba] dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
               >
                 Save Profile
               </Button>
@@ -1470,10 +1453,10 @@ export default function UserDashboard() {
       {/* 6. "SETTINGS" DIALOG                                 */}
       {/* ==================================================== */}
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <DialogContent className="max-w-md border border-[#c4d7d4] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0a181d]">
+        <DialogContent className="max-w-md border border-[#c8d3e5] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0e1623]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-bold">
-              <SettingsIcon className="size-5 text-[#08796f] dark:text-[#52d8c4]" />
+              <SettingsIcon className="size-5 text-[#2a5ed3] dark:text-[#6ab4ff]" />
               Analysis &amp; System Settings
             </DialogTitle>
             <DialogDescription className="text-xs">
@@ -1483,7 +1466,7 @@ export default function UserDashboard() {
 
           <form onSubmit={handleSaveSettings} className="mt-3 space-y-4">
             {/* Arena Auto-detection Toggle */}
-            <div className="flex items-center justify-between rounded-lg border border-[#d2e4e1] p-3 dark:border-white/10 dark:bg-white/[0.02]">
+            <div className="flex items-center justify-between rounded-lg border border-[#d6e0f2] p-3 dark:border-white/10 dark:bg-white/[0.02]">
               <div>
                 <p className="text-xs font-semibold text-foreground">
                   Automated Arena Fitting
@@ -1498,7 +1481,7 @@ export default function UserDashboard() {
                 onChange={(e) =>
                   setSettingsForm({ ...settingsForm, autoArenaDetect: e.target.checked })
                 }
-                className="size-4 accent-[#08796f]"
+                className="size-4 accent-[#2a5ed3]"
               />
             </div>
 
@@ -1513,8 +1496,8 @@ export default function UserDashboard() {
                     onClick={() => setSettingsForm({ ...settingsForm, distanceUnit: unit })}
                     className={`rounded-md border py-1.5 text-xs font-semibold uppercase transition-colors ${
                       settingsForm.distanceUnit === unit
-                        ? "border-[#08796f] bg-[#08796f]/10 text-[#08796f] dark:border-[#52d8c4] dark:bg-[#52d8c4]/20 dark:text-[#52d8c4]"
-                        : "border-[#d0e0de] text-muted-foreground hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                        ? "border-[#2a5ed3] bg-[#2a5ed3]/10 text-[#2a5ed3] dark:border-[#6ab4ff] dark:bg-[#6ab4ff]/20 dark:text-[#6ab4ff]"
+                        : "border-[#d4ddec] text-muted-foreground hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
                     }`}
                   >
                     {unit}
@@ -1559,7 +1542,7 @@ export default function UserDashboard() {
                 onChange={(e) =>
                   setSettingsForm({ ...settingsForm, fpsDownsampling: e.target.value })
                 }
-                className="h-9 w-full rounded-md border border-[#c5d7d5] bg-white px-2.5 text-xs text-[#203c3f] shadow-2xs outline-none focus:border-[#08796f] dark:border-white/10 dark:bg-[#0b1b20] dark:text-[#cfe0de]"
+                className="h-9 w-full rounded-md border border-[#c9d3e5] bg-white px-2.5 text-xs text-[#2a374f] shadow-2xs outline-none focus:border-[#2a5ed3] dark:border-white/10 dark:bg-[#101827] dark:text-[#d3dced]"
               >
                 <option value="60">Native 60 FPS (High Precision)</option>
                 <option value="30">30 FPS (Standard Balance)</option>
@@ -1579,7 +1562,7 @@ export default function UserDashboard() {
               <Button
                 type="submit"
                 size="sm"
-                className="border border-[#08796f] bg-[#08796f] px-5 font-semibold text-white shadow-xs hover:bg-[#066a61] dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+                className="border border-[#2a5ed3] bg-[#2a5ed3] px-5 font-semibold text-white shadow-xs hover:bg-[#2752ba] dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
               >
                 Save Settings
               </Button>

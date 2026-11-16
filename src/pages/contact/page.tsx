@@ -109,10 +109,10 @@ export default function ContactPage() {
               <div className="mx-auto grid size-12 place-items-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="size-6" />
               </div>
-              <h2 className="mt-4 text-xl font-bold tracking-tight text-[#183538] dark:text-[#e0eeec]">
+              <h2 className="mt-4 text-xl font-bold tracking-tight text-[#223048] dark:text-[#e3ebf9]">
                 Message Received!
               </h2>
-              <p className="mt-2 text-sm text-[#4b6362] dark:text-[#91a7a4]">
+              <p className="mt-2 text-sm text-[#525e74] dark:text-[#96a2b7]">
                 Thank you for reaching out to <strong>@drvara.si</strong>. A member of our scientific engineering team will review your inquiry and respond to <strong>{email}</strong> within 24 to 48 business hours.
               </p>
               <div className="mt-6">
@@ -233,7 +233,7 @@ export default function ContactPage() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto gap-2 bg-[#08796f] text-white hover:bg-[#07685f] dark:bg-[#59dbc7] dark:text-[#062024] dark:hover:bg-[#48c9b5]"
+                className="w-full sm:w-auto gap-2 bg-[#2a5ed3] text-white hover:bg-[#2650b6] dark:bg-[#71b8ff] dark:text-[#101c30] dark:hover:bg-[#4fa5ff]"
               >
                 {submitting ? (
                   <>
@@ -254,21 +254,21 @@ export default function ContactPage() {
         {/* Right Column: Direct Info Card (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           {/* Official Contact Details */}
-          <div className="rounded-xl border border-[#c9d9d7] bg-[#f9fcfb] p-6 dark:border-white/[0.08] dark:bg-[#071318]/50">
-            <h3 className="flex items-center gap-2 text-base font-semibold text-[#183538] dark:text-[#e0eeec]">
-              <Sparkles className="size-4 text-[#08796f] dark:text-[#59dbc7]" />
+          <div className="rounded-xl border border-[#cdd6e5] bg-[#f9fcfb] p-6 dark:border-white/[0.08] dark:bg-[#0a111d]/50">
+            <h3 className="flex items-center gap-2 text-base font-semibold text-[#223048] dark:text-[#e3ebf9]">
+              <Sparkles className="size-4 text-[#2a5ed3] dark:text-[#71b8ff]" />
               Direct Contacts
             </h3>
 
             <div className="mt-4 space-y-4">
-              <div className="flex items-start justify-between gap-2 border-b border-[#c9d9d7]/70 pb-3 dark:border-white/[0.08]">
+              <div className="flex items-start justify-between gap-2 border-b border-[#cdd6e5]/70 pb-3 dark:border-white/[0.08]">
                 <div>
                   <span className="block text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
                     Email Address
                   </span>
                   <a
                     href="mailto:contact@drvara.si"
-                    className="text-sm font-semibold text-[#08796f] hover:underline dark:text-[#59dbc7]"
+                    className="text-sm font-semibold text-[#2a5ed3] hover:underline dark:text-[#71b8ff]"
                   >
                     contact@drvara.si
                   </a>
@@ -288,7 +288,7 @@ export default function ContactPage() {
                 </Button>
               </div>
 
-              <div className="border-b border-[#c9d9d7]/70 pb-3 dark:border-white/[0.08]">
+              <div className="border-b border-[#cdd6e5]/70 pb-3 dark:border-white/[0.08]">
                 <span className="block text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
                   Official Website
                 </span>
@@ -296,36 +296,36 @@ export default function ContactPage() {
                   href="https://drvara.si"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#08796f] hover:underline dark:text-[#59dbc7]"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2a5ed3] hover:underline dark:text-[#71b8ff]"
                 >
                   <span>https://drvara.si</span>
                   <ExternalLink className="size-3.5" />
                 </a>
               </div>
 
-              <div className="border-b border-[#c9d9d7]/70 pb-3 dark:border-white/[0.08]">
+              <div className="border-b border-[#cdd6e5]/70 pb-3 dark:border-white/[0.08]">
                 <span className="block text-[11px] font-mono uppercase tracking-wider text-muted-foreground">
                   Copyright &amp; Ownership
                 </span>
-                <span className="text-sm font-semibold text-[#183538] dark:text-[#e0eeec]">
+                <span className="text-sm font-semibold text-[#223048] dark:text-[#e3ebf9]">
                   © {new Date().getFullYear()} @drvara.si
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-[#526d6b] dark:text-[#8ba7a5]">
-                <Clock className="size-3.5 shrink-0 text-[#08796f] dark:text-[#59dbc7]" />
+              <div className="flex items-center gap-2 text-xs text-[#596780] dark:text-[#92a1bb]">
+                <Clock className="size-3.5 shrink-0 text-[#2a5ed3] dark:text-[#71b8ff]" />
                 <span>Typical response time: within 24–48 business hours</span>
               </div>
             </div>
           </div>
 
           {/* Quick FAQ summary */}
-          <div className="rounded-xl border border-[#c9d9d7] bg-[#f9fcfb] p-6 dark:border-white/[0.08] dark:bg-[#071318]/50">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-[#183538] dark:text-[#e0eeec]">
-              <HelpCircle className="size-4 text-[#08796f] dark:text-[#59dbc7]" />
+          <div className="rounded-xl border border-[#cdd6e5] bg-[#f9fcfb] p-6 dark:border-white/[0.08] dark:bg-[#0a111d]/50">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-[#223048] dark:text-[#e3ebf9]">
+              <HelpCircle className="size-4 text-[#2a5ed3] dark:text-[#71b8ff]" />
               Quick Assistance
             </h3>
-            <ul className="mt-3 space-y-2 text-xs text-[#526d6b] dark:text-[#8ba7a5] leading-relaxed">
+            <ul className="mt-3 space-y-2 text-xs text-[#596780] dark:text-[#92a1bb] leading-relaxed">
               <li>
                 <strong>Video Upload Limit:</strong> Supports up to 500 MB per video (MP4, WebM, MOV) with full browser range seeking.
               </li>

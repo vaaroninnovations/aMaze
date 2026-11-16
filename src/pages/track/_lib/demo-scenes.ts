@@ -73,8 +73,8 @@ const SCENES: Partial<Record<TemplateId, SceneDef>> = {
     arena: ROUND_ARENA,
     floor: (ctx, zones) => {
       const r = DEMO_ARENA.rect.w / 2;
-      fillCircle(ctx, rectCenter(DEMO_ARENA.rect), r, "#cdd3d4");
-      ctx.strokeStyle = "#b4bcbd";
+      fillCircle(ctx, rectCenter(DEMO_ARENA.rect), r, "#ced2d8");
+      ctx.strokeStyle = "#b6bac2";
       ctx.lineWidth = 1;
       const c = rectCenter(DEMO_ARENA.rect);
       ctx.beginPath();
@@ -84,7 +84,7 @@ const SCENES: Partial<Record<TemplateId, SceneDef>> = {
       ctx.lineTo(c.x, c.y + r);
       ctx.stroke();
       const platform = zones.find((z) => z.id === "platform");
-      if (platform) fillPoly(ctx, platform.polygon, "#e2e6e6");
+      if (platform) fillPoly(ctx, platform.polygon, "#e3e5e9");
     },
     route: ["quad-SW", "quad-SE", CENTER, "quad-NW", "quad-SW", CENTER, "quad-NE", "platform", "platform"],
   },

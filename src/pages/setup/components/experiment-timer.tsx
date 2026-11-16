@@ -61,10 +61,10 @@ export default function ExperimentTimer({
     <div className="flex flex-col items-center">
       {/* Header */}
       <div className="mb-6 text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#08796f]/30 bg-[#08796f]/[0.08] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#08796f] dark:border-[#52d8c4]/30 dark:bg-[#52d8c4]/15 dark:text-[#52d8c4]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2a5ed3]/30 bg-[#2a5ed3]/[0.08] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#2a5ed3] dark:border-[#6ab4ff]/30 dark:bg-[#6ab4ff]/15 dark:text-[#6ab4ff]">
           Step 3 · Trial Acquisition Timer
         </span>
-        <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#132d30] sm:text-3xl dark:text-white">
+        <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#1c283e] sm:text-3xl dark:text-white">
           Set Experimental Recording Duration
         </h2>
         <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
@@ -74,13 +74,13 @@ export default function ExperimentTimer({
 
       <div className="grid w-full max-w-3xl gap-6 sm:grid-cols-[1.2fr_0.8fr]">
         {/* Left: Timer Display & Presets */}
-        <div className="flex flex-col items-center justify-between rounded-2xl border border-[#cde0dd] bg-white p-6 shadow-xl dark:border-white/10 dark:bg-[#0c1c22]">
+        <div className="flex flex-col items-center justify-between rounded-2xl border border-[#d1dcee] bg-white p-6 shadow-xl dark:border-white/10 dark:bg-[#111929]">
           {/* Digital Clock Display */}
           <div className="flex flex-col items-center py-4">
-            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#08796f] dark:text-[#52d8c4]">
+            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#2a5ed3] dark:text-[#6ab4ff]">
               Recording Duration
             </span>
-            <div className="my-2 flex items-baseline gap-1 font-mono text-6xl font-bold tracking-tight text-[#143236] sm:text-7xl dark:text-[#eaf5f3]">
+            <div className="my-2 flex items-baseline gap-1 font-mono text-6xl font-bold tracking-tight text-[#1f2d45] sm:text-7xl dark:text-[#ecf3fe]">
               {formattedTime}
               <span className="text-xl font-normal text-muted-foreground">min</span>
             </div>
@@ -90,7 +90,7 @@ export default function ExperimentTimer({
           </div>
 
           {/* Quick Preset Buttons */}
-          <div className="w-full space-y-2 border-t border-[#e2ecea] pt-4 dark:border-white/10">
+          <div className="w-full space-y-2 border-t border-[#e4eaf4] pt-4 dark:border-white/10">
             <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               Standard Methodology Presets
             </span>
@@ -104,8 +104,8 @@ export default function ExperimentTimer({
                     onClick={() => setTotalSeconds(p.seconds)}
                     className={`flex flex-col items-center rounded-lg border py-2 text-center transition-all ${
                       isSelected
-                        ? "border-[#08796f] bg-[#08796f]/10 text-[#08796f] ring-1 ring-[#08796f] dark:border-[#52d8c4] dark:bg-[#52d8c4]/20 dark:text-[#52d8c4]"
-                        : "border-[#d8e6e4] bg-[#f9fcfa] text-[#1e3b3e] hover:border-[#08796f]/40 dark:border-white/10 dark:bg-white/[0.02] dark:text-[#cfe0de]"
+                        ? "border-[#2a5ed3] bg-[#2a5ed3]/10 text-[#2a5ed3] ring-1 ring-[#2a5ed3] dark:border-[#6ab4ff] dark:bg-[#6ab4ff]/20 dark:text-[#6ab4ff]"
+                        : "border-[#dbe3f1] bg-[#f9fbff] text-[#28364e] hover:border-[#2a5ed3]/40 dark:border-white/10 dark:bg-white/[0.02] dark:text-[#d3dced]"
                     }`}
                   >
                     <span className="font-mono text-sm font-bold">{p.label}</span>
@@ -117,7 +117,7 @@ export default function ExperimentTimer({
           </div>
 
           {/* Stepper Fine-tuning */}
-          <div className="mt-4 flex w-full items-center justify-between gap-2 border-t border-[#e2ecea] pt-3 text-xs dark:border-white/10">
+          <div className="mt-4 flex w-full items-center justify-between gap-2 border-t border-[#e4eaf4] pt-3 text-xs dark:border-white/10">
             <span className="font-medium text-muted-foreground">Adjust Duration:</span>
             <div className="flex items-center gap-1.5">
               <Button
@@ -157,13 +157,13 @@ export default function ExperimentTimer({
         </div>
 
         {/* Right: Experimental Summary Card */}
-        <div className="flex flex-col justify-between rounded-2xl border border-[#cde0dd] bg-[#f8fbfa] p-5 shadow-md dark:border-white/10 dark:bg-[#0a181d]">
+        <div className="flex flex-col justify-between rounded-2xl border border-[#d1dcee] bg-[#f8fbfa] p-5 shadow-md dark:border-white/10 dark:bg-[#0e1623]">
           <div className="space-y-4">
-            <div className="border-b border-[#e0ece9] pb-3 dark:border-white/10">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#08796f] dark:text-[#52d8c4]">
+            <div className="border-b border-[#e2e9f5] pb-3 dark:border-white/10">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#2a5ed3] dark:text-[#6ab4ff]">
                 Protocol Summary
               </span>
-              <h3 className="text-base font-bold text-[#143236] dark:text-white">
+              <h3 className="text-base font-bold text-[#1f2d45] dark:text-white">
                 Live Trial Configuration
               </h3>
             </div>
@@ -187,7 +187,7 @@ export default function ExperimentTimer({
             {/* Standard Apparatus Size */}
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Arena Sizing:</span>
-              <span className="font-mono text-[11px] font-semibold text-[#08796f] dark:text-[#52d8c4]">
+              <span className="font-mono text-[11px] font-semibold text-[#2a5ed3] dark:text-[#6ab4ff]">
                 Standard {selectedSpecies}
               </span>
             </div>
@@ -201,7 +201,7 @@ export default function ExperimentTimer({
             </div>
 
             {/* Habituation Delay setting */}
-            <div className="space-y-1.5 border-t border-[#e0ece9] pt-3 dark:border-white/10">
+            <div className="space-y-1.5 border-t border-[#e2e9f5] pt-3 dark:border-white/10">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-medium">Habituation Countdown:</span>
                 <span className="font-mono font-bold">{habituationDelay}s</span>
@@ -214,8 +214,8 @@ export default function ExperimentTimer({
                     onClick={() => setHabituationDelay(d)}
                     className={`flex-1 rounded py-1 font-mono text-[10px] font-semibold transition-colors ${
                       habituationDelay === d
-                        ? "bg-[#08796f] text-white dark:bg-[#44cbb9] dark:text-[#041614]"
-                        : "border border-[#cde0dd] bg-white text-muted-foreground dark:border-white/10 dark:bg-white/[0.04]"
+                        ? "bg-[#2a5ed3] text-white dark:bg-[#52a7ff] dark:text-[#0a1222]"
+                        : "border border-[#d1dcee] bg-white text-muted-foreground dark:border-white/10 dark:bg-white/[0.04]"
                     }`}
                   >
                     {d === 0 ? "Off" : `${d}s`}
@@ -230,7 +230,7 @@ export default function ExperimentTimer({
             <Button
               size="lg"
               onClick={() => onLaunchExperiment(totalSeconds, habituationDelay)}
-              className="w-full border border-[#08796f] bg-[#08796f] py-6 text-sm font-bold text-white shadow-lg hover:bg-[#066a61] dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+              className="w-full border border-[#2a5ed3] bg-[#2a5ed3] py-6 text-sm font-bold text-white shadow-lg hover:bg-[#2752ba] dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
             >
               <Play className="mr-2 size-4 fill-current stroke-none" />
               Launch Experimental Page <ArrowRight className="ml-2 size-4" />

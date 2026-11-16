@@ -218,10 +218,10 @@ export default function MazeCoverflow({
     <div className="flex w-full flex-col items-center px-2 sm:px-4">
       {/* Header Info */}
       <div className="mb-4 text-center sm:mb-6">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#08796f]/30 bg-[#08796f]/[0.08] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#08796f] dark:border-[#52d8c4]/30 dark:bg-[#52d8c4]/15 dark:text-[#52d8c4]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2a5ed3]/30 bg-[#2a5ed3]/[0.08] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#2a5ed3] dark:border-[#6ab4ff]/30 dark:bg-[#6ab4ff]/15 dark:text-[#6ab4ff]">
           Step 2 · 3D Apparatus Coverflow
         </span>
-        <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#132d30] sm:text-3xl dark:text-white">
+        <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#1c283e] sm:text-3xl dark:text-white">
           Select &amp; Customize Behavioral Maze
         </h2>
         <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
@@ -240,8 +240,8 @@ export default function MazeCoverflow({
               onClick={() => setActiveIndex(idx)}
               className={`rounded-full px-2.5 py-1 font-mono text-[10px] sm:text-[11px] font-semibold transition-all ${
                 isActive
-                  ? "bg-[#08796f] text-white shadow-sm ring-2 ring-[#08796f]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:ring-[#44cbb9]/40"
-                  : "border border-[#cde0dd] bg-white text-muted-foreground hover:bg-[#f2f8f7] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                  ? "bg-[#2a5ed3] text-white shadow-sm ring-2 ring-[#2a5ed3]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:ring-[#52a7ff]/40"
+                  : "border border-[#d1dcee] bg-white text-muted-foreground hover:bg-[#f3f7fd] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
               }`}
             >
               {m.short}
@@ -294,24 +294,24 @@ export default function MazeCoverflow({
                 zIndex,
                 transition: isDragging && isCenter ? "none" : "all 0.42s cubic-bezier(0.22, 1, 0.36, 1)",
               }}
-              className={`absolute flex h-[490px] w-[310px] sm:w-[350px] flex-col justify-between rounded-2xl border bg-white p-4 shadow-xl transition-colors dark:bg-[#0c1c22] ${
+              className={`absolute flex h-[490px] w-[310px] sm:w-[350px] flex-col justify-between rounded-2xl border bg-white p-4 shadow-xl transition-colors dark:bg-[#111929] ${
                 isCenter
-                  ? "border-[#08796f] shadow-[0_24px_60px_rgba(8,121,111,0.22)] ring-2 ring-[#08796f]/40 dark:border-[#52d8c4] dark:ring-[#52d8c4]/40"
-                  : "cursor-pointer border-[#cadad7] shadow-md dark:border-white/10"
+                  ? "border-[#2a5ed3] shadow-[0_24px_60px_rgba(42,94,211,0.22)] ring-2 ring-[#2a5ed3]/40 dark:border-[#6ab4ff] dark:ring-[#6ab4ff]/40"
+                  : "cursor-pointer border-[#ced6e6] shadow-md dark:border-white/10"
               }`}
             >
               {/* Card Header: Short code, Name & Category */}
-              <div className="flex items-start justify-between border-b border-[#e2ecea] pb-2 dark:border-white/10">
+              <div className="flex items-start justify-between border-b border-[#e4eaf4] pb-2 dark:border-white/10">
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="rounded bg-[#08796f]/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#08796f] dark:bg-[#52d8c4]/15 dark:text-[#52d8c4]">
+                    <span className="rounded bg-[#2a5ed3]/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-[#2a5ed3] dark:bg-[#6ab4ff]/15 dark:text-[#6ab4ff]">
                       {maze.short}
                     </span>
                     <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-wider">
                       {maze.category}
                     </span>
                   </div>
-                  <h3 className="mt-1 text-base sm:text-lg font-bold tracking-tight text-[#143135] dark:text-[#f0f9f8]">
+                  <h3 className="mt-1 text-base sm:text-lg font-bold tracking-tight text-[#1f2c44] dark:text-[#f2f7ff]">
                     {maze.name}
                   </h3>
                 </div>
@@ -328,7 +328,12 @@ export default function MazeCoverflow({
                     onProceed();
                   }
                 }}
-                className="relative flex flex-1 cursor-pointer items-center justify-center overflow-hidden py-1 rounded-xl transition-transform hover:scale-[1.02]"
+                className={`relative my-2 flex flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl border py-1 transition-[transform,background-color] hover:scale-[1.02] ${
+                  // Stage always contrasts with the apparatus: dark behind a white maze, light behind a black maze.
+                  colorState === "White"
+                    ? "border-[#22304b] bg-[radial-gradient(ellipse_at_50%_35%,#24365c_0%,#0f1a30_70%)]"
+                    : "border-[#c8d3e5] bg-[radial-gradient(ellipse_at_50%_35%,#ffffff_0%,#d5e0f3_75%)]"
+                }`}
                 title={isCenter ? `Click to select ${maze.name} and proceed to Timer` : `Click to view ${maze.name}`}
               >
                 <Maze3DView
@@ -341,13 +346,13 @@ export default function MazeCoverflow({
               </div>
 
               {/* Card Options: Mice / Rat & Black / White CTA */}
-              <div className="space-y-2 rounded-xl border border-[#d8e8e5] bg-[#f8fbfa] p-2.5 sm:p-3 dark:border-white/10 dark:bg-white/[0.02]">
+              <div className="space-y-2 rounded-xl border border-[#dce4f4] bg-[#f8fbfa] p-2.5 sm:p-3 dark:border-white/10 dark:bg-white/[0.02]">
                 {/* Species Toggle: Mouse vs Rat */}
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                     Subject Species
                   </span>
-                  <div className="flex rounded-md border border-[#cde0dd] bg-white p-0.5 dark:border-white/10 dark:bg-[#071318]">
+                  <div className="flex rounded-md border border-[#d1dcee] bg-white p-0.5 dark:border-white/10 dark:bg-[#0a111d]">
                     {(["Mouse", "Rat"] as const).map((sp) => (
                       <button
                         key={sp}
@@ -358,7 +363,7 @@ export default function MazeCoverflow({
                         }}
                         className={`rounded px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
                           speciesState === sp
-                            ? "bg-[#08796f] text-white dark:bg-[#44cbb9] dark:text-[#041614]"
+                            ? "bg-[#2a5ed3] text-white dark:bg-[#52a7ff] dark:text-[#0a1222]"
                             : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
@@ -374,11 +379,11 @@ export default function MazeCoverflow({
                     <span className="font-mono text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
                       Apparatus Contrast CTA
                     </span>
-                    <span className="font-mono text-[9px] font-bold text-[#08796f] dark:text-[#52d8c4]">
+                    <span className="font-mono text-[9px] font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">
                       {colorState === "Black" ? "Black Maze" : "White Maze"}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-1 rounded-md border border-[#cde0dd] bg-white p-0.5 dark:border-white/10 dark:bg-[#071318]">
+                  <div className="grid grid-cols-2 gap-1 rounded-md border border-[#d1dcee] bg-white p-0.5 dark:border-white/10 dark:bg-[#0a111d]">
                     {/* Black CTA Button -> Black Maze with White Animal */}
                     <button
                       type="button"
@@ -418,8 +423,8 @@ export default function MazeCoverflow({
                 </div>
 
                 {/* Standard Dimensions Badge (Dynamically calculated based on species) */}
-                <div className="rounded-md border border-[#cde0dd] bg-white px-2 py-1 font-mono text-[9px] sm:text-[10px] text-[#133033] dark:border-white/10 dark:bg-white/[0.04] dark:text-[#dcf2ef]">
-                  <span className="font-bold text-[#08796f] dark:text-[#52d8c4]">Standard {speciesState} Size: </span>
+                <div className="rounded-md border border-[#d1dcee] bg-white px-2 py-1 font-mono text-[9px] sm:text-[10px] text-[#1e2b42] dark:border-white/10 dark:bg-white/[0.04] dark:text-[#e3edff]">
+                  <span className="font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">Standard {speciesState} Size: </span>
                   <span>{speciesState === "Rat" ? maze.ratDimensions : maze.mouseDimensions}</span>
                 </div>
               </div>
@@ -434,7 +439,7 @@ export default function MazeCoverflow({
           variant="outline"
           size="icon"
           onClick={handlePrev}
-          className="size-9 rounded-full border-[#bed4d1] bg-white text-foreground hover:bg-[#eaf3f1] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="size-9 rounded-full border-[#c3cfe4] bg-white text-foreground hover:bg-[#ecf1fa] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
           aria-label="Previous maze"
         >
           <ChevronLeft className="size-4" />
@@ -449,8 +454,8 @@ export default function MazeCoverflow({
               onClick={() => setActiveIndex(idx)}
               className={`h-2 rounded-full transition-all ${
                 idx === activeIndex
-                  ? "w-6 bg-[#08796f] dark:bg-[#52d8c4]"
-                  : "w-2 bg-[#bed4d1] hover:bg-[#08796f]/50 dark:bg-zinc-700"
+                  ? "w-6 bg-[#2a5ed3] dark:bg-[#6ab4ff]"
+                  : "w-2 bg-[#c3cfe4] hover:bg-[#2a5ed3]/50 dark:bg-zinc-700"
               }`}
               title={m.name}
             />
@@ -461,7 +466,7 @@ export default function MazeCoverflow({
           variant="outline"
           size="icon"
           onClick={handleNext}
-          className="size-9 rounded-full border-[#bed4d1] bg-white text-foreground hover:bg-[#eaf3f1] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="size-9 rounded-full border-[#c3cfe4] bg-white text-foreground hover:bg-[#ecf1fa] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
           aria-label="Next maze"
         >
           <ChevronRight className="size-4" />
@@ -473,7 +478,7 @@ export default function MazeCoverflow({
         <Button
           variant="outline"
           onClick={onBack}
-          className="h-11 border-[#cde0dd] px-5 dark:border-white/15"
+          className="h-11 border-[#d1dcee] px-5 dark:border-white/15"
         >
           <ArrowLeft className="mr-1.5 size-4" /> Back to Animal
         </Button>
@@ -481,7 +486,7 @@ export default function MazeCoverflow({
         <Button
           size="lg"
           onClick={handleConfirm}
-          className="h-11 border border-[#08796f] bg-[#08796f] px-6 sm:px-8 font-semibold text-white shadow-md hover:bg-[#066a61] dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+          className="h-11 border border-[#2a5ed3] bg-[#2a5ed3] px-6 sm:px-8 font-semibold text-white shadow-md hover:bg-[#2752ba] dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
         >
           <Check className="mr-1.5 size-4 stroke-[2.5]" />
           Confirm {activeMaze.name} ({speciesState}) &amp; Set Timer

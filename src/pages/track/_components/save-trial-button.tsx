@@ -22,7 +22,7 @@ export default function SaveTrialButton({ s, summary, info, disabled }: Props) {
         size="sm"
         onClick={() => setOpen(true)}
         disabled={disabled}
-        className="gap-1.5 bg-[#08796f] text-xs font-semibold text-white shadow-2xs hover:bg-[#0a8b80] dark:bg-[#52d8c4] dark:text-[#041614] dark:hover:bg-[#44cbb9]"
+        className="gap-1.5 bg-[#2a5ed3] text-xs font-semibold text-white shadow-2xs hover:bg-[#236ff0] dark:bg-[#6ab4ff] dark:text-[#0a1222] dark:hover:bg-[#52a7ff]"
       >
         <Save className="size-3.5" />
         <span>Save Trial to Project</span>

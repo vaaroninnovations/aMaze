@@ -175,7 +175,7 @@ export function generateSampleTrialsForProject(project: ProjectItem): TrialRecor
       },
       zones: [
         { id: "z-1", name: isEPM ? "Open Arm North" : isBM ? "Escape Hole (Target)" : isOFT ? "Center Zone" : isYM ? "Arm A" : "Novel Object", color: "#38bdf8" },
-        { id: "z-2", name: isEPM ? "Open Arm South" : isBM ? "Quadrant North" : isOFT ? "Periphery Ring" : isYM ? "Arm B" : "Familiar Object", color: "#52d8c4" },
+        { id: "z-2", name: isEPM ? "Open Arm South" : isBM ? "Quadrant North" : isOFT ? "Periphery Ring" : isYM ? "Arm B" : "Familiar Object", color: "#6ab4ff" },
         { id: "z-3", name: isEPM ? "Closed Arm East" : isBM ? "Quadrant East" : isOFT ? "Corner North-East" : isYM ? "Arm C" : "Corner East", color: "#a855f7" },
         { id: "z-4", name: isEPM ? "Closed Arm West" : isBM ? "Quadrant West" : isOFT ? "Corner South-West" : "Corner West", color: "#f59e0b" },
         { id: "z-5", name: isEPM ? "Central Intersection" : isBM ? "Quadrant South" : "Center", color: "#ec4899" },
@@ -215,7 +215,7 @@ export function generateSampleTrialsForProject(project: ProjectItem): TrialRecor
       {
         id: "z-2",
         name: isEPM ? "Open Arm South" : isBM ? "Quadrant North" : isOFT ? "Periphery Ring" : isYM ? "Arm B" : "Familiar Object",
-        color: "#52d8c4",
+        color: "#6ab4ff",
         entries: 5,
         timeSeconds: 24,
         dwellPercent: 8,

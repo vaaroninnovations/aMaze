@@ -243,11 +243,11 @@ export default function SaveTrialDialog({ s, summary, info, open, onOpenChange }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-[#153438] dark:text-[#ecf7f5]">
-            <CheckCircle2 className="size-5 text-[#08796f] dark:text-[#52d8c4]" />
+          <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-[#212e48] dark:text-[#eff5ff]">
+            <CheckCircle2 className="size-5 text-[#2a5ed3] dark:text-[#6ab4ff]" />
             Save Trial to Project
           </DialogTitle>
-          <DialogDescription className="text-xs text-[#4f6c69] dark:text-[#8ea9a6]">
+          <DialogDescription className="text-xs text-[#576680] dark:text-[#95a3bd]">
             Save full behavioral endpoints, 2D trajectory track, velocity timeline, and zones under your research project.
           </DialogDescription>
         </DialogHeader>
@@ -260,7 +260,7 @@ export default function SaveTrialDialog({ s, summary, info, open, onOpenChange }
               <button
                 type="button"
                 onClick={() => setIsCreatingNew(!isCreatingNew)}
-                className="text-[11px] font-semibold text-[#08796f] hover:underline dark:text-[#52d8c4]"
+                className="text-[11px] font-semibold text-[#2a5ed3] hover:underline dark:text-[#6ab4ff]"
               >
                 {isCreatingNew ? "Select existing project" : "+ Create new project"}
               </button>
@@ -345,7 +345,7 @@ export default function SaveTrialDialog({ s, summary, info, open, onOpenChange }
           </div>
 
           {/* Summary Preview */}
-          <div className="rounded-lg border border-[#c9dcd9] bg-[#f8fbfa] p-2.5 dark:border-white/[0.08] dark:bg-white/[0.02]">
+          <div className="rounded-lg border border-[#cdd8ea] bg-[#f8fbfa] p-2.5 dark:border-white/[0.08] dark:bg-white/[0.02]">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Metrics Snapshot</p>
             <div className="mt-1.5 grid grid-cols-3 gap-2 font-mono text-xs">
               <div>
@@ -380,7 +380,7 @@ export default function SaveTrialDialog({ s, summary, info, open, onOpenChange }
             size="sm"
             onClick={handleSave}
             disabled={isSaving}
-            className="bg-[#08796f] hover:bg-[#0a8b80] text-white text-xs font-semibold gap-1.5 dark:bg-[#52d8c4] dark:text-[#041614] dark:hover:bg-[#44cbb9]"
+            className="bg-[#2a5ed3] hover:bg-[#236ff0] text-white text-xs font-semibold gap-1.5 dark:bg-[#6ab4ff] dark:text-[#0a1222] dark:hover:bg-[#52a7ff]"
           >
             <Save className="size-3.5" />
             {isSaving ? "Saving..." : "Save & Open Project Details"}

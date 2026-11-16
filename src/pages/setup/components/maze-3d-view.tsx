@@ -64,7 +64,7 @@ export default function Maze3DView({
     dirLight.shadow.mapSize.height = 1024;
     scene.add(dirLight);
 
-    const rimLight = new THREE.DirectionalLight(0x7edbd0, 0.6);
+    const rimLight = new THREE.DirectionalLight(0x7cbdff, 0.6);
     rimLight.position.set(-3.5, 3.5, -3.5);
     scene.add(rimLight);
 
@@ -76,8 +76,9 @@ export default function Maze3DView({
 
     // Dynamic Floor & Wall Colors
     const floorColor = isBlackMaze ? 0x16181b : 0xf5f8f7;
-    const wallColor = isBlackMaze ? 0x24282c : 0xdce4e2;
-    const accentLineColor = isBlackMaze ? 0x52d8c4 : 0x08796f;
+    const wallColor = isBlackMaze ? 0x2b3038 : 0xd3dbe9;
+    // Accent lines use the logo blue, lightened on the black maze so they stay legible.
+    const accentLineColor = isBlackMaze ? 0x5aadff : 0x1f6feb;
 
     // Materials
     const floorMat = new THREE.MeshStandardMaterial({
@@ -93,7 +94,7 @@ export default function Maze3DView({
     });
 
     const transparentWallMat = new THREE.MeshPhysicalMaterial({
-      color: isBlackMaze ? 0x33444b : 0xe0f0ee,
+      color: isBlackMaze ? 0x374153 : 0xe4edfc,
       transparent: true,
       opacity: 0.45,
       roughness: 0.1,
@@ -102,7 +103,7 @@ export default function Maze3DView({
     });
 
     const baseStandMat = new THREE.MeshStandardMaterial({
-      color: 0x3a4245,
+      color: 0x3c4149,
       roughness: 0.35,
       metalness: 0.5,
     });
@@ -262,7 +263,7 @@ export default function Maze3DView({
         // Water surface with realistic physical material
         const waterGeo = new THREE.CircleGeometry(poolRadius * 0.98, 48);
         const waterMat = new THREE.MeshPhysicalMaterial({
-          color: isBlackMaze ? 0x0a141c : 0xb5e0de,
+          color: isBlackMaze ? 0x0b1320 : 0xa8caee,
           transparent: true,
           opacity: 0.72,
           roughness: 0.1,
@@ -329,7 +330,7 @@ export default function Maze3DView({
           const isTargetHole = i === 3;
           const holeGeo = new THREE.CylinderGeometry(holeRadius, holeRadius, 0.06, 16);
           const holeMat = new THREE.MeshBasicMaterial({
-            color: isTargetHole ? accentLineColor : (isBlackMaze ? 0x050607 : 0x1f2326),
+            color: isTargetHole ? accentLineColor : (isBlackMaze ? 0x050607 : 0x202328),
           });
           const hole = new THREE.Mesh(holeGeo, holeMat);
           hole.position.set(x, 0.02, z);

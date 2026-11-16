@@ -251,11 +251,11 @@ export default function ProjectDetailsPage() {
     ctx.clearRect(0, 0, w, h);
 
     // Dark backdrop
-    ctx.fillStyle = "#071318";
+    ctx.fillStyle = "#0a111d";
     ctx.fillRect(0, 0, w, h);
 
     // Grid lines
-    ctx.strokeStyle = "rgba(82, 216, 196, 0.08)";
+    ctx.strokeStyle = "rgba(106, 180, 255, 0.08)";
     ctx.lineWidth = 1;
     for (let x = 0; x < w; x += 40) {
       ctx.beginPath();
@@ -297,7 +297,7 @@ export default function ProjectDetailsPage() {
       for (let i = 1; i < pts.length; i++) {
         ctx.lineTo(pts[i].x * scaleX, pts[i].y * scaleY);
       }
-      ctx.strokeStyle = "rgba(82, 216, 196, 0.85)";
+      ctx.strokeStyle = "rgba(106, 180, 255, 0.85)";
       ctx.lineWidth = 2.5;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
@@ -337,7 +337,7 @@ export default function ProjectDetailsPage() {
     ctx.clearRect(0, 0, w, h);
 
     // Heat background
-    ctx.fillStyle = "#071318";
+    ctx.fillStyle = "#0a111d";
     ctx.fillRect(0, 0, w, h);
 
     const pts = activeTrial.trajectory;
@@ -428,16 +428,16 @@ export default function ProjectDetailsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7faf9] text-[#142d31] selection:bg-[#08796f]/20 dark:bg-[#071318] dark:text-[#e4f0ef]">
+    <div className="min-h-screen bg-[#f7faf9] text-[#1d293e] selection:bg-[#2a5ed3]/20 dark:bg-[#0a111d] dark:text-[#e7edf9]">
       {/* -------------------------------------------------------------------- */}
       {/* TOP NAVIGATION BAR                                                   */}
       {/* -------------------------------------------------------------------- */}
-      <header className="sticky top-0 z-40 border-b border-[#c8d9d7]/70 bg-white/80 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#071318]/80">
+      <header className="sticky top-0 z-40 border-b border-[#ccd5e6]/70 bg-white/80 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#0a111d]/80">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <Link
               to="/dashboard"
-              className="flex items-center gap-1.5 rounded-lg border border-[#c8d9d7] bg-white px-2.5 py-1 text-xs font-semibold text-muted-foreground shadow-2xs hover:bg-[#eef5f4] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
+              className="flex items-center gap-1.5 rounded-lg border border-[#ccd5e6] bg-white px-2.5 py-1 text-xs font-semibold text-muted-foreground shadow-2xs hover:bg-[#f0f3fa] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
             >
               <ArrowLeft className="size-3.5" />
               <span>Dashboard</span>
@@ -461,7 +461,7 @@ export default function ProjectDetailsPage() {
               size="sm"
               variant="outline"
               onClick={handleExportCSV}
-              className="h-8 gap-1.5 border-[#c8d9d7] bg-white text-xs font-semibold shadow-2xs hover:bg-[#eef5f4] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
+              className="h-8 gap-1.5 border-[#ccd5e6] bg-white text-xs font-semibold shadow-2xs hover:bg-[#f0f3fa] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
             >
               <Download className="size-3.5" />
               <span className="hidden sm:inline">Export CSV</span>
@@ -471,7 +471,7 @@ export default function ProjectDetailsPage() {
               size="sm"
               variant="outline"
               onClick={() => window.print()}
-              className="h-8 gap-1.5 border-[#c8d9d7] bg-white text-xs font-semibold shadow-2xs hover:bg-[#eef5f4] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
+              className="h-8 gap-1.5 border-[#ccd5e6] bg-white text-xs font-semibold shadow-2xs hover:bg-[#f0f3fa] dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
             >
               <Printer className="size-3.5" />
               <span className="hidden sm:inline">Print Report</span>
@@ -480,7 +480,7 @@ export default function ProjectDetailsPage() {
             <Button
               size="sm"
               onClick={() => navigate(`/setup?projectId=${encodeURIComponent(project.id)}&template=${project.templateId}`)}
-              className="h-8 gap-1.5 bg-[#08796f] px-3 text-xs font-bold text-white shadow-xs hover:bg-[#0a8b80] dark:bg-[#52d8c4] dark:text-[#041614] dark:hover:bg-[#44cbb9]"
+              className="h-8 gap-1.5 bg-[#2a5ed3] px-3 text-xs font-bold text-white shadow-xs hover:bg-[#236ff0] dark:bg-[#6ab4ff] dark:text-[#0a1222] dark:hover:bg-[#52a7ff]"
             >
               <Play className="size-3.5" />
               <span>Record New Trial</span>
@@ -494,7 +494,7 @@ export default function ProjectDetailsPage() {
       {/* -------------------------------------------------------------------- */}
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-y-6">
         {/* HERO PROJECT BANNER & TRIAL SELECTOR */}
-        <div className="relative overflow-hidden rounded-2xl border border-[#c4d7d4] bg-gradient-to-br from-white via-[#f5faf9] to-[#ebf5f3] p-6 shadow-sm dark:border-white/[0.08] dark:from-[#091a20] dark:via-[#071318] dark:to-[#0b1f26]">
+        <div className="relative overflow-hidden rounded-2xl border border-[#c8d3e5] bg-gradient-to-br from-white via-[#f6f9fe] to-[#edf3fd] p-6 shadow-sm dark:border-white/[0.08] dark:from-[#0f1727] dark:via-[#0a111d] dark:to-[#121c2e]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">
@@ -508,7 +508,7 @@ export default function ProjectDetailsPage() {
                   Created: {project.createdAt}
                 </span>
               </div>
-              <h1 className="text-2xl font-bold tracking-tight text-[#0e272b] dark:text-[#e4f0ef] sm:text-3xl">
+              <h1 className="text-2xl font-bold tracking-tight text-[#172337] dark:text-[#e7edf9] sm:text-3xl">
                 {project.name}
               </h1>
               <p className="text-xs text-muted-foreground max-w-3xl leading-relaxed sm:text-sm">
@@ -516,28 +516,28 @@ export default function ProjectDetailsPage() {
               </p>
               <div className="flex flex-wrap items-center gap-4 pt-1 font-mono text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5">
-                  <User className="size-3.5 text-[#08796f] dark:text-[#52d8c4]" />
+                  <User className="size-3.5 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                   PI: {project.investigator}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <FlaskConical className="size-3.5 text-[#08796f] dark:text-[#52d8c4]" />
+                  <FlaskConical className="size-3.5 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                   Model: {project.strain}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Clock className="size-3.5 text-[#08796f] dark:text-[#52d8c4]" />
+                  <Clock className="size-3.5 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                   Last Updated: {project.lastModified}
                 </span>
               </div>
             </div>
 
             {/* Trial Selection Switcher */}
-            <div className="flex flex-col gap-2 rounded-xl border border-[#c4d7d4] bg-white/80 p-3 shadow-2xs backdrop-blur-xs dark:border-white/10 dark:bg-black/30 lg:w-80">
+            <div className="flex flex-col gap-2 rounded-xl border border-[#c8d3e5] bg-white/80 p-3 shadow-2xs backdrop-blur-xs dark:border-white/10 dark:bg-black/30 lg:w-80">
               <div className="flex items-center justify-between text-xs font-semibold">
                 <span className="flex items-center gap-1.5 text-muted-foreground font-mono">
-                  <Sliders className="size-3.5 text-[#08796f] dark:text-[#52d8c4]" />
+                  <Sliders className="size-3.5 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                   Select Recorded Trial:
                 </span>
-                <span className="font-mono text-[11px] text-[#08796f] dark:text-[#52d8c4]">
+                <span className="font-mono text-[11px] text-[#2a5ed3] dark:text-[#6ab4ff]">
                   {trials.length} total
                 </span>
               </div>
@@ -545,7 +545,7 @@ export default function ProjectDetailsPage() {
               <select
                 value={selectedTrialId}
                 onChange={(e) => setSelectedTrialId(e.target.value)}
-                className="w-full rounded-lg border border-[#c8d9d7] bg-white px-3 py-1.5 font-mono text-xs font-semibold text-foreground shadow-2xs focus:border-[#08796f] focus:outline-none dark:border-white/15 dark:bg-[#071318]"
+                className="w-full rounded-lg border border-[#ccd5e6] bg-white px-3 py-1.5 font-mono text-xs font-semibold text-foreground shadow-2xs focus:border-[#2a5ed3] focus:outline-none dark:border-white/15 dark:bg-[#0a111d]"
               >
                 {trials.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -570,10 +570,10 @@ export default function ProjectDetailsPage() {
         {activeTrial && (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {/* Total Distance */}
-            <div className="rounded-xl border border-[#c8d9d7] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+            <div className="rounded-xl border border-[#ccd5e6] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase font-mono">Total Distance</span>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-2xl font-bold tracking-tight text-[#08796f] dark:text-[#52d8c4]">
+                <span className="text-2xl font-bold tracking-tight text-[#2a5ed3] dark:text-[#6ab4ff]">
                   {activeTrial.metrics.totalDistanceM}
                 </span>
                 <span className="text-xs text-muted-foreground font-mono">meters</span>
@@ -584,10 +584,10 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* Mean Velocity */}
-            <div className="rounded-xl border border-[#c8d9d7] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+            <div className="rounded-xl border border-[#ccd5e6] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase font-mono">Mean Speed</span>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-2xl font-bold tracking-tight text-[#08796f] dark:text-[#52d8c4]">
+                <span className="text-2xl font-bold tracking-tight text-[#2a5ed3] dark:text-[#6ab4ff]">
                   {activeTrial.metrics.meanSpeedCmS}
                 </span>
                 <span className="text-xs text-muted-foreground font-mono">cm/s</span>
@@ -598,7 +598,7 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* Immobility / Freezing */}
-            <div className="rounded-xl border border-[#c8d9d7] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+            <div className="rounded-xl border border-[#ccd5e6] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase font-mono">Immobility Time</span>
               <div className="mt-1 flex items-baseline gap-1">
                 <span className="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
@@ -612,10 +612,10 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* Active Bouts */}
-            <div className="rounded-xl border border-[#c8d9d7] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+            <div className="rounded-xl border border-[#ccd5e6] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase font-mono">Locomotor Bouts</span>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-2xl font-bold tracking-tight text-[#08796f] dark:text-[#52d8c4]">
+                <span className="text-2xl font-bold tracking-tight text-[#2a5ed3] dark:text-[#6ab4ff]">
                   {activeTrial.metrics.boutsCount}
                 </span>
                 <span className="text-xs text-muted-foreground font-mono">episodes</span>
@@ -626,10 +626,10 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* Zone Crossings */}
-            <div className="rounded-xl border border-[#c8d9d7] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+            <div className="rounded-xl border border-[#ccd5e6] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase font-mono">Zone Entries</span>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-2xl font-bold tracking-tight text-[#08796f] dark:text-[#52d8c4]">
+                <span className="text-2xl font-bold tracking-tight text-[#2a5ed3] dark:text-[#6ab4ff]">
                   {activeTrial.metrics.zoneEntriesTotal}
                 </span>
                 <span className="text-xs text-muted-foreground font-mono">crossings</span>
@@ -640,7 +640,7 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* Paradigm Specific Index */}
-            <div className="rounded-xl border border-[#c8d9d7] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+            <div className="rounded-xl border border-[#ccd5e6] bg-white p-3.5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
               <span className="text-[11px] font-semibold text-muted-foreground uppercase font-mono truncate block">
                 {activeTrial.metrics.primaryIndexLabel}
               </span>
@@ -659,13 +659,13 @@ export default function ProjectDetailsPage() {
         {/* -------------------------------------------------------------------- */}
         {/* TAB CONTROLS (Graphs, Tables, Settings, Trials History)             */}
         {/* -------------------------------------------------------------------- */}
-        <div className="flex border-b border-[#c8d9d7] dark:border-white/10">
+        <div className="flex border-b border-[#ccd5e6] dark:border-white/10">
           <button
             type="button"
             onClick={() => setActiveTab("graphs")}
             className={`flex items-center gap-2 border-b-2 px-5 py-3 font-mono text-xs font-bold transition-colors ${
               activeTab === "graphs"
-                ? "border-[#08796f] text-[#08796f] dark:border-[#52d8c4] dark:text-[#52d8c4]"
+                ? "border-[#2a5ed3] text-[#2a5ed3] dark:border-[#6ab4ff] dark:text-[#6ab4ff]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -678,7 +678,7 @@ export default function ProjectDetailsPage() {
             onClick={() => setActiveTab("tables")}
             className={`flex items-center gap-2 border-b-2 px-5 py-3 font-mono text-xs font-bold transition-colors ${
               activeTab === "tables"
-                ? "border-[#08796f] text-[#08796f] dark:border-[#52d8c4] dark:text-[#52d8c4]"
+                ? "border-[#2a5ed3] text-[#2a5ed3] dark:border-[#6ab4ff] dark:text-[#6ab4ff]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -691,7 +691,7 @@ export default function ProjectDetailsPage() {
             onClick={() => setActiveTab("settings")}
             className={`flex items-center gap-2 border-b-2 px-5 py-3 font-mono text-xs font-bold transition-colors ${
               activeTab === "settings"
-                ? "border-[#08796f] text-[#08796f] dark:border-[#52d8c4] dark:text-[#52d8c4]"
+                ? "border-[#2a5ed3] text-[#2a5ed3] dark:border-[#6ab4ff] dark:text-[#6ab4ff]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -704,7 +704,7 @@ export default function ProjectDetailsPage() {
             onClick={() => setActiveTab("trials")}
             className={`flex items-center gap-2 border-b-2 px-5 py-3 font-mono text-xs font-bold transition-colors ${
               activeTab === "trials"
-                ? "border-[#08796f] text-[#08796f] dark:border-[#52d8c4] dark:text-[#52d8c4]"
+                ? "border-[#2a5ed3] text-[#2a5ed3] dark:border-[#6ab4ff] dark:text-[#6ab4ff]"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -719,11 +719,11 @@ export default function ProjectDetailsPage() {
         {activeTab === "graphs" && activeTrial && (
           <div className="space-y-6">
             {/* GRAPH 1: VELOCITY OVER TIME */}
-            <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#e4efec] dark:border-white/[0.06]">
+            <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#e6ecf8] dark:border-white/[0.06]">
                 <div>
                   <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
-                    <Activity className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+                    <Activity className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                     Locomotor Velocity Timeline (Speed vs. Time)
                   </h3>
                   <p className="text-xs text-muted-foreground">
@@ -731,7 +731,7 @@ export default function ProjectDetailsPage() {
                   </p>
                 </div>
                 {hoveredSpeedPoint && (
-                  <div className="font-mono text-xs px-2.5 py-1 rounded bg-[#08796f]/10 text-[#08796f] dark:text-[#52d8c4]">
+                  <div className="font-mono text-xs px-2.5 py-1 rounded bg-[#2a5ed3]/10 text-[#2a5ed3] dark:text-[#6ab4ff]">
                     Time: {hoveredSpeedPoint.t}s · Speed: {hoveredSpeedPoint.speed} cm/s
                   </div>
                 )}
@@ -798,8 +798,8 @@ export default function ProjectDetailsPage() {
                           <rect x="40" y="10" width="940" height="215" rx="2" />
                         </clipPath>
                         <linearGradient id="speedGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#52d8c4" stopOpacity="0.45" />
-                          <stop offset="100%" stopColor="#52d8c4" stopOpacity="0.02" />
+                          <stop offset="0%" stopColor="#6ab4ff" stopOpacity="0.45" />
+                          <stop offset="100%" stopColor="#6ab4ff" stopOpacity="0.02" />
                         </linearGradient>
                       </defs>
 
@@ -828,7 +828,7 @@ export default function ProjectDetailsPage() {
                       {pathData && (
                         <g clipPath="url(#speedPlotClip)">
                           <path d={closePath} fill="url(#speedGrad)" />
-                          <path d={pathData} fill="none" stroke="#08796f" strokeWidth="2" className="dark:stroke-[#52d8c4]" />
+                          <path d={pathData} fill="none" stroke="#2a5ed3" strokeWidth="2" className="dark:stroke-[#6ab4ff]" />
                         </g>
                       )}
 
@@ -844,7 +844,7 @@ export default function ProjectDetailsPage() {
                             cy={y}
                             r="4"
                             fill="transparent"
-                            className="cursor-pointer hover:fill-[#52d8c4]"
+                            className="cursor-pointer hover:fill-[#6ab4ff]"
                             onMouseEnter={() => setHoveredSpeedPoint(p)}
                           />
                         );
@@ -867,12 +867,12 @@ export default function ProjectDetailsPage() {
             {/* GRAPHS ROW 2: ZONE DWELL DISTRIBUTION & CUMULATIVE DISTANCE */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               {/* ZONE DWELL DISTRIBUTION */}
-              <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+              <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
                 <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
-                  <BarChart3 className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+                  <BarChart3 className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                   Apparatus Zone Dwell Time Distribution
                 </h3>
-                <p className="text-xs text-muted-foreground pb-4 border-b border-[#e4efec] dark:border-white/[0.06]">
+                <p className="text-xs text-muted-foreground pb-4 border-b border-[#e6ecf8] dark:border-white/[0.06]">
                   Proportion of trial time and cumulative seconds spent residing in each apparatus sector.
                 </p>
 
@@ -903,12 +903,12 @@ export default function ProjectDetailsPage() {
               </div>
 
               {/* CUMULATIVE DISTANCE PROGRESSION */}
-              <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
+              <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
                 <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
-                  <TrendingUp className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+                  <TrendingUp className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                   Cumulative Exploration Distance Progression
                 </h3>
-                <p className="text-xs text-muted-foreground pb-4 border-b border-[#e4efec] dark:border-white/[0.06]">
+                <p className="text-xs text-muted-foreground pb-4 border-b border-[#e6ecf8] dark:border-white/[0.06]">
                   Total locomotor distance accumulated steadily over the trial timeline.
                 </p>
 
@@ -959,11 +959,11 @@ export default function ProjectDetailsPage() {
             {/* GRAPHS ROW 3: TRACK MAP & HEATMAP */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               {/* SPATIAL TRACK MAP */}
-              <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-                <div className="flex items-center justify-between pb-3 border-b border-[#e4efec] dark:border-white/[0.06]">
+              <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+                <div className="flex items-center justify-between pb-3 border-b border-[#e6ecf8] dark:border-white/[0.06]">
                   <div>
                     <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
-                      <MapPin className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+                      <MapPin className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                       Spatial Trajectory Track Map
                     </h3>
                     <p className="text-xs text-muted-foreground">
@@ -975,14 +975,14 @@ export default function ProjectDetailsPage() {
                   </Badge>
                 </div>
 
-                <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-xl border border-black/40 bg-[#071318]">
+                <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-xl border border-black/40 bg-[#0a111d]">
                   <canvas ref={trackCanvasRef} width={640} height={360} className="h-full w-full object-contain" />
                 </div>
               </div>
 
               {/* OCCUPANCY HEATMAP */}
-              <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-                <div className="flex items-center justify-between pb-3 border-b border-[#e4efec] dark:border-white/[0.06]">
+              <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+                <div className="flex items-center justify-between pb-3 border-b border-[#e6ecf8] dark:border-white/[0.06]">
                   <div>
                     <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
                       <Flame className="size-4 text-orange-500" />
@@ -999,7 +999,7 @@ export default function ProjectDetailsPage() {
                   </div>
                 </div>
 
-                <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-xl border border-black/40 bg-[#071318]">
+                <div className="relative mt-4 aspect-video w-full overflow-hidden rounded-xl border border-black/40 bg-[#0a111d]">
                   <canvas ref={heatmapCanvasRef} width={640} height={360} className="h-full w-full object-contain" />
                 </div>
               </div>
@@ -1013,8 +1013,8 @@ export default function ProjectDetailsPage() {
         {activeTab === "tables" && activeTrial && (
           <div className="space-y-6">
             {/* TABLE 1: SUMMARY METRICS */}
-            <div className="overflow-hidden rounded-2xl border border-[#c8d9d7] bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-              <div className="p-4 border-b border-[#e4efec] dark:border-white/[0.06] flex items-center justify-between">
+            <div className="overflow-hidden rounded-2xl border border-[#ccd5e6] bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+              <div className="p-4 border-b border-[#e6ecf8] dark:border-white/[0.06] flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-sm text-foreground">Executive Behavioral Endpoints Summary</h3>
                   <p className="text-xs text-muted-foreground">Primary locomotor, thigmotaxic, and paradigm-specific measures</p>
@@ -1026,7 +1026,7 @@ export default function ProjectDetailsPage() {
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#f5f9f8] font-mono text-[10px] uppercase text-muted-foreground border-b border-[#d8e8e5] dark:bg-white/[0.02] dark:border-white/[0.08]">
+                  <thead className="bg-[#f6f8fc] font-mono text-[10px] uppercase text-muted-foreground border-b border-[#dce4f4] dark:bg-white/[0.02] dark:border-white/[0.08]">
                     <tr>
                       <th className="px-4 py-3">Parameter / Metric</th>
                       <th className="px-4 py-3">Recorded Value</th>
@@ -1035,24 +1035,24 @@ export default function ProjectDetailsPage() {
                       <th className="px-4 py-3">Biological Interpretation</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e4efec] dark:divide-white/[0.06] font-mono">
+                  <tbody className="divide-y divide-[#e6ecf8] dark:divide-white/[0.06] font-mono">
                     <tr>
                       <td className="px-4 py-3 font-semibold text-foreground">Total Distance Traveled</td>
-                      <td className="px-4 py-3 font-bold text-[#08796f] dark:text-[#52d8c4]">{activeTrial.metrics.totalDistanceM}</td>
+                      <td className="px-4 py-3 font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">{activeTrial.metrics.totalDistanceM}</td>
                       <td className="px-4 py-3 text-muted-foreground">meters</td>
                       <td className="px-4 py-3 text-muted-foreground">12.0 – 25.0 m</td>
                       <td className="px-4 py-3 font-sans text-xs">Overall ambulatory locomotion &amp; exploratory drive</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-semibold text-foreground">Mean Locomotor Speed</td>
-                      <td className="px-4 py-3 font-bold text-[#08796f] dark:text-[#52d8c4]">{activeTrial.metrics.meanSpeedCmS}</td>
+                      <td className="px-4 py-3 font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">{activeTrial.metrics.meanSpeedCmS}</td>
                       <td className="px-4 py-3 text-muted-foreground">cm/s</td>
                       <td className="px-4 py-3 text-muted-foreground">8.0 – 16.0 cm/s</td>
                       <td className="px-4 py-3 font-sans text-xs">General motor capability &amp; arousal state</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-semibold text-foreground">Maximum Peak Velocity</td>
-                      <td className="px-4 py-3 font-bold text-[#08796f] dark:text-[#52d8c4]">{activeTrial.metrics.maxSpeedCmS}</td>
+                      <td className="px-4 py-3 font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">{activeTrial.metrics.maxSpeedCmS}</td>
                       <td className="px-4 py-3 text-muted-foreground">cm/s</td>
                       <td className="px-4 py-3 text-muted-foreground">22.0 – 35.0 cm/s</td>
                       <td className="px-4 py-3 font-sans text-xs">Maximum sprint capacity during exploratory darts</td>
@@ -1066,14 +1066,14 @@ export default function ProjectDetailsPage() {
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-semibold text-foreground">Active Locomotor Bouts</td>
-                      <td className="px-4 py-3 font-bold text-[#08796f] dark:text-[#52d8c4]">{activeTrial.metrics.boutsCount}</td>
+                      <td className="px-4 py-3 font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">{activeTrial.metrics.boutsCount}</td>
                       <td className="px-4 py-3 text-muted-foreground">bouts</td>
                       <td className="px-4 py-3 text-muted-foreground">12 – 28 bouts</td>
                       <td className="px-4 py-3 font-sans text-xs">Discrete episodes of purposeful exploration</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-semibold text-foreground">Total Arena Zone Crossings</td>
-                      <td className="px-4 py-3 font-bold text-[#08796f] dark:text-[#52d8c4]">{activeTrial.metrics.zoneEntriesTotal}</td>
+                      <td className="px-4 py-3 font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">{activeTrial.metrics.zoneEntriesTotal}</td>
                       <td className="px-4 py-3 text-muted-foreground">entries</td>
                       <td className="px-4 py-3 text-muted-foreground">15 – 45 crossings</td>
                       <td className="px-4 py-3 font-sans text-xs">Transitions between designated apparatus sectors</td>
@@ -1091,8 +1091,8 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* TABLE 2: ZONE-BY-ZONE METRICS */}
-            <div className="overflow-hidden rounded-2xl border border-[#c8d9d7] bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-              <div className="p-4 border-b border-[#e4efec] dark:border-white/[0.06] flex items-center justify-between">
+            <div className="overflow-hidden rounded-2xl border border-[#ccd5e6] bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+              <div className="p-4 border-b border-[#e6ecf8] dark:border-white/[0.06] flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-sm text-foreground">Zone-by-Zone Behavioral Analytics</h3>
                   <p className="text-xs text-muted-foreground">Entries, dwell durations, latencies, and localized velocity per sector</p>
@@ -1101,7 +1101,7 @@ export default function ProjectDetailsPage() {
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#f5f9f8] font-mono text-[10px] uppercase text-muted-foreground border-b border-[#d8e8e5] dark:bg-white/[0.02] dark:border-white/[0.08]">
+                  <thead className="bg-[#f6f8fc] font-mono text-[10px] uppercase text-muted-foreground border-b border-[#dce4f4] dark:bg-white/[0.02] dark:border-white/[0.08]">
                     <tr>
                       <th className="px-4 py-3">Zone Sector</th>
                       <th className="px-4 py-3 text-center">Entries</th>
@@ -1112,7 +1112,7 @@ export default function ProjectDetailsPage() {
                       <th className="px-4 py-3 text-right">Distance in Zone (cm)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#e4efec] dark:divide-white/[0.06] font-mono">
+                  <tbody className="divide-y divide-[#e6ecf8] dark:divide-white/[0.06] font-mono">
                     {activeTrial.zoneStats.map((z) => (
                       <tr key={z.id} className="hover:bg-muted/10 transition-colors">
                         <td className="px-4 py-3 font-semibold flex items-center gap-2">
@@ -1121,7 +1121,7 @@ export default function ProjectDetailsPage() {
                         </td>
                         <td className="px-4 py-3 text-center font-bold">{z.entries}</td>
                         <td className="px-4 py-3 text-center">{z.timeSeconds}s</td>
-                        <td className="px-4 py-3 text-center font-bold text-[#08796f] dark:text-[#52d8c4]">{z.dwellPercent}%</td>
+                        <td className="px-4 py-3 text-center font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">{z.dwellPercent}%</td>
                         <td className="px-4 py-3 text-center">{z.firstEntryLatency !== null ? `${z.firstEntryLatency}s` : "None"}</td>
                         <td className="px-4 py-3 text-center">{z.meanSpeed ?? "—"}</td>
                         <td className="px-4 py-3 text-right">{z.distanceCm ? `${z.distanceCm} cm` : "—"}</td>
@@ -1140,9 +1140,9 @@ export default function ProjectDetailsPage() {
         {activeTab === "settings" && activeTrial && (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             {/* APPARATUS & ARENA GEOMETRY */}
-            <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-2 pb-3 border-b border-[#e4efec] dark:border-white/[0.06]">
-                <Compass className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+            <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2 pb-3 border-b border-[#e6ecf8] dark:border-white/[0.06]">
+                <Compass className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                 Apparatus &amp; Physical Geometry Settings
               </h3>
               <dl className="mt-4 space-y-3 font-mono text-xs">
@@ -1172,15 +1172,15 @@ export default function ProjectDetailsPage() {
                 </div>
                 <div className="flex justify-between py-1">
                   <dt className="text-muted-foreground font-sans">Spatial Scale Factor:</dt>
-                  <dd className="text-[#08796f] dark:text-[#52d8c4] font-bold">1 px = 0.10 cm (10 px/cm)</dd>
+                  <dd className="text-[#2a5ed3] dark:text-[#6ab4ff] font-bold">1 px = 0.10 cm (10 px/cm)</dd>
                 </div>
               </dl>
             </div>
 
             {/* COMPUTER VISION TRACKING SETTINGS */}
-            <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-2 pb-3 border-b border-[#e4efec] dark:border-white/[0.06]">
-                <Scan className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+            <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2 pb-3 border-b border-[#e6ecf8] dark:border-white/[0.06]">
+                <Scan className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                 Computer Vision Detection &amp; Segmentation Settings
               </h3>
               <dl className="mt-4 space-y-3 font-mono text-xs">
@@ -1212,15 +1212,15 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* SUBJECT & PROTOCOL METADATA */}
-            <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-2 pb-3 border-b border-[#e4efec] dark:border-white/[0.06]">
-                <User className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+            <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2 pb-3 border-b border-[#e6ecf8] dark:border-white/[0.06]">
+                <User className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                 Subject &amp; Cohort Information
               </h3>
               <dl className="mt-4 space-y-3 font-mono text-xs">
                 <div className="flex justify-between py-1 border-b border-muted/10">
                   <dt className="text-muted-foreground font-sans">Animal Number / Subject ID:</dt>
-                  <dd className="font-bold text-foreground text-sm text-[#08796f] dark:text-[#52d8c4]">{activeTrial.animalNumber}</dd>
+                  <dd className="font-bold text-foreground text-sm text-[#2a5ed3] dark:text-[#6ab4ff]">{activeTrial.animalNumber}</dd>
                 </div>
                 <div className="flex justify-between py-1 border-b border-muted/10">
                   <dt className="text-muted-foreground font-sans">Group / Cohort Assignment:</dt>
@@ -1242,9 +1242,9 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* ZONES CONFIGURATION LIST */}
-            <div className="rounded-2xl border border-[#c8d9d7] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-2 pb-3 border-b border-[#e4efec] dark:border-white/[0.06]">
-                <Layers className="size-4 text-[#08796f] dark:text-[#52d8c4]" />
+            <div className="rounded-2xl border border-[#ccd5e6] bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2 pb-3 border-b border-[#e6ecf8] dark:border-white/[0.06]">
+                <Layers className="size-4 text-[#2a5ed3] dark:text-[#6ab4ff]" />
                 Configured Apparatus Zones ({activeTrial.zoneStats.length})
               </h3>
               <div className="mt-4 space-y-2.5">
@@ -1268,8 +1268,8 @@ export default function ProjectDetailsPage() {
         {/* TAB 4: ALL RECORDED TRIALS                                           */}
         {/* -------------------------------------------------------------------- */}
         {activeTab === "trials" && (
-          <div className="overflow-hidden rounded-2xl border border-[#c8d9d7] bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#0b1b20]">
-            <div className="p-4 border-b border-[#e4efec] dark:border-white/[0.06] flex items-center justify-between">
+          <div className="overflow-hidden rounded-2xl border border-[#ccd5e6] bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#101827]">
+            <div className="p-4 border-b border-[#e6ecf8] dark:border-white/[0.06] flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-sm text-foreground">Cohort Trial Recording History</h3>
                 <p className="text-xs text-muted-foreground">All experimental trials saved under {project.name}</p>
@@ -1277,7 +1277,7 @@ export default function ProjectDetailsPage() {
               <Button
                 size="sm"
                 onClick={() => navigate(`/setup?projectId=${encodeURIComponent(project.id)}&template=${project.templateId}`)}
-                className="h-8 gap-1.5 bg-[#08796f] text-xs font-bold text-white hover:bg-[#0a8b80] dark:bg-[#52d8c4] dark:text-[#041614]"
+                className="h-8 gap-1.5 bg-[#2a5ed3] text-xs font-bold text-white hover:bg-[#236ff0] dark:bg-[#6ab4ff] dark:text-[#0a1222]"
               >
                 <Play className="size-3" />
                 <span>+ Run Next Trial</span>
@@ -1286,7 +1286,7 @@ export default function ProjectDetailsPage() {
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-[#f5f9f8] text-[10px] uppercase text-muted-foreground border-b border-[#d8e8e5] dark:bg-white/[0.02] dark:border-white/[0.08]">
+                <thead className="bg-[#f6f8fc] text-[10px] uppercase text-muted-foreground border-b border-[#dce4f4] dark:bg-white/[0.02] dark:border-white/[0.08]">
                   <tr>
                     <th className="px-4 py-3">Trial #</th>
                     <th className="px-4 py-3">Subject / Animal #</th>
@@ -1298,15 +1298,15 @@ export default function ProjectDetailsPage() {
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#e4efec] dark:divide-white/[0.06]">
+                <tbody className="divide-y divide-[#e6ecf8] dark:divide-white/[0.06]">
                   {trials.map((t) => (
                     <tr
                       key={t.id}
                       className={`hover:bg-muted/10 transition-colors ${
-                        t.id === selectedTrialId ? "bg-[#08796f]/5 dark:bg-[#52d8c4]/10" : ""
+                        t.id === selectedTrialId ? "bg-[#2a5ed3]/5 dark:bg-[#6ab4ff]/10" : ""
                       }`}
                     >
-                      <td className="px-4 py-3.5 font-bold text-[#08796f] dark:text-[#52d8c4]">
+                      <td className="px-4 py-3.5 font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">
                         #{t.trialNumber}
                       </td>
                       <td className="px-4 py-3.5 font-bold font-sans text-foreground">
@@ -1334,7 +1334,7 @@ export default function ProjectDetailsPage() {
                           }}
                           className={`h-7 px-2.5 text-[11px] font-sans ${
                             t.id === selectedTrialId
-                              ? "bg-[#08796f] text-white dark:bg-[#52d8c4] dark:text-[#041614]"
+                              ? "bg-[#2a5ed3] text-white dark:bg-[#6ab4ff] dark:text-[#0a1222]"
                               : ""
                           }`}
                         >

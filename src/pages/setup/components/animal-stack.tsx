@@ -191,10 +191,10 @@ export default function AnimalStack({
     <div className="flex w-full flex-col items-center px-2 sm:px-4">
       {/* Step Header Instructions */}
       <div className="mb-3 text-center sm:mb-5">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#08796f]/30 bg-[#08796f]/[0.08] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#08796f] dark:border-[#52d8c4]/30 dark:bg-[#52d8c4]/15 dark:text-[#52d8c4]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2a5ed3]/30 bg-[#2a5ed3]/[0.08] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-[#2a5ed3] dark:border-[#6ab4ff]/30 dark:bg-[#6ab4ff]/15 dark:text-[#6ab4ff]">
           Step 1 · Subject Selection
         </span>
-        <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#132d30] sm:text-3xl dark:text-white">
+        <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#1c283e] sm:text-3xl dark:text-white">
           Choose Your Experimental Rodent
         </h2>
         <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
@@ -213,8 +213,8 @@ export default function AnimalStack({
               onClick={() => setActiveIndex(idx)}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-semibold transition-all ${
                 isActive
-                  ? "bg-[#08796f] text-white shadow-xs ring-2 ring-[#08796f]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:ring-[#44cbb9]/40"
-                  : "border border-[#cde0dd] bg-white text-muted-foreground hover:bg-[#f2f8f7] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                  ? "bg-[#2a5ed3] text-white shadow-xs ring-2 ring-[#2a5ed3]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:ring-[#52a7ff]/40"
+                  : "border border-[#d1dcee] bg-white text-muted-foreground hover:bg-[#f3f7fd] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
               }`}
             >
               <span
@@ -275,19 +275,19 @@ export default function AnimalStack({
                 zIndex,
                 transition: isDragging && isCenter ? "none" : "all 0.38s cubic-bezier(0.22, 1, 0.36, 1)",
               }}
-              className={`absolute top-0 flex h-[440px] w-[310px] sm:w-[350px] flex-col justify-between rounded-2xl border bg-white p-4 sm:p-5 shadow-xl transition-colors dark:bg-[#0c1c22] ${
+              className={`absolute top-0 flex h-[440px] w-[310px] sm:w-[350px] flex-col justify-between rounded-2xl border bg-white p-4 sm:p-5 shadow-xl transition-colors dark:bg-[#111929] ${
                 isCenter
-                  ? "border-[#08796f] shadow-[0_20px_50px_rgba(8,121,111,0.22)] ring-2 ring-[#08796f]/40 dark:border-[#52d8c4] dark:ring-[#52d8c4]/40"
-                  : "cursor-pointer border-[#cadad7] shadow-md dark:border-white/10"
+                  ? "border-[#2a5ed3] shadow-[0_20px_50px_rgba(42,94,211,0.22)] ring-2 ring-[#2a5ed3]/40 dark:border-[#6ab4ff] dark:ring-[#6ab4ff]/40"
+                  : "cursor-pointer border-[#ced6e6] shadow-md dark:border-white/10"
               }`}
             >
               {/* Card Top: Plain & Clean - Name on the Top */}
-              <div className="flex items-start justify-between border-b border-[#e2ecea] pb-2.5 dark:border-white/10">
+              <div className="flex items-start justify-between border-b border-[#e4eaf4] pb-2.5 dark:border-white/10">
                 <div>
-                  <h3 className="text-xl font-bold tracking-tight text-[#123135] dark:text-[#f0f9f8]">
+                  <h3 className="text-xl font-bold tracking-tight text-[#1e2b45] dark:text-[#f2f7ff]">
                     {animal.name}
                   </h3>
-                  <p className="font-mono text-[11px] italic text-[#506e6b] dark:text-[#8ea9a6]">
+                  <p className="font-mono text-[11px] italic text-[#586883] dark:text-[#95a3bd]">
                     {animal.scientificName} · {animal.strain}
                   </p>
                 </div>
@@ -323,15 +323,15 @@ export default function AnimalStack({
               </div>
 
               {/* Card Bottom: Specifications & Instant Select CTA */}
-              <div className="space-y-2 border-t border-[#e2ecea] pt-2.5 text-xs dark:border-white/10">
+              <div className="space-y-2 border-t border-[#e4eaf4] pt-2.5 text-xs dark:border-white/10">
                 <div className="grid grid-cols-2 gap-2 font-mono text-[10px]">
-                  <div className="rounded-md bg-[#f4f8f7] p-1.5 dark:bg-white/[0.03]">
+                  <div className="rounded-md bg-[#f5f7fb] p-1.5 dark:bg-white/[0.03]">
                     <span className="text-muted-foreground block text-[9px] uppercase">Avg Weight</span>
-                    <span className="font-bold text-[#143236] dark:text-[#e4f3f1]">{animal.avgWeight}</span>
+                    <span className="font-bold text-[#1f2d45] dark:text-[#e7f0fe]">{animal.avgWeight}</span>
                   </div>
-                  <div className="rounded-md bg-[#f4f8f7] p-1.5 dark:bg-white/[0.03]">
+                  <div className="rounded-md bg-[#f5f7fb] p-1.5 dark:bg-white/[0.03]">
                     <span className="text-muted-foreground block text-[9px] uppercase">Body Length</span>
-                    <span className="font-bold text-[#143236] dark:text-[#e4f3f1]">{animal.adultLength}</span>
+                    <span className="font-bold text-[#1f2d45] dark:text-[#e7f0fe]">{animal.adultLength}</span>
                   </div>
                 </div>
 
@@ -346,7 +346,7 @@ export default function AnimalStack({
                       onSelectAnimal(animal);
                       onProceed();
                     }}
-                    className="flex items-center gap-1 font-mono text-[11px] font-bold text-[#08796f] hover:underline dark:text-[#52d8c4]"
+                    className="flex items-center gap-1 font-mono text-[11px] font-bold text-[#2a5ed3] hover:underline dark:text-[#6ab4ff]"
                   >
                     Select <ArrowRight className="size-3" />
                   </button>
@@ -363,7 +363,7 @@ export default function AnimalStack({
           variant="outline"
           size="icon"
           onClick={handlePrev}
-          className="size-9 rounded-full border-[#bed4d1] bg-white text-foreground hover:bg-[#eaf3f1] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="size-9 rounded-full border-[#c3cfe4] bg-white text-foreground hover:bg-[#ecf1fa] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
           aria-label="Previous animal"
         >
           <ChevronLeft className="size-4" />
@@ -378,8 +378,8 @@ export default function AnimalStack({
               onClick={() => setActiveIndex(idx)}
               className={`h-2 rounded-full transition-all ${
                 idx === activeIndex
-                  ? "w-6 bg-[#08796f] dark:bg-[#52d8c4]"
-                  : "w-2 bg-[#bed4d1] hover:bg-[#08796f]/50 dark:bg-zinc-700"
+                  ? "w-6 bg-[#2a5ed3] dark:bg-[#6ab4ff]"
+                  : "w-2 bg-[#c3cfe4] hover:bg-[#2a5ed3]/50 dark:bg-zinc-700"
               }`}
               title={a.name}
             />
@@ -390,7 +390,7 @@ export default function AnimalStack({
           variant="outline"
           size="icon"
           onClick={handleNext}
-          className="size-9 rounded-full border-[#bed4d1] bg-white text-foreground hover:bg-[#eaf3f1] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+          className="size-9 rounded-full border-[#c3cfe4] bg-white text-foreground hover:bg-[#ecf1fa] dark:border-white/10 dark:bg-zinc-900 dark:hover:bg-zinc-800"
           aria-label="Next animal"
         >
           <ChevronRight className="size-4" />
@@ -402,7 +402,7 @@ export default function AnimalStack({
         <Button
           size="lg"
           onClick={onProceed}
-          className="h-11 border border-[#08796f] bg-[#08796f] px-6 sm:px-8 font-semibold text-white shadow-md hover:bg-[#066a61] dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+          className="h-11 border border-[#2a5ed3] bg-[#2a5ed3] px-6 sm:px-8 font-semibold text-white shadow-md hover:bg-[#2752ba] dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
         >
           <Check className="mr-1.5 size-4 stroke-[2.5]" />
           Select {currentAnimal.name} &amp; Configure Maze <ArrowRight className="ml-2 size-4" />

@@ -657,13 +657,13 @@ export default function ExperimentalRunPage() {
 
       const bgGrad = offCtx.createRadialGradient(w / 2, h / 2, 80, w / 2, h / 2, 620);
       if (isDark) {
-        bgGrad.addColorStop(0, "#1c242b");
+        bgGrad.addColorStop(0, "#1d232f");
         bgGrad.addColorStop(0.7, "#12171d");
         bgGrad.addColorStop(1, "#0a0d11");
       } else {
-        bgGrad.addColorStop(0, "#eef5f4");
-        bgGrad.addColorStop(0.7, "#d8e4e2");
-        bgGrad.addColorStop(1, "#b8c9c6");
+        bgGrad.addColorStop(0, "#f0f3fa");
+        bgGrad.addColorStop(0.7, "#dbe1ed");
+        bgGrad.addColorStop(1, "#bcc5d6");
       }
       offCtx.fillStyle = bgGrad;
       offCtx.fillRect(0, 0, w, h);
@@ -1260,11 +1260,11 @@ export default function ExperimentalRunPage() {
       ctx.clearRect(0, 0, w, h);
 
       // Dark laboratory backdrop
-      ctx.fillStyle = "#051116";
+      ctx.fillStyle = "#080f1b";
       ctx.fillRect(0, 0, w, h);
 
       // Coordinate grid
-      ctx.strokeStyle = "rgba(82, 216, 196, 0.06)";
+      ctx.strokeStyle = "rgba(106, 180, 255, 0.06)";
       ctx.lineWidth = 1;
       for (let x = 0; x < w; x += 50) {
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
@@ -1286,13 +1286,13 @@ export default function ExperimentalRunPage() {
         ctx.arc(c.x, c.y, Math.min(arena.rect.w, arena.rect.h) / 2, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
         ctx.fill();
-        ctx.strokeStyle = "rgba(82, 216, 196, 0.4)";
+        ctx.strokeStyle = "rgba(106, 180, 255, 0.4)";
         ctx.lineWidth = 2.5;
         ctx.stroke();
       } else {
         ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
         ctx.fillRect(arena.rect.x, arena.rect.y, arena.rect.w, arena.rect.h);
-        ctx.strokeStyle = "rgba(82, 216, 196, 0.4)";
+        ctx.strokeStyle = "rgba(106, 180, 255, 0.4)";
         ctx.lineWidth = 2.5;
         ctx.strokeRect(arena.rect.x, arena.rect.y, arena.rect.w, arena.rect.h);
       }
@@ -1330,7 +1330,7 @@ export default function ExperimentalRunPage() {
         ctx.lineJoin = "round";
         ctx.stroke();
 
-        ctx.strokeStyle = "#52d8c4";
+        ctx.strokeStyle = "#6ab4ff";
         ctx.lineWidth = 3;
         ctx.stroke();
 
@@ -1379,7 +1379,7 @@ export default function ExperimentalRunPage() {
       ctx.clearRect(0, 0, w, h);
 
       // Dark background
-      ctx.fillStyle = "#051116";
+      ctx.fillStyle = "#080f1b";
       ctx.fillRect(0, 0, w, h);
 
       const pts = trajectoryRef.current;
@@ -1468,9 +1468,9 @@ export default function ExperimentalRunPage() {
 
       // Synthetic benchmark background if chosen
       if (videoSource === "benchmark") {
-        ctx.fillStyle = contrastMode === "Black" ? "#0f171d" : "#f1f6f5";
+        ctx.fillStyle = contrastMode === "Black" ? "#101620" : "#f2f5fa";
         ctx.fillRect(0, 0, width, height);
-        ctx.strokeStyle = "rgba(82, 216, 196, 0.08)";
+        ctx.strokeStyle = "rgba(106, 180, 255, 0.08)";
         ctx.lineWidth = 1;
         for (let x = 0; x < width; x += 50) {
           ctx.beginPath();
@@ -1578,7 +1578,7 @@ export default function ExperimentalRunPage() {
         ctx.lineJoin = "round";
         ctx.stroke();
 
-        ctx.strokeStyle = "#52d8c4";
+        ctx.strokeStyle = "#6ab4ff";
         ctx.lineWidth = 3;
         ctx.stroke();
       }
@@ -1623,13 +1623,13 @@ export default function ExperimentalRunPage() {
     // Glowing aura
     ctx.beginPath();
     ctx.ellipse(0, 0, majorR + 6, minorR + 6, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(82, 216, 196, 0.15)";
+    ctx.fillStyle = "rgba(106, 180, 255, 0.15)";
     ctx.fill();
 
     // Fitted body blob fill
     ctx.beginPath();
     ctx.ellipse(0, 0, majorR, minorR, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(82, 216, 196, 0.32)";
+    ctx.fillStyle = "rgba(106, 180, 255, 0.32)";
     ctx.fill();
 
     // Outer dark contrast boundary
@@ -1638,7 +1638,7 @@ export default function ExperimentalRunPage() {
     ctx.stroke();
 
     // Inner bright neon boundary
-    ctx.strokeStyle = "#52d8c4";
+    ctx.strokeStyle = "#6ab4ff";
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
@@ -1705,7 +1705,7 @@ export default function ExperimentalRunPage() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.fillStyle = "rgba(7, 19, 24, 0.85)";
+    ctx.fillStyle = "rgba(10, 17, 29, 0.85)";
     ctx.fillRect(nose.x + 8, nose.y - 8, 38, 14);
     ctx.strokeStyle = "#ef4444";
     ctx.lineWidth = 1;
@@ -1724,7 +1724,7 @@ export default function ExperimentalRunPage() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.fillStyle = "rgba(7, 19, 24, 0.85)";
+    ctx.fillStyle = "rgba(10, 17, 29, 0.85)";
     ctx.fillRect(x + 8, y - 8, 38, 14);
     ctx.strokeStyle = "#38bdf8";
     ctx.lineWidth = 1;
@@ -1743,7 +1743,7 @@ export default function ExperimentalRunPage() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.fillStyle = "rgba(7, 19, 24, 0.85)";
+    ctx.fillStyle = "rgba(10, 17, 29, 0.85)";
     ctx.fillRect(tail.x + 8, tail.y - 8, 38, 14);
     ctx.strokeStyle = "#a855f7";
     ctx.lineWidth = 1;
@@ -1760,11 +1760,11 @@ export default function ExperimentalRunPage() {
     const tagText = `AUTO-BLOB: ${Math.round(majorR * 2)}×${Math.round(minorR * 2)}px · ${angleDegVal}°`;
     ctx.font = "bold 9px monospace";
     const tagW = ctx.measureText(tagText).width + 18;
-    ctx.fillStyle = "rgba(7, 19, 24, 0.88)";
+    ctx.fillStyle = "rgba(10, 17, 29, 0.88)";
     ctx.beginPath();
     ctx.roundRect(tagX - tagW / 2, tagY - 8, tagW, 16, 4);
     ctx.fill();
-    ctx.strokeStyle = "#52d8c4";
+    ctx.strokeStyle = "#6ab4ff";
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -1774,7 +1774,7 @@ export default function ExperimentalRunPage() {
     ctx.fillStyle = "#22c55e";
     ctx.fill();
 
-    ctx.fillStyle = "#52d8c4";
+    ctx.fillStyle = "#6ab4ff";
     ctx.textAlign = "center";
     ctx.fillText(tagText, tagX + 4, tagY + 3);
 
@@ -1859,7 +1859,7 @@ export default function ExperimentalRunPage() {
   const selectedBox = selectedZone ? polygonBounds(selectedZone.polygon) : null;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#071318] text-[#e4f0ef]">
+    <div className="flex min-h-screen flex-col bg-[#0a111d] text-[#e7edf9]">
       <input
         ref={fileInputRef}
         type="file"
@@ -1869,7 +1869,7 @@ export default function ExperimentalRunPage() {
       />
 
       {/* TOP HEADER */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#071318]/95 px-4 py-2.5 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0a111d]/95 px-4 py-2.5 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Link
@@ -1881,7 +1881,7 @@ export default function ExperimentalRunPage() {
             </Link>
             <span className="text-white/20">|</span>
             <div className="flex items-center gap-2">
-              <span className="rounded bg-[#08796f]/25 px-2 py-0.5 font-mono text-[11px] font-bold text-[#52d8c4]">
+              <span className="rounded bg-[#2a5ed3]/25 px-2 py-0.5 font-mono text-[11px] font-bold text-[#6ab4ff]">
                 {mazeShort}
               </span>
               <span className="text-sm font-bold text-white">{mazeName}</span>
@@ -1896,7 +1896,7 @@ export default function ExperimentalRunPage() {
                 type="text"
                 value={animalNumber}
                 onChange={(e) => setAnimalNumber(e.target.value)}
-                className="w-20 rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs font-semibold text-white outline-none focus:ring-1 focus:ring-[#52d8c4]"
+                className="w-20 rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs font-semibold text-white outline-none focus:ring-1 focus:ring-[#6ab4ff]"
                 placeholder="M-01"
               />
             </div>
@@ -1907,14 +1907,14 @@ export default function ExperimentalRunPage() {
                 type="text"
                 value={groupNumber}
                 onChange={(e) => setGroupNumber(e.target.value)}
-                className="w-28 rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs font-semibold text-white outline-none focus:ring-1 focus:ring-[#52d8c4]"
+                className="w-28 rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs font-semibold text-white outline-none focus:ring-1 focus:ring-[#6ab4ff]"
                 placeholder="Control"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-2.5">
-            <div className="flex items-center gap-2 rounded-lg border border-[#52d8c4]/40 bg-[#52d8c4]/10 px-3 py-1 font-mono text-sm font-bold text-[#52d8c4]">
+            <div className="flex items-center gap-2 rounded-lg border border-[#6ab4ff]/40 bg-[#6ab4ff]/10 px-3 py-1 font-mono text-sm font-bold text-[#6ab4ff]">
               <Timer className="size-4" />
               <span>
                 {String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:
@@ -1927,7 +1927,7 @@ export default function ExperimentalRunPage() {
               <Button
                 size="sm"
                 onClick={handleStartAnalysis}
-                className="h-8 gap-1.5 bg-[#44cbb9] px-4 font-mono text-xs font-bold uppercase text-[#041614] hover:bg-[#52d8c4] shadow-md shadow-[#44cbb9]/20 transition-transform active:scale-95"
+                className="h-8 gap-1.5 bg-[#52a7ff] px-4 font-mono text-xs font-bold uppercase text-[#0a1222] hover:bg-[#6ab4ff] shadow-md shadow-[#52a7ff]/20 transition-transform active:scale-95"
               >
                 <Play className="size-3.5 fill-current" />
                 <span>Run Analysis</span>
@@ -1956,7 +1956,7 @@ export default function ExperimentalRunPage() {
               <Button
                 size="sm"
                 onClick={handleResumeAnalysis}
-                className="h-8 gap-1.5 bg-[#44cbb9] px-4 font-mono text-xs font-bold uppercase text-[#041614] hover:bg-[#52d8c4]"
+                className="h-8 gap-1.5 bg-[#52a7ff] px-4 font-mono text-xs font-bold uppercase text-[#0a1222] hover:bg-[#6ab4ff]"
               >
                 <Play className="size-3.5 fill-current" />
                 <span>Resume</span>
@@ -1976,7 +1976,7 @@ export default function ExperimentalRunPage() {
             <Button
               size="sm"
               onClick={handleSaveAndFinishTrial}
-              className="h-8 gap-1.5 bg-[#08796f] px-3 font-semibold text-white shadow-xs hover:bg-[#0a8b80] dark:bg-[#52d8c4] dark:text-[#041614] dark:hover:bg-[#44cbb9]"
+              className="h-8 gap-1.5 bg-[#2a5ed3] px-3 font-semibold text-white shadow-xs hover:bg-[#236ff0] dark:bg-[#6ab4ff] dark:text-[#0a1222] dark:hover:bg-[#52a7ff]"
             >
               <Save className="size-3.5" />
               <span className="hidden sm:inline">Finish &amp; Save</span>
@@ -1988,14 +1988,14 @@ export default function ExperimentalRunPage() {
               onClick={() => setIsSidebarOpen((prev) => !prev)}
               className="h-8 border-white/15 bg-white/5 px-2.5 text-xs text-white hover:bg-white/10"
             >
-              {isSidebarOpen ? <PanelRightClose className="size-4 text-[#52d8c4]" /> : <PanelRightOpen className="size-4 text-[#52d8c4]" />}
+              {isSidebarOpen ? <PanelRightClose className="size-4 text-[#6ab4ff]" /> : <PanelRightOpen className="size-4 text-[#6ab4ff]" />}
             </Button>
           </div>
         </div>
       </header>
 
       {/* QUICK SOURCE & ADJUSTMENT TOOLBAR */}
-      <div className="border-b border-white/10 bg-[#09181e] px-4 py-2">
+      <div className="border-b border-white/10 bg-[#0e1624] px-4 py-2">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-mono text-[10px] font-bold text-muted-foreground uppercase">Source:</span>
@@ -2003,7 +2003,7 @@ export default function ExperimentalRunPage() {
               size="sm"
               variant={videoSource === "sample" ? "default" : "outline"}
               onClick={() => setVideoSource("sample")}
-              className={`h-7 px-2.5 text-xs ${videoSource === "sample" ? "bg-[#44cbb9] font-bold text-[#041614]" : "border-white/15 bg-white/5 text-white"}`}
+              className={`h-7 px-2.5 text-xs ${videoSource === "sample" ? "bg-[#52a7ff] font-bold text-[#0a1222]" : "border-white/15 bg-white/5 text-white"}`}
             >
               <Video className="size-3" />
               <span>Sample Lab Video</span>
@@ -2012,7 +2012,7 @@ export default function ExperimentalRunPage() {
               size="sm"
               variant={videoSource === "upload" ? "default" : "outline"}
               onClick={() => fileInputRef.current?.click()}
-              className={`h-7 px-2.5 text-xs ${videoSource === "upload" ? "bg-[#44cbb9] font-bold text-[#041614]" : "border-white/15 bg-white/5 text-white"}`}
+              className={`h-7 px-2.5 text-xs ${videoSource === "upload" ? "bg-[#52a7ff] font-bold text-[#0a1222]" : "border-white/15 bg-white/5 text-white"}`}
             >
               <Upload className="size-3" />
               <span>{uploadedFileName ? `File: ${uploadedFileName.slice(0, 14)}...` : "Upload Video"}</span>
@@ -2021,7 +2021,7 @@ export default function ExperimentalRunPage() {
               size="sm"
               variant={videoSource === "live" ? "default" : "outline"}
               onClick={() => handleStartLiveCamera()}
-              className={`h-7 px-2.5 text-xs ${videoSource === "live" ? "bg-[#44cbb9] font-bold text-[#041614]" : "border-white/15 bg-white/5 text-white"}`}
+              className={`h-7 px-2.5 text-xs ${videoSource === "live" ? "bg-[#52a7ff] font-bold text-[#0a1222]" : "border-white/15 bg-white/5 text-white"}`}
             >
               <Camera className="size-3" />
               <span>Live Camera</span>
@@ -2035,7 +2035,7 @@ export default function ExperimentalRunPage() {
               onClick={() => setIsAdjustmentMode((prev) => !prev)}
               className={`h-7 gap-1.5 px-3 font-mono text-xs font-bold transition-all ${
                 isAdjustmentMode
-                  ? "bg-[#52d8c4] text-[#041614] shadow-md shadow-[#52d8c4]/20"
+                  ? "bg-[#6ab4ff] text-[#0a1222] shadow-md shadow-[#6ab4ff]/20"
                   : "border border-white/15 bg-white/5 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -2047,7 +2047,7 @@ export default function ExperimentalRunPage() {
               size="sm"
               variant="outline"
               onClick={runAutoDetectMaze}
-              className="h-7 gap-1.5 border-[#52d8c4]/40 bg-[#52d8c4]/15 px-2.5 text-xs text-[#52d8c4]"
+              className="h-7 gap-1.5 border-[#6ab4ff]/40 bg-[#6ab4ff]/15 px-2.5 text-xs text-[#6ab4ff]"
             >
               <ScanSearch className="size-3" />
               <span>Auto-Detect</span>
@@ -2073,15 +2073,15 @@ export default function ExperimentalRunPage() {
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
             {/* LEFT: VIDEO VIEWPORT WITH ADJUSTABLE ARENA & ZONES */}
             <div className="min-w-0 space-y-4">
-              <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-[#040e12] shadow-2xl">
+              <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-[#070c17] shadow-2xl">
                 {/* View Mode Tabs (Video / Track Map / Heatmap) & Animal Status */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-[#07171e] px-4 py-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-[#0c1425] px-4 py-2">
                   <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/40 p-1">
                     <button
                       type="button"
                       onClick={() => setActiveViewTab("video")}
                       className={`flex items-center gap-1.5 rounded-md px-3 py-1 font-mono text-xs font-bold transition-all ${
-                        activeViewTab === "video" ? "bg-[#44cbb9] text-[#041614] shadow-xs" : "text-white/60 hover:text-white"
+                        activeViewTab === "video" ? "bg-[#52a7ff] text-[#0a1222] shadow-xs" : "text-white/60 hover:text-white"
                       }`}
                     >
                       <Video className="size-3.5" />
@@ -2096,7 +2096,7 @@ export default function ExperimentalRunPage() {
                         }, 50);
                       }}
                       className={`flex items-center gap-1.5 rounded-md px-3 py-1 font-mono text-xs font-bold transition-all ${
-                        activeViewTab === "track" ? "bg-[#44cbb9] text-[#041614] shadow-xs" : "text-white/60 hover:text-white"
+                        activeViewTab === "track" ? "bg-[#52a7ff] text-[#0a1222] shadow-xs" : "text-white/60 hover:text-white"
                       }`}
                     >
                       <LineChart className="size-3.5" />
@@ -2111,7 +2111,7 @@ export default function ExperimentalRunPage() {
                         }, 50);
                       }}
                       className={`flex items-center gap-1.5 rounded-md px-3 py-1 font-mono text-xs font-bold transition-all ${
-                        activeViewTab === "heatmap" ? "bg-[#44cbb9] text-[#041614] shadow-xs" : "text-white/60 hover:text-white"
+                        activeViewTab === "heatmap" ? "bg-[#52a7ff] text-[#0a1222] shadow-xs" : "text-white/60 hover:text-white"
                       }`}
                     >
                       <Flame className="size-3.5" />
@@ -2257,7 +2257,7 @@ export default function ExperimentalRunPage() {
                                 width={110}
                                 height={22}
                                 rx={5}
-                                fill="rgba(7, 19, 24, 0.92)"
+                                fill="rgba(10, 17, 29, 0.92)"
                                 stroke={z.color}
                                 strokeWidth={1.5}
                               />
@@ -2286,7 +2286,7 @@ export default function ExperimentalRunPage() {
                               cy={center.y}
                               r={Math.min(arena.rect.w, arena.rect.h) / 2}
                               fill="none"
-                              stroke="#52d8c4"
+                              stroke="#6ab4ff"
                               strokeWidth={3}
                               strokeDasharray="8 6"
                               className="cursor-move"
@@ -2300,7 +2300,7 @@ export default function ExperimentalRunPage() {
                               height={arena.rect.h}
                               transform={rotateTransform}
                               fill="none"
-                              stroke="#52d8c4"
+                              stroke="#6ab4ff"
                               strokeWidth={3}
                               strokeDasharray="8 6"
                               className="cursor-move"
@@ -2327,7 +2327,7 @@ export default function ExperimentalRunPage() {
                                 height={16}
                                 rx={3}
                                 transform={`rotate(${rotation} ${corner.x} ${corner.y})`}
-                                fill="#52d8c4"
+                                fill="#6ab4ff"
                                 stroke="#000000"
                                 strokeWidth={2}
                                 className={k === "nw" || k === "se" ? "cursor-nwse-resize" : "cursor-nesw-resize"}
@@ -2343,7 +2343,7 @@ export default function ExperimentalRunPage() {
                               y1={arena.rect.y}
                               x2={center.x}
                               y2={arena.rect.y - 36}
-                              stroke="#52d8c4"
+                              stroke="#6ab4ff"
                               strokeWidth={2.5}
                               pointerEvents="none"
                             />
@@ -2352,7 +2352,7 @@ export default function ExperimentalRunPage() {
                               cy={arena.rect.y - 36}
                               r={10}
                               fill="#ffffff"
-                              stroke="#52d8c4"
+                              stroke="#6ab4ff"
                               strokeWidth={3}
                               className={drag?.kind === "rotate" ? "cursor-grabbing" : "cursor-grab"}
                               onPointerDown={startRotateDrag}
@@ -2364,7 +2364,7 @@ export default function ExperimentalRunPage() {
                             <text
                               x={center.x}
                               y={center.y}
-                              fill="#52d8c4"
+                              fill="#6ab4ff"
                               fontSize={22}
                               fontWeight="bold"
                               fontFamily="monospace"
@@ -2414,7 +2414,7 @@ export default function ExperimentalRunPage() {
                       {videoSource === "upload" ? "FILE VIDEO" : videoSource === "live" ? "OPTICAL CAMERA" : "SAMPLE LAB VIDEO"}
                     </span>
                     {isAdjustmentMode && (
-                      <span className="flex items-center gap-1 rounded-md bg-[#52d8c4]/20 border border-[#52d8c4]/40 px-2 py-0.5 font-mono text-[10px] font-bold text-[#52d8c4] backdrop-blur-md">
+                      <span className="flex items-center gap-1 rounded-md bg-[#6ab4ff]/20 border border-[#6ab4ff]/40 px-2 py-0.5 font-mono text-[10px] font-bold text-[#6ab4ff] backdrop-blur-md">
                         <Move className="size-3" />
                         <span>Arena &amp; Zones Adjustable</span>
                       </span>
@@ -2423,7 +2423,7 @@ export default function ExperimentalRunPage() {
                 </div>
 
                 {/* Video Playback Transport Controls */}
-                <div className="border-t border-white/10 bg-[#07171e] px-4 py-2.5">
+                <div className="border-t border-white/10 bg-[#0c1425] px-4 py-2.5">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-3">
                       <span className="w-14 font-mono text-[11px] font-bold text-white/70">
@@ -2441,7 +2441,7 @@ export default function ExperimentalRunPage() {
                           setVideoCurrentTime(newTime);
                           if (videoElementRef.current) videoElementRef.current.currentTime = newTime;
                         }}
-                        className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-white/20 accent-[#52d8c4]"
+                        className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-white/20 accent-[#6ab4ff]"
                       />
                       <span className="w-14 text-right font-mono text-[11px] text-muted-foreground">
                         {String(Math.floor(videoDuration / 60)).padStart(2, "0")}:
@@ -2463,7 +2463,7 @@ export default function ExperimentalRunPage() {
                               setIsVideoPlaying(false);
                             }
                           }}
-                          className="h-8 gap-1.5 bg-[#44cbb9] px-3 font-bold text-[#041614] hover:bg-[#52d8c4]"
+                          className="h-8 gap-1.5 bg-[#52a7ff] px-3 font-bold text-[#0a1222] hover:bg-[#6ab4ff]"
                         >
                           {isVideoPlaying ? <Pause className="size-3.5 fill-current" /> : <Play className="size-3.5 fill-current" />}
                           <span>{isVideoPlaying ? "Pause Video" : "Play Video"}</span>
@@ -2473,7 +2473,7 @@ export default function ExperimentalRunPage() {
                           type="button"
                           onClick={() => setIsLooping((prev) => !prev)}
                           className={`flex h-8 items-center gap-1 rounded-lg border px-2.5 font-mono text-[11px] ${
-                            isLooping ? "border-[#52d8c4]/40 bg-[#52d8c4]/15 text-[#52d8c4]" : "border-white/10 bg-white/5 text-white/50"
+                            isLooping ? "border-[#6ab4ff]/40 bg-[#6ab4ff]/15 text-[#6ab4ff]" : "border-white/10 bg-white/5 text-white/50"
                           }`}
                         >
                           <Repeat className="size-3" />
@@ -2491,9 +2491,9 @@ export default function ExperimentalRunPage() {
 
               {/* HERO ANALYSIS CTA BANNER */}
               {analysisStatus === "idle" ? (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#52d8c4]/30 bg-gradient-to-r from-[#072428] via-[#092d32] to-[#072428] p-3.5 shadow-lg">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#6ab4ff]/30 bg-gradient-to-r from-[#131f36] via-[#1a2742] to-[#131f36] p-3.5 shadow-lg">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#52d8c4]/20 text-[#52d8c4] ring-1 ring-[#52d8c4]/30">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#6ab4ff]/20 text-[#6ab4ff] ring-1 ring-[#6ab4ff]/30">
                       <Crosshair className="size-5" />
                     </div>
                     <div>
@@ -2514,7 +2514,7 @@ export default function ExperimentalRunPage() {
                   <Button
                     size="lg"
                     onClick={handleStartAnalysis}
-                    className="h-10 gap-2 bg-[#44cbb9] px-6 font-mono text-xs font-bold uppercase tracking-wider text-[#041614] hover:bg-[#52d8c4] shadow-lg shadow-[#44cbb9]/30 transition-transform active:scale-95"
+                    className="h-10 gap-2 bg-[#52a7ff] px-6 font-mono text-xs font-bold uppercase tracking-wider text-[#0a1222] hover:bg-[#6ab4ff] shadow-lg shadow-[#52a7ff]/30 transition-transform active:scale-95"
                   >
                     <Play className="size-4 fill-current" />
                     <span>Run Analysis</span>
@@ -2585,7 +2585,7 @@ export default function ExperimentalRunPage() {
                     <Button
                       size="sm"
                       onClick={handleResumeAnalysis}
-                      className="h-9 gap-1.5 bg-[#44cbb9] font-mono text-xs font-bold uppercase text-[#041614] hover:bg-[#52d8c4]"
+                      className="h-9 gap-1.5 bg-[#52a7ff] font-mono text-xs font-bold uppercase text-[#0a1222] hover:bg-[#6ab4ff]"
                     >
                       <Play className="size-3.5 fill-current" />
                       <span>Resume Analysis</span>
@@ -2627,7 +2627,7 @@ export default function ExperimentalRunPage() {
                       onClick={handleExportCSV}
                       className="h-9 gap-1.5 border border-white/15 bg-white/5 font-mono text-xs font-bold text-white hover:bg-white/10"
                     >
-                      <FileSpreadsheet className="size-3.5 text-[#52d8c4]" />
+                      <FileSpreadsheet className="size-3.5 text-[#6ab4ff]" />
                       <span>Export CSV</span>
                     </Button>
                     <Button
@@ -2645,33 +2645,33 @@ export default function ExperimentalRunPage() {
               {/* LIVE RESULTS SUMMARY */}
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
-                  <div className="rounded-xl border border-white/10 bg-[#09181e] p-3">
+                  <div className="rounded-xl border border-white/10 bg-[#0e1624] p-3">
                     <span className="block font-mono text-[10px] text-muted-foreground uppercase">Total Distance</span>
                     <span className="font-mono text-xl font-bold text-white">{distanceCm > 100 ? (distanceCm / 100).toFixed(2) + "m" : distanceCm + "cm"}</span>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#09181e] p-3">
+                  <div className="rounded-xl border border-white/10 bg-[#0e1624] p-3">
                     <span className="block font-mono text-[10px] text-muted-foreground uppercase">Speed (cm/s)</span>
-                    <span className="font-mono text-xl font-bold text-[#52d8c4]">{currentSpeed} cm/s</span>
+                    <span className="font-mono text-xl font-bold text-[#6ab4ff]">{currentSpeed} cm/s</span>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#09181e] p-3">
+                  <div className="rounded-xl border border-white/10 bg-[#0e1624] p-3">
                     <span className="block font-mono text-[10px] text-muted-foreground uppercase">Freezing Time</span>
                     <span className="font-mono text-xl font-bold text-amber-400">{immobilityTime}s</span>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#09181e] p-3">
+                  <div className="rounded-xl border border-white/10 bg-[#0e1624] p-3">
                     <span className="block font-mono text-[10px] text-muted-foreground uppercase">Activity Bouts</span>
                     <span className="font-mono text-xl font-bold text-white">{boutsCount}</span>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#09181e] p-3">
+                  <div className="rounded-xl border border-white/10 bg-[#0e1624] p-3">
                     <span className="block font-mono text-[10px] text-muted-foreground uppercase">Latency to Target</span>
                     <span className="font-mono text-xl font-bold text-rose-400">{latencyToKeyZone !== null ? `${latencyToKeyZone}s` : "Pending..."}</span>
                   </div>
-                  <div className="rounded-xl border border-white/10 bg-[#09181e] p-3">
-                    <span className="block font-mono text-[10px] text-[#52d8c4] uppercase">Key Metric</span>
+                  <div className="rounded-xl border border-white/10 bg-[#0e1624] p-3">
+                    <span className="block font-mono text-[10px] text-[#6ab4ff] uppercase">Key Metric</span>
                     <span className="font-mono text-xl font-bold text-white">Active</span>
                   </div>
                 </div>
 
-                <div className="overflow-hidden rounded-xl border border-white/10 bg-[#09181e]">
+                <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0e1624]">
                   <div className="border-b border-white/10 px-4 py-2 font-mono text-xs font-bold text-white">
                     Adjusted Zone Classification Breakdown
                   </div>
@@ -2693,7 +2693,7 @@ export default function ExperimentalRunPage() {
                           </td>
                           <td className="px-3 py-2.5 text-center font-bold text-white">{z.entries}</td>
                           <td className="px-3 py-2.5 text-center text-white/80">{z.timeSeconds}s</td>
-                          <td className="px-3 py-2.5 text-center font-bold text-[#52d8c4]">{z.dwellPercent}%</td>
+                          <td className="px-3 py-2.5 text-center font-bold text-[#6ab4ff]">{z.dwellPercent}%</td>
                         </tr>
                       ))}
                     </tbody>
@@ -2705,12 +2705,12 @@ export default function ExperimentalRunPage() {
             {/* RIGHT SIDEBAR: ARENA & ZONE ADJUSTMENT CONTROLS */}
             <aside className={`space-y-4 ${isSidebarOpen ? "block" : "hidden lg:block"}`}>
               {/* Tab selector */}
-              <div className="flex rounded-xl border border-white/15 bg-[#09181e] p-1 text-xs">
+              <div className="flex rounded-xl border border-white/15 bg-[#0e1624] p-1 text-xs">
                 <button
                   type="button"
                   onClick={() => setSidebarTab("arena")}
                   className={`flex-1 rounded-lg py-1.5 font-mono text-[11px] font-bold transition-all ${
-                    sidebarTab === "arena" ? "bg-[#44cbb9] text-[#041614]" : "text-white/60 hover:text-white"
+                    sidebarTab === "arena" ? "bg-[#52a7ff] text-[#0a1222]" : "text-white/60 hover:text-white"
                   }`}
                 >
                   Adjust Arena
@@ -2719,7 +2719,7 @@ export default function ExperimentalRunPage() {
                   type="button"
                   onClick={() => setSidebarTab("detection")}
                   className={`flex-1 rounded-lg py-1.5 font-mono text-[11px] font-bold transition-all ${
-                    sidebarTab === "detection" ? "bg-[#44cbb9] text-[#041614]" : "text-white/60 hover:text-white"
+                    sidebarTab === "detection" ? "bg-[#52a7ff] text-[#0a1222]" : "text-white/60 hover:text-white"
                   }`}
                 >
                   Detection
@@ -2728,7 +2728,7 @@ export default function ExperimentalRunPage() {
                   type="button"
                   onClick={() => setSidebarTab("live")}
                   className={`flex-1 rounded-lg py-1.5 font-mono text-[11px] font-bold transition-all ${
-                    sidebarTab === "live" ? "bg-[#44cbb9] text-[#041614]" : "text-white/60 hover:text-white"
+                    sidebarTab === "live" ? "bg-[#52a7ff] text-[#0a1222]" : "text-white/60 hover:text-white"
                   }`}
                 >
                   Live Options
@@ -2737,16 +2737,16 @@ export default function ExperimentalRunPage() {
 
               {/* TAB 1: ARENA & ZONES ADJUSTMENT CONTROLS */}
               {sidebarTab === "arena" && (
-                <div className="space-y-4 rounded-2xl border border-white/10 bg-[#09181e] p-4 text-xs">
+                <div className="space-y-4 rounded-2xl border border-white/10 bg-[#0e1624] p-4 text-xs">
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                    <span className="font-mono text-[11px] font-bold uppercase text-[#52d8c4]">
+                    <span className="font-mono text-[11px] font-bold uppercase text-[#6ab4ff]">
                       01 · Arena &amp; Zones
                     </span>
                     <Button
                       size="sm"
                       variant="secondary"
                       onClick={runAutoDetectMaze}
-                      className="h-6 gap-1 bg-[#52d8c4]/20 px-2 font-mono text-[10px] font-bold text-[#52d8c4]"
+                      className="h-6 gap-1 bg-[#6ab4ff]/20 px-2 font-mono text-[10px] font-bold text-[#6ab4ff]"
                     >
                       <ScanSearch className="size-3" />
                       <span>Auto-detect</span>
@@ -2787,7 +2787,7 @@ export default function ExperimentalRunPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs text-white/80">Arena Center Position</Label>
-                      <span className="font-mono text-xs font-bold text-[#52d8c4]">
+                      <span className="font-mono text-xs font-bold text-[#6ab4ff]">
                         ({Math.round(arena.rect.x + arena.rect.w / 2)}, {Math.round(arena.rect.y + arena.rect.h / 2)})
                       </span>
                     </div>
@@ -2835,7 +2835,7 @@ export default function ExperimentalRunPage() {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs text-white/80">Arena Width</Label>
-                      <span className="font-mono text-xs font-bold text-[#52d8c4]">{Math.round(arena.rect.w)} px</span>
+                      <span className="font-mono text-xs font-bold text-[#6ab4ff]">{Math.round(arena.rect.w)} px</span>
                     </div>
                     <Slider
                       value={[arena.rect.w]}
@@ -2860,7 +2860,7 @@ export default function ExperimentalRunPage() {
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs text-white/80">Arena Height</Label>
-                        <span className="font-mono text-xs font-bold text-[#52d8c4]">{Math.round(arena.rect.h)} px</span>
+                        <span className="font-mono text-xs font-bold text-[#6ab4ff]">{Math.round(arena.rect.h)} px</span>
                       </div>
                       <Slider
                         value={[arena.rect.h]}
@@ -2879,7 +2879,7 @@ export default function ExperimentalRunPage() {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs text-white/80">Arena Rotation</Label>
-                      <span className="font-mono text-xs font-bold text-[#52d8c4]">{(arena.rotation ?? 0).toFixed(1)}°</span>
+                      <span className="font-mono text-xs font-bold text-[#6ab4ff]">{(arena.rotation ?? 0).toFixed(1)}°</span>
                     </div>
                     <Slider
                       value={[arena.rotation ?? 0]}
@@ -2918,7 +2918,7 @@ export default function ExperimentalRunPage() {
                       <Label className="text-xs text-white/80">
                         {getTemplate(templateId).sizeLabel || "Zone Size Ratio"}
                       </Label>
-                      <span className="font-mono text-xs font-bold text-[#52d8c4]">
+                      <span className="font-mono text-xs font-bold text-[#6ab4ff]">
                         {(templateParams.size * 100).toFixed(0)}%
                       </span>
                     </div>
@@ -2981,7 +2981,7 @@ export default function ExperimentalRunPage() {
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-[11px]">
                             <span className="text-muted-foreground">Zone Scale</span>
-                            <span className="font-mono text-[#52d8c4]">
+                            <span className="font-mono text-[#6ab4ff]">
                               {((zoneEdits[selectedZone.id]?.scale || 1) * 100).toFixed(0)}%
                             </span>
                           </div>
@@ -3024,12 +3024,12 @@ export default function ExperimentalRunPage() {
 
               {/* TAB 2: DETECTION PANEL (detection-panel.tsx) */}
               {sidebarTab === "detection" && (
-                <div className="space-y-3 rounded-2xl border border-white/10 bg-[#09181e] p-4 text-xs">
+                <div className="space-y-3 rounded-2xl border border-white/10 bg-[#0e1624] p-4 text-xs">
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                    <span className="font-mono text-[11px] font-bold uppercase text-[#52d8c4]">
+                    <span className="font-mono text-[11px] font-bold uppercase text-[#6ab4ff]">
                       03 · Animal Detection
                     </span>
-                    <Badge variant="outline" className="border-[#52d8c4]/40 font-mono text-[10px] text-[#52d8c4]">
+                    <Badge variant="outline" className="border-[#6ab4ff]/40 font-mono text-[10px] text-[#6ab4ff]">
                       CV Active
                     </Badge>
                   </div>
@@ -3061,7 +3061,7 @@ export default function ExperimentalRunPage() {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs text-white/80">Sensitivity Threshold</Label>
-                      <span className="font-mono text-xs font-bold text-[#52d8c4]">{settings.threshold}</span>
+                      <span className="font-mono text-xs font-bold text-[#6ab4ff]">{settings.threshold}</span>
                     </div>
                     <Slider
                       value={[settings.threshold]}
@@ -3075,7 +3075,7 @@ export default function ExperimentalRunPage() {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs text-white/80">Minimum Animal Size</Label>
-                      <span className="font-mono text-xs font-bold text-[#52d8c4]">{settings.minArea} px</span>
+                      <span className="font-mono text-xs font-bold text-[#6ab4ff]">{settings.minArea} px</span>
                     </div>
                     <Slider
                       value={[settings.minArea]}
@@ -3089,7 +3089,7 @@ export default function ExperimentalRunPage() {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs text-white/80">Sampling Rate (FPS)</Label>
-                      <span className="font-mono text-xs font-bold text-[#52d8c4]">{settings.fps} fps</span>
+                      <span className="font-mono text-xs font-bold text-[#6ab4ff]">{settings.fps} fps</span>
                     </div>
                     <Slider
                       value={[settings.fps]}
@@ -3115,7 +3115,7 @@ export default function ExperimentalRunPage() {
                       <Button
                         size="sm"
                         onClick={handleStartAnalysis}
-                        className="flex-1 gap-1.5 bg-[#44cbb9] text-xs font-bold text-[#041614] hover:bg-[#52d8c4]"
+                        className="flex-1 gap-1.5 bg-[#52a7ff] text-xs font-bold text-[#0a1222] hover:bg-[#6ab4ff]"
                       >
                         <Play className="size-3 fill-current" />
                         <span>Run Analysis</span>
@@ -3133,7 +3133,7 @@ export default function ExperimentalRunPage() {
                       <Button
                         size="sm"
                         onClick={handleResumeAnalysis}
-                        className="flex-1 gap-1.5 bg-[#44cbb9] text-xs font-bold text-[#041614] hover:bg-[#52d8c4]"
+                        className="flex-1 gap-1.5 bg-[#52a7ff] text-xs font-bold text-[#0a1222] hover:bg-[#6ab4ff]"
                       >
                         <Play className="size-3 fill-current" />
                         <span>Resume</span>
@@ -3154,12 +3154,12 @@ export default function ExperimentalRunPage() {
 
               {/* TAB 3: LIVE CAMERA OPTIONS (live-panel.tsx) */}
               {sidebarTab === "live" && (
-                <div className="space-y-3 rounded-2xl border border-white/10 bg-[#09181e] p-4 text-xs">
+                <div className="space-y-3 rounded-2xl border border-white/10 bg-[#0e1624] p-4 text-xs">
                   <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                    <span className="font-mono text-[11px] font-bold uppercase text-[#52d8c4]">
+                    <span className="font-mono text-[11px] font-bold uppercase text-[#6ab4ff]">
                       00 · Live Camera Controls
                     </span>
-                    <Radio className="size-3.5 text-[#52d8c4]" />
+                    <Radio className="size-3.5 text-[#6ab4ff]" />
                   </div>
 
                   {cameraDevices.length > 1 && (
@@ -3201,7 +3201,7 @@ export default function ExperimentalRunPage() {
                       onClick={runAutoDetectMaze}
                       className="gap-1 bg-white/5 text-xs text-white"
                     >
-                      <ScanSearch className="size-3 text-[#52d8c4]" />
+                      <ScanSearch className="size-3 text-[#6ab4ff]" />
                       <span>Detect arena</span>
                     </Button>
                     <Button
@@ -3226,7 +3226,7 @@ export default function ExperimentalRunPage() {
 
       {/* TRIAL COMPLETION & RESULTS SAVE DIALOG */}
       <Dialog open={isTrialCompleteDialogOpen} onOpenChange={setIsTrialCompleteDialogOpen}>
-        <DialogContent className="max-w-md border border-[#c4d7d4] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0a181d]">
+        <DialogContent className="max-w-md border border-[#c8d3e5] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0e1623]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-bold text-foreground">
               <CheckCircle2 className="size-5 text-emerald-500" />
@@ -3241,7 +3241,7 @@ export default function ExperimentalRunPage() {
             <div className="grid grid-cols-2 gap-2 rounded-xl bg-muted/20 p-3">
               <div>
                 <span className="text-[10px] text-muted-foreground uppercase">Distance:</span>
-                <p className="text-base font-bold text-[#08796f] dark:text-[#52d8c4]">
+                <p className="text-base font-bold text-[#2a5ed3] dark:text-[#6ab4ff]">
                   {distanceCm > 100 ? (distanceCm / 100).toFixed(2) + "m" : distanceCm + "cm"}
                 </p>
               </div>
@@ -3283,7 +3283,7 @@ export default function ExperimentalRunPage() {
                 setIsTrialCompleteDialogOpen(false);
                 handleSaveAndFinishTrial();
               }}
-              className="bg-[#08796f] text-xs font-bold text-white hover:bg-[#0a8b80] dark:bg-[#52d8c4] dark:text-[#041614]"
+              className="bg-[#2a5ed3] text-xs font-bold text-white hover:bg-[#236ff0] dark:bg-[#6ab4ff] dark:text-[#0a1222]"
             >
               <Check className="size-3 mr-1" /> Save &amp; Open Project Page
             </Button>

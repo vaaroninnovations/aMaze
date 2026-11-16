@@ -242,21 +242,21 @@ export default function AccountAuthDialog({
     <>
       <Dialog open={isOpen} onOpenChange={setOpen}>
         {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-        <DialogContent className="max-h-[92vh] overflow-y-auto border border-[#c4d6d4] bg-white p-6 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#09161a]">
+        <DialogContent className="max-h-[92vh] overflow-y-auto border border-[#c8d2e4] bg-white p-6 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#0d1420]">
           {/* Header */}
           <DialogHeader className="space-y-1">
-            <div className="flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#08796f] dark:text-[#52d8c4]">
+            <div className="flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#2a5ed3] dark:text-[#6ab4ff]">
               <ShieldCheck className="size-3.5" />
               Academic &amp; Researcher Access
             </div>
-            <DialogTitle className="text-xl font-bold tracking-tight text-[#142f32] dark:text-white">
+            <DialogTitle className="text-xl font-bold tracking-tight text-[#1e2a41] dark:text-white">
               {mode === "signUp"
                 ? "Create Your aMaze Account"
                 : mode === "reset"
                   ? "Reset Your Password"
                   : "Sign In to aMaze"}
             </DialogTitle>
-            <DialogDescription className="text-xs text-[#526d6a] dark:text-[#8ea9a6]">
+            <DialogDescription className="text-xs text-[#596780] dark:text-[#95a3bd]">
               {mode === "signUp"
                 ? "Directly initialize your workspace, rodent tracking projects, and behavioral protocols."
                 : mode === "reset"
@@ -267,13 +267,13 @@ export default function AccountAuthDialog({
 
           {/* Segmented Mode Switcher (Sign In vs Create Account) */}
           {mode !== "reset" && (
-            <div className="grid grid-cols-2 gap-1 rounded-lg border border-[#cde0dd] bg-[#f2f7f6] p-1 dark:border-white/10 dark:bg-white/[0.04]">
+            <div className="grid grid-cols-2 gap-1 rounded-lg border border-[#d1dcee] bg-[#f3f6fb] p-1 dark:border-white/10 dark:bg-white/[0.04]">
               <button
                 type="button"
                 onClick={() => setMode("signIn")}
                 className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition-all ${
                   mode === "signIn"
-                    ? "bg-white text-[#132c30] shadow-xs dark:bg-[#0c1f25] dark:text-white"
+                    ? "bg-white text-[#1c283d] shadow-xs dark:bg-[#121c2d] dark:text-white"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -285,7 +285,7 @@ export default function AccountAuthDialog({
                 onClick={() => setMode("signUp")}
                 className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition-all ${
                   mode === "signUp"
-                    ? "bg-white text-[#08796f] shadow-xs dark:bg-[#0c1f25] dark:text-[#52d8c4]"
+                    ? "bg-white text-[#2a5ed3] shadow-xs dark:bg-[#121c2d] dark:text-[#6ab4ff]"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -322,7 +322,7 @@ export default function AccountAuthDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-9 w-full gap-2 border-[#ccdcd9] text-xs font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                  className="h-9 w-full gap-2 border-[#d0d8e8] text-xs font-medium hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
                   disabled={submitting}
                   onClick={() => void signInWithGoogle()}
                 >
@@ -350,10 +350,10 @@ export default function AccountAuthDialog({
                 {/* Divider */}
                 <div className="relative py-1">
                   <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-[#d4e4e1] dark:border-white/10" />
+                    <span className="w-full border-t border-[#d8e0f0] dark:border-white/10" />
                   </div>
                   <div className="relative flex justify-center text-[10px] uppercase">
-                    <span className="bg-white px-2 font-mono text-muted-foreground dark:bg-[#09161a]">
+                    <span className="bg-white px-2 font-mono text-muted-foreground dark:bg-[#0d1420]">
                       or institutional credentials
                     </span>
                   </div>
@@ -406,7 +406,7 @@ export default function AccountAuthDialog({
                       <button
                         type="button"
                         onClick={() => setOrcid("0000-0002-1825-0097")}
-                        className="font-mono text-[9px] text-[#08796f] hover:underline dark:text-[#52d8c4]"
+                        className="font-mono text-[9px] text-[#2a5ed3] hover:underline dark:text-[#6ab4ff]"
                       >
                         Use sample
                       </button>
@@ -449,7 +449,7 @@ export default function AccountAuthDialog({
                       <button
                         type="button"
                         onClick={() => setMode("reset")}
-                        className="text-[11px] font-medium text-[#08796f] hover:underline dark:text-[#52d8c4]"
+                        className="text-[11px] font-medium text-[#2a5ed3] hover:underline dark:text-[#6ab4ff]"
                       >
                         Forgot password?
                       </button>
@@ -503,7 +503,7 @@ export default function AccountAuthDialog({
                     I agree to the{" "}
                     <Link
                       to="/"
-                      className="font-medium text-[#08796f] underline dark:text-[#52d8c4]"
+                      className="font-medium text-[#2a5ed3] underline dark:text-[#6ab4ff]"
                     >
                       Terms of Service
                     </Link>{" "}
@@ -516,7 +516,7 @@ export default function AccountAuthDialog({
               <Button
                 type="submit"
                 disabled={submitting}
-                className="mt-2 w-full border border-[#08796f] bg-[#08796f] font-semibold text-white shadow-xs hover:bg-[#066a61] dark:border-[#52d8c4]/30 dark:bg-[#44cbb9] dark:text-[#041614] dark:hover:bg-[#57decb]"
+                className="mt-2 w-full border border-[#2a5ed3] bg-[#2a5ed3] font-semibold text-white shadow-xs hover:bg-[#2752ba] dark:border-[#6ab4ff]/30 dark:bg-[#52a7ff] dark:text-[#0a1222] dark:hover:bg-[#76baff]"
               >
                 {submitting ? (
                   "Processing…"
@@ -535,14 +535,14 @@ export default function AccountAuthDialog({
             </form>
 
             {/* Bottom Switcher Note */}
-            <div className="border-t border-[#d8e8e5] pt-3 text-center text-xs text-muted-foreground dark:border-white/10">
+            <div className="border-t border-[#dce4f4] pt-3 text-center text-xs text-muted-foreground dark:border-white/10">
               {mode === "signUp" ? (
                 <p>
                   Already have an account?{" "}
                   <button
                     type="button"
                     onClick={() => setMode("signIn")}
-                    className="font-semibold text-[#08796f] hover:underline dark:text-[#52d8c4]"
+                    className="font-semibold text-[#2a5ed3] hover:underline dark:text-[#6ab4ff]"
                   >
                     Sign in here
                   </button>
@@ -551,7 +551,7 @@ export default function AccountAuthDialog({
                 <button
                   type="button"
                   onClick={() => setMode("signIn")}
-                  className="font-semibold text-[#08796f] hover:underline dark:text-[#52d8c4]"
+                  className="font-semibold text-[#2a5ed3] hover:underline dark:text-[#6ab4ff]"
                 >
                   Return to sign in
                 </button>
@@ -561,7 +561,7 @@ export default function AccountAuthDialog({
                   <button
                     type="button"
                     onClick={() => setMode("signUp")}
-                    className="font-semibold text-[#08796f] hover:underline dark:text-[#52d8c4]"
+                    className="font-semibold text-[#2a5ed3] hover:underline dark:text-[#6ab4ff]"
                   >
                     Create an account directly
                   </button>
@@ -576,7 +576,7 @@ export default function AccountAuthDialog({
       {/* ORCID VERIFICATION & DIRECT AUTHORIZATION MODAL     */}
       {/* ==================================================== */}
       <Dialog open={isOrcidAuthOpen} onOpenChange={setIsOrcidAuthOpen}>
-        <DialogContent className="max-w-md border border-[#c4d7d4] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0a181d]">
+        <DialogContent className="max-w-md border border-[#c8d3e5] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0e1623]">
           <DialogHeader>
             <div className="flex items-center gap-2">
               <OrcidIcon className="size-6" />
@@ -604,7 +604,7 @@ export default function AccountAuthDialog({
             </div>
 
             {/* Researcher Info Preview */}
-            <div className="space-y-2 rounded-lg border border-[#d2e4e1] bg-[#f8fbfa] p-3 text-xs dark:border-white/10 dark:bg-white/[0.02]">
+            <div className="space-y-2 rounded-lg border border-[#d6e0f2] bg-[#f8fbfa] p-3 text-xs dark:border-white/10 dark:bg-white/[0.02]">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Researcher Name:</span>
                 <span className="font-semibold text-foreground">
@@ -619,7 +619,7 @@ export default function AccountAuthDialog({
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Authorized Scope:</span>
-                <span className="font-mono text-[10px] text-[#08796f] dark:text-[#52d8c4]">
+                <span className="font-mono text-[10px] text-[#2a5ed3] dark:text-[#6ab4ff]">
                   /read-limited · /record-activities
                 </span>
               </div>

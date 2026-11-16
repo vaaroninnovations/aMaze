@@ -1,4 +1,5 @@
 import { useState, useEffect, type FormEvent } from "react";
+import BrandLogo from "@/components/brand-logo.tsx";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useConvexAuth, useAuthActions } from "@convex-dev/auth/react";
 import { toast } from "sonner";
@@ -204,25 +205,12 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f9f8] text-[#142d31] dark:bg-[#071318] dark:text-[#e5f1f0] flex flex-col justify-between">
+    <div className="min-h-screen bg-[#f6f8fc] text-[#1d293e] dark:bg-[#0a111d] dark:text-[#e8eefa] flex flex-col justify-between">
       {/* Top Header */}
-      <header className="sticky top-0 z-30 border-b border-[#c9d9d7] bg-white/80 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#071318]/80">
+      <header className="sticky top-0 z-30 border-b border-[#cdd6e5] bg-white/80 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#0a111d]/80">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="grid size-7 place-items-center rounded-md border border-[#08796f]/30 bg-[#08796f]/[0.07] text-[#08796f] dark:border-[#68dfce]/30 dark:bg-[#48cdbb]/10 dark:text-[#59dbc7]">
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="size-[18px]">
-                <path
-                  d="M4 4h16v16H4zM8 4v5h4v6h4v5M12 9h4v4M8 15h4"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="square"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            <span className="font-sans text-[15px] font-semibold tracking-[-0.04em]">
-              α<span className="text-[#08796f] dark:text-[#59dbc7]">Maze</span>
-            </span>
+            <BrandLogo markClassName="size-8" wordmarkClassName="text-[17px]" />
           </Link>
 
           <div className="flex items-center gap-3">
@@ -240,21 +228,21 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
 
       {/* Main Centered Auth Form */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-        <div className="w-full max-w-md rounded-2xl border border-[#c4d6d4] bg-white p-6 shadow-xl sm:p-8 dark:border-white/10 dark:bg-[#09161a]">
+        <div className="w-full max-w-md rounded-2xl border border-[#c8d2e4] bg-white p-6 shadow-xl sm:p-8 dark:border-white/10 dark:bg-[#0d1420]">
           {/* Header */}
           <div className="space-y-1.5 pb-4">
-            <div className="flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#08796f] dark:text-[#52d8c4]">
+            <div className="flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#2a5ed3] dark:text-[#6ab4ff]">
               <ShieldCheck className="size-3.5" />
               Academic &amp; Researcher Access
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-[#142f32] dark:text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-[#1e2a41] dark:text-white">
               {mode === "signUp"
                 ? "Create Your aMaze Account"
                 : mode === "reset"
                   ? "Reset Your Password"
                   : "Sign In to aMaze"}
             </h1>
-            <p className="text-xs text-[#526d6a] dark:text-[#8ea9a6]">
+            <p className="text-xs text-[#596780] dark:text-[#95a3bd]">
               {mode === "signUp"
                 ? "Initialize your workspace, rodent tracking projects, and behavioral protocols."
                 : mode === "reset"
@@ -265,13 +253,13 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
 
           {/* Segmented Mode Switcher */}
           {mode !== "reset" && (
-            <div className="grid grid-cols-2 gap-1 rounded-lg border border-[#cde0dd] bg-[#f2f7f6] p-1 dark:border-white/10 dark:bg-white/[0.04] mb-5">
+            <div className="grid grid-cols-2 gap-1 rounded-lg border border-[#d1dcee] bg-[#f3f6fb] p-1 dark:border-white/10 dark:bg-white/[0.04] mb-5">
               <button
                 type="button"
                 onClick={() => setMode("signIn")}
                 className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition-all ${
                   mode === "signIn"
-                    ? "bg-white text-[#132c30] shadow-xs dark:bg-[#0c1f25] dark:text-white"
+                    ? "bg-white text-[#1c283d] shadow-xs dark:bg-[#121c2d] dark:text-white"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -283,7 +271,7 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
                 onClick={() => setMode("signUp")}
                 className={`flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition-all ${
                   mode === "signUp"
-                    ? "bg-white text-[#08796f] shadow-xs dark:bg-[#0c1f25] dark:text-[#52d8c4]"
+                    ? "bg-white text-[#2a5ed3] shadow-xs dark:bg-[#121c2d] dark:text-[#6ab4ff]"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -346,9 +334,9 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
 
               <div className="relative my-4 flex items-center justify-center">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-[#cde0dd] dark:border-white/10" />
+                  <div className="w-full border-t border-[#d1dcee] dark:border-white/10" />
                 </div>
-                <span className="relative bg-white px-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground dark:bg-[#09161a]">
+                <span className="relative bg-white px-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground dark:bg-[#0d1420]">
                   or continue with email
                 </span>
               </div>
@@ -438,7 +426,7 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
                     <button
                       type="button"
                       onClick={() => setMode("reset")}
-                      className="text-[11px] text-[#08796f] hover:underline dark:text-[#52d8c4]"
+                      className="text-[11px] text-[#2a5ed3] hover:underline dark:text-[#6ab4ff]"
                     >
                       Forgot password?
                     </button>
@@ -489,11 +477,11 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
                 />
                 <label htmlFor="login-terms" className="text-[11px] text-muted-foreground leading-tight cursor-pointer">
                   I agree to the{" "}
-                  <Link to="/terms" className="text-[#08796f] underline dark:text-[#52d8c4]">
+                  <Link to="/terms" className="text-[#2a5ed3] underline dark:text-[#6ab4ff]">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link to="/privacy" className="text-[#08796f] underline dark:text-[#52d8c4]">
+                  <Link to="/privacy" className="text-[#2a5ed3] underline dark:text-[#6ab4ff]">
                     Privacy Statement
                   </Link>
                   .
@@ -504,7 +492,7 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
             <Button
               type="submit"
               disabled={submitting}
-              className="mt-2 w-full gap-2 bg-[#08796f] text-xs font-semibold text-white hover:bg-[#066a61] dark:bg-[#52d8c4] dark:text-[#041614] dark:hover:bg-[#43c4b1]"
+              className="mt-2 w-full gap-2 bg-[#2a5ed3] text-xs font-semibold text-white hover:bg-[#2752ba] dark:bg-[#6ab4ff] dark:text-[#0a1222] dark:hover:bg-[#46a0ff]"
             >
               {submitting ? (
                 <>
@@ -524,7 +512,7 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
           </form>
 
           {/* Quick Fill Demo Credentials */}
-          <div className="mt-4 pt-3 border-t border-[#cde0dd]/60 dark:border-white/10 text-center">
+          <div className="mt-4 pt-3 border-t border-[#d1dcee]/60 dark:border-white/10 text-center">
             <button
               type="button"
               onClick={() => {
@@ -546,7 +534,7 @@ export default function LoginPage({ defaultMode = "signIn" }: LoginPageProps) {
 
       {/* ORCID Simulation Modal */}
       <Dialog open={isOrcidAuthOpen} onOpenChange={setIsOrcidAuthOpen}>
-        <DialogContent className="max-w-md border border-[#c4d6d4] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#09161a]">
+        <DialogContent className="max-w-md border border-[#c8d2e4] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0d1420]">
           <DialogHeader>
             <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#A6CE39]">
               <OrcidIcon className="size-4" />

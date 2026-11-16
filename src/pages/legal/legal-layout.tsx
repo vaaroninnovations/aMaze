@@ -74,12 +74,12 @@ export default function LegalLayout({
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f9f8] text-[#142d31] dark:bg-[#071318] dark:text-[#e5f1f0] flex flex-col justify-between">
+    <div className="min-h-screen bg-[#f6f8fc] text-[#1d293e] dark:bg-[#0a111d] dark:text-[#e8eefa] flex flex-col justify-between">
       <div>
         <AppHeader />
 
         {/* Hero Banner */}
-        <section className="relative border-b border-[#c9d9d7] bg-linear-to-b from-white via-white/80 to-[#f0f6f5] py-12 px-4 dark:border-white/[0.08] dark:from-[#091a20] dark:via-[#08171c] dark:to-[#071318] sm:px-6 lg:px-8">
+        <section className="relative border-b border-[#cdd6e5] bg-linear-to-b from-white via-white/80 to-[#f1f5fb] py-12 px-4 dark:border-white/[0.08] dark:from-[#0f1727] dark:via-[#0d1523] dark:to-[#0a111d] sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl">
             {/* Breadcrumb & Badges */}
             <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
@@ -88,10 +88,10 @@ export default function LegalLayout({
                   Home
                 </Link>
                 <span>/</span>
-                <span className="text-[#08796f] dark:text-[#59dbc7]">Legal &amp; Compliance</span>
+                <span className="text-[#2a5ed3] dark:text-[#71b8ff]">Legal &amp; Compliance</span>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="border-[#08796f]/30 bg-[#08796f]/10 text-[#08796f] dark:text-[#59dbc7]">
+                <Badge variant="outline" className="border-[#2a5ed3]/30 bg-[#2a5ed3]/10 text-[#2a5ed3] dark:text-[#71b8ff]">
                   {badge}
                 </Badge>
                 <span className="text-muted-foreground">Effective: {lastUpdated}</span>
@@ -101,10 +101,10 @@ export default function LegalLayout({
             {/* Title & Subtitle */}
             <div className="mt-4 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
               <div>
-                <h1 className="text-3xl font-bold tracking-tight text-[#142d31] sm:text-4xl dark:text-[#e5f1f0]">
+                <h1 className="text-3xl font-bold tracking-tight text-[#1d293e] sm:text-4xl dark:text-[#e8eefa]">
                   {title}
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#4b6362] dark:text-[#91a7a4] sm:text-base">
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#525e74] dark:text-[#96a2b7] sm:text-base">
                   {subtitle}
                 </p>
               </div>
@@ -133,7 +133,7 @@ export default function LegalLayout({
             </div>
 
             {/* Navigation Tabs */}
-            <div className="mt-8 flex flex-wrap gap-2 border-t border-[#c9d9d7]/80 pt-4 dark:border-white/[0.08] print:hidden">
+            <div className="mt-8 flex flex-wrap gap-2 border-t border-[#cdd6e5]/80 pt-4 dark:border-white/[0.08] print:hidden">
               {LEGAL_TABS.map((tab) => {
                 const isActive =
                   location.pathname === tab.to ||
@@ -146,8 +146,8 @@ export default function LegalLayout({
                     to={tab.to}
                     className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-medium transition-all ${
                       isActive
-                        ? "bg-[#08796f] text-white shadow-xs dark:bg-[#59dbc7] dark:text-[#062024]"
-                        : "bg-white/80 text-[#3b5352] hover:bg-white hover:text-[#183538] dark:bg-[#0c1f24] dark:text-[#8ba7a5] dark:hover:bg-[#10272d] dark:hover:text-[#e0eeec] border border-[#c9d9d7] dark:border-white/[0.08]"
+                        ? "bg-[#2a5ed3] text-white shadow-xs dark:bg-[#71b8ff] dark:text-[#101c30]"
+                        : "bg-white/80 text-[#424e64] hover:bg-white hover:text-[#223048] dark:bg-[#131c2d] dark:text-[#92a1bb] dark:hover:bg-[#182338] dark:hover:text-[#e3ebf9] border border-[#cdd6e5] dark:border-white/[0.08]"
                     }`}
                   >
                     <Icon className="size-3.5" />
@@ -161,18 +161,18 @@ export default function LegalLayout({
 
         {/* Main Document Content */}
         <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-[#c9d9d7] bg-white/95 p-6 shadow-xs sm:p-10 dark:border-white/[0.08] dark:bg-[#0b1b20]/90">
+          <div className="rounded-2xl border border-[#cdd6e5] bg-white/95 p-6 shadow-xs sm:p-10 dark:border-white/[0.08] dark:bg-[#101827]/90">
             {children}
 
             {/* Bottom Copyright Notice */}
-            <div className="mt-12 border-t border-[#c9d9d7]/70 pt-6 text-xs text-muted-foreground font-mono flex flex-wrap items-center justify-between gap-3 dark:border-white/[0.08]">
+            <div className="mt-12 border-t border-[#cdd6e5]/70 pt-6 text-xs text-muted-foreground font-mono flex flex-wrap items-center justify-between gap-3 dark:border-white/[0.08]">
               <div className="flex items-center gap-2">
                 <span>Copyright © {new Date().getFullYear()}</span>
                 <a
                   href="https://drvara.si"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-[#08796f] hover:underline dark:text-[#59dbc7] flex items-center gap-1"
+                  className="font-semibold text-[#2a5ed3] hover:underline dark:text-[#71b8ff] flex items-center gap-1"
                 >
                   @drvara.si
                   <ExternalLink className="size-3" />
